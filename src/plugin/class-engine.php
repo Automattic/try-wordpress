@@ -4,6 +4,8 @@ namespace DotOrg\TryWordPress;
 
 class Engine {
 
+	private string $storage_post_type = 'liberated_data';
+
 	public function __construct() {
 		require 'class-post-type-ui.php';
 		require 'class-promoter.php';
@@ -12,16 +14,14 @@ class Engine {
 		require 'class-storage.php';
 
 		( function () {
-			$custom_post_type = Storage::POST_TYPE;
+			$promoter = new Promoter( $this->storage_post_type );
 
-			$promoter = new Promoter( $custom_post_type );
+			new Post_Type_UI( $this->storage_post_type, $promoter );
+			new Meta_Fields_Manager( $this->storage_post_type );
 
-			new Post_Type_UI( $custom_post_type, $promoter );
-			new Meta_Fields_Manager( $custom_post_type );
+			new Rest_API_Extender( $this->storage_post_type, $promoter );
 
-			new Rest_API_Extender( $custom_post_type, $promoter );
-
-			new Storage();
+			new Storage( $this->storage_post_type );
 		} )();
 	}
 }

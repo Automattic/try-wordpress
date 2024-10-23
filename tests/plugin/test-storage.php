@@ -8,10 +8,10 @@ class Storage_Test extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->storage = new Storage();
+		$this->storage = new Storage( 'lib_x' );
 	}
 
 	public function testRegisterPostTypes(): void {
-		$this->assertTrue( post_type_exists( 'liberated_data' ), 'Custom post type "liberated_data" not registered' );
+		$this->assertTrue( post_type_exists( 'lib_x' ), 'Custom post type meant for storage not registered' );
 	}
 }

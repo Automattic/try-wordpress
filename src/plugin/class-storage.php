@@ -3,21 +3,24 @@
 namespace DotOrg\TryWordPress;
 
 class Storage {
-	const string POST_TYPE      = 'liberated_data';
-	const string POST_TYPE_NAME = 'Liberated Data';
+	private string $post_type;
+	private string $post_type_name;
 
 	private array $custom_post_types_supports = array( 'title', 'editor', 'custom-fields' );
 
-	public function __construct() {
+	public function __construct( string $post_type ) {
+		$this->post_type      = $post_type;
+		$this->post_type_name = ucwords( str_replace( '_', ' ', $post_type ) );
+
 		add_action( 'init', array( $this, 'register_post_types' ) );
 	}
 
 	private function get_singular_name(): string {
-		return self::POST_TYPE_NAME;
+		return $this->post_type_name;
 	}
 
 	private function get_plural_name(): string {
-		return self::POST_TYPE_NAME;
+		return $this->post_type_name;
 	}
 
 	public function register_post_types(): void {
@@ -34,13 +37,13 @@ class Storage {
 			'menu_icon'           => 'dashicons-database',
 			'supports'            => $this->custom_post_types_supports,
 			'labels'              => $this->get_post_type_registration_labels( $name, $name_plural ),
-			'rest_base'           => self::POST_TYPE,
+			'rest_base'           => $this->post_type,
 		);
 
-		register_post_type( self::POST_TYPE, $args );
+		register_post_type( $this->post_type, $args );
 	}
 
-	public function get_post_type_registration_labels( $name, $name_plural ): array {
+	public function get_post_type_registration_labels( string $name, string $name_plural ): array {
 		return array(
 			'name'                  => $name_plural,
 			'singular_name'         => $name,
