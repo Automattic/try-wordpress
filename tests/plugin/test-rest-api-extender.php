@@ -56,14 +56,6 @@ class Rest_API_Extender_Test extends TestCase {
 		wp_delete_post( $promoted_post_id, true );
 	}
 
-	public function testRegisterRoute(): void {
-		do_action( 'rest_api_init' ); // so that register_route() executes.
-
-		$routes = rest_get_server()->get_routes( 'wp/v2' );
-
-		$this->assertArrayHasKey( '/wp/v2/lib_x/(?P<id>\d+)/promote', $routes );
-	}
-
 	public function testPromotePost(): void {
 		$request = $this->createMock( WP_REST_Request::class );
 		$request->method( 'offsetGet' )->with( 'id' )->willReturn( $this->post_id_in_db );

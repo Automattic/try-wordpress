@@ -28,24 +28,7 @@ class Rest_API_Extender {
 		add_filter( 'rest_prepare_' . $this->post_type, array( $this, 'inject_preview_link' ), 10, 3 );
 	}
 
-	public function register_route(): void {
-		register_rest_route(
-			'wp/v2',
-			'/' . $this->post_type . '/(?P<id>\d+)/promote',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'promote_post' ),
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'id' => array(
-						'validate_callback' => function ( $param, $request, $key ) {
-							return is_numeric( $param );
-						},
-					),
-				),
-			)
-		);
-	}
+	public function register_route(): void {}
 
 	public function promote_post( WP_REST_Request $request ): WP_Error|WP_REST_Response {
 		$post_id = $request['id'];
