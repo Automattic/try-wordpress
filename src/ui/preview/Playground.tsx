@@ -16,7 +16,6 @@ export function Playground( props: {
 	onReady: ( client: PlaygroundClient ) => void;
 } ) {
 	const { slug, className, blogName, onReady } = props;
-
 	const initializationRef = useRef( false );
 
 	useEffect( () => {

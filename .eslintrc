@@ -18,6 +18,7 @@
     "rules": {
         // Turn on errors for missing imports.
         "import/no-unresolved": "error",
+        "import/named": "off",
         "no-console": [
             "off"
         ]
