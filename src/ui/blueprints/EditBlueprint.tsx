@@ -92,7 +92,7 @@ export function EditBlueprint() {
 				postFieldsToUpdate
 			);
 			setPost( p );
-			void playgroundClient.goTo( '/?p=' + post.transformedId );
+			void playgroundClient!.goTo( '/?p=' + post.transformedId );
 		}
 	}
 
