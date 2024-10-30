@@ -16,7 +16,6 @@ export function Playground( props: {
 	onReady: ( client: PlaygroundClient ) => void;
 } ) {
 	const { slug, className, blogName, onReady } = props;
-
 	const initializationRef = useRef( false );
 
 	useEffect( () => {
@@ -56,6 +55,8 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
+	// TODO: We should pass the initialSyncDirection property.
+	// @ts-ignore
 	const mountDescriptor: MountDescriptor = {
 		device: {
 			type: 'opfs',
