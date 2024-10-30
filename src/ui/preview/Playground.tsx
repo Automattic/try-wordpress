@@ -55,6 +55,8 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
+	// TODO: We should pass the initialSyncDirection property.
+	// @ts-ignore
 	const mountDescriptor: MountDescriptor = {
 		device: {
 			type: 'opfs',
