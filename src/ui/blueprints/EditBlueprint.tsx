@@ -15,6 +15,7 @@ import {
 	BlogPostBlueprint,
 	validateBlogpostBlueprint,
 } from '@/model/blueprint/BlogPost';
+import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -27,7 +28,10 @@ export function EditBlueprint() {
 	// Make the source site navigate to the blueprint's source URL.
 	useEffect( () => {
 		if ( blueprint ) {
-			void ContentBus.navigateTo( blueprint.sourceUrl );
+			void sendCommandToContent( {
+				type: CommandTypes.NavigateTo,
+				payload: { url: blueprint.sourceUrl },
+			} );
 		}
 	}, [ blueprint ] );
 
