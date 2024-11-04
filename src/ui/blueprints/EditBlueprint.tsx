@@ -73,7 +73,7 @@ export function EditBlueprint() {
 			subjectFieldsToUpdate
 		);
 		setSubject( p );
-		void playgroundClient.goTo( '/?p=' + subject.transformedId );
+		void playgroundClient!.goTo( '/?p=' + subject.transformedId );
 	}
 
 	let isValid = false;
