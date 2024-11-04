@@ -36,7 +36,7 @@ class Promoter_Test extends TestCase {
 		wp_delete_post( $promoted_post_id, true );
 		wp_delete_post( $this->post_id_in_db, true );
 
-		delete_post_meta( 99, '_promoted_post' );
+		delete_post_meta( 99, '_dl_transformed' );
 	}
 
 	public function testGetPostTypeForPromotedPost() {
@@ -53,7 +53,7 @@ class Promoter_Test extends TestCase {
 	}
 
 	public function testGetPromotedPost() {
-		add_post_meta( 99, '_promoted_post', 999 );
+		add_post_meta( 99, '_dl_transformed', 999 );
 
 		$this->assertEquals( 999, $this->promoter->get_promoted_post_id( 99 ) );
 		$this->assertEquals( null, $this->promoter->get_promoted_post_id( 88 ) );
@@ -62,7 +62,7 @@ class Promoter_Test extends TestCase {
 	public function testPromote(): void {
 		$result = $this->promoter->promote( get_post( $this->post_id_in_db ) );
 
-		$promoted_post_id = absint( get_post_meta( $this->post_id_in_db, '_promoted_post', true ) );
+		$promoted_post_id = absint( get_post_meta( $this->post_id_in_db, '_dl_transformed', true ) );
 
 		$this->assertEquals( $this->post_id_in_db + 1, $promoted_post_id );
 		$this->assertTrue( $result );

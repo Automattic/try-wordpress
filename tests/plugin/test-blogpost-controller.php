@@ -102,17 +102,15 @@ class Blogpost_Controller_Test extends TestCase {
 
 		$this->assertEquals( 200, $response->get_status() );
 		$response_data = $response->get_data();
-		$this->assertEquals(
-			array(
-				'id'        => 6,
-				'title'     => $post_title,
-				'content'   => $post_content,
-				'date'      => $date,
-				'sourceUrl' => $source_url,
-				'authorId'  => $author_id,
-			),
-			$response_data
-		);
+
+		$this->assertEquals( 6, $response_data['id'] );
+		$this->assertEquals( $author_id, $response_data['authorId'] );
+		$this->assertEquals( $post_title, $response_data['title'] );
+		$this->assertEquals( $post_content, $response_data['content'] );
+		$this->assertEquals( $date, $response_data['date'] );
+		$this->assertEquals( $source_url, $response_data['sourceUrl'] );
+
+		$this->assertNotEmpty( $response_data['previewUrl'] );
 
 		// read from db
 		$post = get_post( $response_data['id'] );

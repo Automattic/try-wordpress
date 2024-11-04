@@ -5,7 +5,7 @@ namespace DotOrg\TryWordPress;
 use WP_Post;
 
 class Promoter {
-	private string $meta_key_for_promoted_post = '_promoted_post';
+	private string $meta_key_for_promoted_post = '_dl_transformed';
 
 	public function __construct( $post_type ) {
 		// constantly promote for now

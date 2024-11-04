@@ -28,6 +28,13 @@ class Liberate_Controller extends WP_REST_Controller {
 			'sourceUrl' => $item['guid'] ?? '',
 		);
 
+		if ( ! empty( $item['ID'] ) ) {
+			$transformed_post = get_post_meta( $item['ID'], '_dl_transformed', true );
+			if ( $transformed_post ) {
+				$response['previewUrl'] = get_post_permalink( $transformed_post );
+			}
+		}
+
 		return new WP_REST_Response( $response );
 	}
 
