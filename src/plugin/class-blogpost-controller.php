@@ -29,6 +29,12 @@ class Blogpost_Controller extends Liberate_Controller {
 					'permission_callback' => '__return_true',
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 				),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'search_item' ),
+					'permission_callback' => '__return_true',
+					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::READABLE ),
+				),
 			)
 		);
 		register_rest_route(
@@ -217,5 +223,36 @@ class Blogpost_Controller extends Liberate_Controller {
 		}
 
 		return new WP_Error( 'rest_could_not_delete', __( 'Could not delete', 'try_wordpress' ), array( 'status' => 500 ) );
+	}
+
+	public function search_item( $request ): WP_Error|WP_REST_Response {
+		$guid = $request['sourceurl'] ?? '';
+
+		if ( empty( $guid ) ) {
+			return new WP_Error(
+				'rest_search_invalid_sourceurl',
+				__( 'Invalid source URL.', 'try_wordpress' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		global $wpdb;
+		$post = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM $wpdb->posts WHERE guid = %s",
+				$guid
+			),
+			ARRAY_A
+		);
+
+		if ( $post ) {
+			return $this->prepare_item_for_response( $post, $request );
+		}
+
+		return new WP_Error(
+			'rest_not_found',
+			__( 'Not found', 'try_wordpress' ),
+			array( 'status' => 404 )
+		);
 	}
 }

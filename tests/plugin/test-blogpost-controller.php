@@ -231,4 +231,73 @@ class Blogpost_Controller_Test extends TestCase {
 
 		$this->assertEquals( 404, $response->get_status() );
 	}
+
+	public function testFindBySourceUrlNoArgs() {
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'GET', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function testFindBySourceUrlNoUrl() {
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'GET', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => '',
+			)
+		);
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function testFindBySourceUrlValidUrl() {
+		// First create a post to lookup
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => 'https://example.org/lookmeup',
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$post_id  = $response->get_data()['id'];
+
+		$request = new WP_REST_Request( 'GET', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => 'https://example.org/lookmeup',
+			)
+		);
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( $post_id, $response->get_data()['id'] );
+	}
+
+	public function testFindBySourceUrlInvalidUrl() {
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'GET', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => 'https://example.org/nonexistent',
+			)
+		);
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
 }
