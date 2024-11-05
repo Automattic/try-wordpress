@@ -32,7 +32,8 @@
 		"dev:db": "wp-env run cli wp db export - > backup.sql",
 		"dev:db:backup": "wp-env run cli wp db export - > backup-$(date +%Y%m%d-%H%M%S).sql",
 		"dev:test": "wp-env run tests-cli --env-cwd=wp-content/ plugins/plugin/vendor/bin/phpunit",
-		"dev:test:api": "wp-env run tests-cli --env-cwd=wp-content/ plugins/plugin/vendor/bin/phpunit --filter 'Controller_Test'"
+		"dev:test:api": "wp-env run tests-cli --env-cwd=wp-content/ plugins/plugin/vendor/bin/phpunit --filter 'Controller_Test'",
+		"dev:test:failing": "wp-env run tests-cli --env-cwd=wp-content/ plugins/plugin/vendor/bin/phpunit --group failing"
 	},
 	"config": {
 		"vendor-dir": "src/plugin/vendor",
