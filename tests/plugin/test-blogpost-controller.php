@@ -302,9 +302,9 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testGuidCache(): void {
-		$sourceUrl   = 'https://example.org/guidcachetesting';
+		$source_url  = 'https://example.org/guidcachetesting';
 		$cache_group = 'try_wp';
-		$cache_key   = 'try_wp_cache_guid_' . md5( $sourceUrl );
+		$cache_key   = 'try_wp_cache_guid_' . md5( $source_url );
 
 		// First create a post
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
@@ -313,7 +313,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'sourceUrl' => $sourceUrl,
+					'sourceUrl' => $source_url,
 				)
 			)
 		);
@@ -325,7 +325,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
 			array(
-				'sourceurl' => $sourceUrl,
+				'sourceurl' => $source_url,
 			)
 		);
 
