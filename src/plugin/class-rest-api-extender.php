@@ -14,8 +14,6 @@ class Rest_API_Extender {
 		$this->post_type = $custom_post_type;
 		$this->promoter  = $promoter;
 
-		add_action( 'rest_api_init', array( $this, 'register_route' ) );
-
 		add_filter(
 			'rest_' . $this->post_type . '_query',
 			function ( $args, \WP_REST_Request $request ) {
@@ -27,8 +25,6 @@ class Rest_API_Extender {
 
 		add_filter( 'rest_prepare_' . $this->post_type, array( $this, 'inject_preview_link' ), 10, 3 );
 	}
-
-	public function register_route(): void {}
 
 	public function promote_post( WP_REST_Request $request ): WP_Error|WP_REST_Response {
 		$post_id = $request['id'];
