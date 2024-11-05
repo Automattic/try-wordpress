@@ -15,12 +15,67 @@ class Liberate_Controller_Test extends TestCase {
 		$this->inserted_post_id    = wp_insert_post(
 			array(
 				'post_title' => 'hello unit tests',
+				'post_type'  => $this->storage_post_type,
 			)
 		);
 	}
 
 	public function testGetStoragePostType() {
 		$this->assertEquals( $this->storage_post_type, $this->liberate_controller->get_storage_post_type() );
+	}
+
+	public function testValidRequestForUpdateRule1() {
+		// invalid id, rule 1 violation
+		$api_endpoint = '/try-wp/v1/blogpost/9999';
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'title' => 'Some title',
+				)
+			)
+		);
+		rest_do_request( $request );
+
+		$result = $this->liberate_controller->valid_request_for_update( $request );
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertEquals( 'rest_post_invalid_id', $result->get_error_code() );
+	}
+
+	public function testValidRequestForUpdateRule2() {
+		// attempting to update sourceUrl/guid, rule 2 violation
+		$api_endpoint = '/try-wp/v1/blogpost/' . $this->inserted_post_id;
+		$request      = new WP_REST_Request( 'PUT', $api_endpoint );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'title'     => 'Updated title',
+					'sourceUrl' => 'https://example.org/different',
+				)
+			)
+		);
+		rest_do_request( $request );
+
+		$result = $this->liberate_controller->valid_request_for_update( $request );
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertEquals( 'rest_source_url_immutable', $result->get_error_code() );
+	}
+
+	public function testValidRequestForUpdateSuccess() {
+		// valid id and same sourceUrl specified
+		$request = new WP_REST_Request( 'POST', '/try-wp/v1/blogpost/' . $this->inserted_post_id );
+		$request->set_query_params( array( 'id' => $this->inserted_post_id ) );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'title'     => 'Some title',
+					'sourceUrl' => get_permalink( $this->inserted_post_id ),
+				)
+			)
+		);
+		rest_do_request( $request );
+
+		$this->assertTrue( $this->liberate_controller->valid_request_for_update( $request ) );
 	}
 
 	public function testPrepareItemForResponse() {
@@ -76,28 +131,18 @@ class Liberate_Controller_Test extends TestCase {
 				array(
 					'title'     => 'This is the test title',
 					'content'   => 'This is the test content',
-					'sourceUrl' => 'https://example.org/70',
+					'sourceUrl' => get_permalink( $this->inserted_post_id ),
 					'date'      => $this->date,
 				)
 			)
 		);
+		rest_do_request( $request );
 
-		// test create attempt
 		$result = $this->liberate_controller->prepare_item_for_database( $request );
 		$this->assertEquals( $this->liberate_controller->get_storage_post_type(), $result['post_type'] );
 		$this->assertEquals( 'This is the test title', $result['post_title'] );
 		$this->assertEquals( 'This is the test content', $result['post_content'] );
-		$this->assertEquals( 'https://example.org/70', $result['guid'] );
+		$this->assertEquals( get_permalink( $this->inserted_post_id ), $result['guid'] );
 		$this->assertEquals( $this->date, $result['post_date'] );
-
-		// test update attempt - valid id
-		$request->set_query_params( array( 'id' => $this->inserted_post_id ) );
-		$result = $this->liberate_controller->prepare_item_for_database( $request );
-		$this->assertEquals( $this->inserted_post_id, $result['ID'] );
-
-		// test update attempt - invalid id
-		$request->set_query_params( array( 'id' => 9999 ) );
-		$result = $this->liberate_controller->prepare_item_for_database( $request );
-		$this->assertInstanceOf( 'WP_Error', $result );
 	}
 }

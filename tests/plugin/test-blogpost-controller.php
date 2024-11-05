@@ -120,4 +120,91 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( $author_id, $post->post_author );
 		$this->assertEquals( $date, $post->post_date );
 	}
+
+	public function test_update_item() {
+		// First create a post to update
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$source_url   = 'https://example.org/original';
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => $source_url,
+					'title'     => 'Original Title',
+					'content'   => 'Original Content',
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$post_id  = $response->get_data()['id'];
+
+		// Now update the post
+		$update_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/' . $post_id;
+		$new_title       = 'Updated Title';
+		$new_content     = 'Updated Content';
+
+		$request = new WP_REST_Request( 'PUT', $update_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'title'     => $new_title,
+					'content'   => $new_content,
+					'sourceUrl' => $source_url,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$this->assertEquals( 200, $response->get_status() );
+		$response_data = $response->get_data();
+
+		// Verify response data
+		$this->assertEquals( $post_id, $response_data['id'] );
+		$this->assertEquals( $new_title, $response_data['title'] );
+		$this->assertEquals( $new_content, $response_data['content'] );
+		$this->assertEquals( $source_url, $response_data['sourceUrl'] );
+
+		// Verify database update
+		$post = get_post( $post_id );
+		$this->assertEquals( $new_title, $post->post_title );
+		$this->assertEquals( $new_content, $post->post_content );
+		$this->assertEquals( $source_url, $post->guid );
+	}
+
+	public function test_delete_item() {
+		// First create a post to delete
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => 'https://example.org/to-delete',
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$post_id  = $response->get_data()['id'];
+
+		// Now delete the post
+		$delete_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/' . $post_id;
+		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
+		$response        = rest_do_request( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertTrue( $response->get_data() );
+
+		// Verify post is in trash
+		$post = get_post( $post_id );
+		$this->assertEquals( 'trash', $post->post_status );
+	}
+
+	public function test_delete_nonexistent_item() {
+		$delete_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/99999';
+		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
+		$response        = rest_do_request( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
 }

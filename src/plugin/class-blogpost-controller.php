@@ -15,8 +15,6 @@ class Blogpost_Controller extends Liberate_Controller {
 		$this->attach_filters();
 	}
 
-	// @TODO: This function can become register_liberation_routes and be moved to Liberate_Controller
-	// register_liberation_routes( $namespace, $subject_type )
 	public function register_routes(): void {
 		$version      = '1';
 		$namespace    = 'try-wp/v' . $version;
@@ -186,7 +184,13 @@ class Blogpost_Controller extends Liberate_Controller {
 	}
 
 	public function update_item( $request ): WP_REST_Response|WP_Error {
-		$item = $this->prepare_item_for_database( $request );
+		$valid_request_for_update = $this->valid_request_for_update( $request );
+		if ( is_wp_error( $valid_request_for_update ) ) {
+			return $valid_request_for_update;
+		}
+
+		$item       = $this->prepare_item_for_database( $request );
+		$item['ID'] = $request['id'];
 
 		$result = wp_insert_post( $item, true );
 		if ( is_wp_error( $result ) ) {

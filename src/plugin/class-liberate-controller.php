@@ -18,6 +18,31 @@ class Liberate_Controller extends WP_REST_Controller {
 		return $this->storage_post_type;
 	}
 
+	public function valid_request_for_update( $request ): bool|WP_Error {
+		// Rule1: if post id is specified, it must be a valid id
+		$post_id = $request['id'];
+		$item    = get_post( $post_id );
+		if ( is_null( $item ) ) {
+			return new WP_Error(
+				'rest_post_invalid_id',
+				__( 'Invalid post ID.', 'try_wordpress' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		// Rule2: if sourceUrl is supplied, it must be the same as already saved
+		$request_data = json_decode( $request->get_body(), true );
+		if ( isset( $request_data['sourceUrl'] ) && $request_data['sourceUrl'] !== $item->guid ) {
+			return new WP_Error(
+				'rest_source_url_immutable',
+				__( 'Source URL is immutable', 'try_wordpress' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		return true;
+	}
+
 	public function prepare_item_for_response( $item, $request ): WP_REST_Response|WP_Error {
 		$response = array(
 			'id'        => $item['ID'] ?? '',
@@ -40,21 +65,7 @@ class Liberate_Controller extends WP_REST_Controller {
 
 	public function prepare_item_for_database( $request ): WP_Error|array {
 		$prepared_post = array();
-
-		// Check if we're doing an update, we have a valid post id to work with
-		if ( isset( $request['id'] ) ) {
-			$existing_post = get_post( $request['id'] );
-			if ( is_null( $existing_post ) ) {
-				return new WP_Error(
-					'rest_invalid_id',
-					__( 'Invalid ID.', 'try_wordpress' ),
-					array( 'status' => 400 )
-				);
-			}
-			$prepared_post['ID'] = $request['id'];
-		}
-
-		$request_data = json_decode( $request->get_body(), true );
+		$request_data  = json_decode( $request->get_body(), true );
 
 		// Prepare $postarr that can be passed to wp_insert_post()
 		$prepared_post['post_type']    = $this->storage_post_type;
