@@ -300,4 +300,44 @@ class Blogpost_Controller_Test extends TestCase {
 
 		$this->assertEquals( 404, $response->get_status() );
 	}
+
+	public function testGuidCache(): void {
+		$sourceUrl   = 'https://example.org/guidcachetesting';
+		$cache_group = 'try_wp';
+		$cache_key   = 'try_wp_cache_guid_' . md5( $sourceUrl );
+
+		// First create a post
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => $sourceUrl,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$post_id  = $response->get_data()['id'];
+
+		// do a look up, so that it gets cached
+		$request = new WP_REST_Request( 'GET', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => $sourceUrl,
+			)
+		);
+
+		rest_do_request( $request );
+
+		// Verify cache was set
+		$this->assertEquals( $post_id, wp_cache_get( $cache_key, $cache_group ) );
+
+		// Delete the post
+		wp_delete_post( $post_id );
+
+		// Verify the cache was cleared
+		$this->assertFalse( wp_cache_get( $cache_key, $cache_group ) );
+	}
 }

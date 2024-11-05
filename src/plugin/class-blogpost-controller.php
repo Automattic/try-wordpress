@@ -92,6 +92,19 @@ class Blogpost_Controller extends Liberate_Controller {
 			10,
 			2
 		);
+
+		// Bust guid -> postId cache when a post is deleted
+		add_filter(
+			'delete_post_' . $this->storage_post_type,
+			function ( $post_id, $post ) {
+				$cache_group = 'try_wp';
+				$cache_key   = 'try_wp_cache_guid_' . md5( $post->guid );
+
+				wp_cache_delete( $cache_key, $cache_group );
+			},
+			10,
+			2
+		);
 	}
 
 	public function get_item_schema(): array {
@@ -236,7 +249,24 @@ class Blogpost_Controller extends Liberate_Controller {
 			);
 		}
 
+		// Use wp_cache_* for guid -> postId
+		$cache_group = 'try_wp';
+		$cache_key   = 'try_wp_cache_guid_' . md5( $guid );
+		$post_id     = wp_cache_get( $cache_key, $cache_group );
+
+		if ( false !== $post_id ) {
+			// Cache hit - get post using WordPress API
+			$post = get_post( $post_id, ARRAY_A );
+			if ( $post ) {
+				return $this->prepare_item_for_response( $post, $request );
+			}
+			// If post not found despite cache hit, delete the cache
+			wp_cache_delete( $cache_key, $cache_group );
+		}
+
+		// Cache miss - query database
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$post = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT * FROM $wpdb->posts WHERE guid = %s",
@@ -246,6 +276,8 @@ class Blogpost_Controller extends Liberate_Controller {
 		);
 
 		if ( $post ) {
+			// Cache the post ID for future lookups
+			wp_cache_set( $cache_key, $post['ID'], $cache_group, YEAR_IN_SECONDS );
 			return $this->prepare_item_for_response( $post, $request );
 		}
 
