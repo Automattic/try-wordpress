@@ -16,12 +16,12 @@ class Blogpost_Controller extends Liberate_Controller {
 	}
 
 	public function register_routes(): void {
-		$version      = '1';
-		$namespace    = 'try-wp/v' . $version;
-		$subject_type = 'blogpost';
+		$version             = '1';
+		$namespace           = 'try-wp/v' . $version;
+		$subject_type_plural = 'blog-posts';
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type,
+			'/' . $subject_type_plural,
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -39,7 +39,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		);
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type . '/(?P<id>\d+)',
+			'/' . $subject_type_plural . '/(?P<id>\d+)',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -71,7 +71,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		);
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type . '/schema',
+			'/' . $subject_type_plural . '/schema',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_public_item_schema' ),

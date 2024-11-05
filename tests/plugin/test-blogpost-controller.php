@@ -4,14 +4,17 @@ use DotOrg\TryWordPress\Blogpost_Controller;
 use PHPUnit\Framework\TestCase;
 
 class Blogpost_Controller_Test extends TestCase {
-	private string $namespace    = 'try-wp/v1';
-	private string $subject_type = 'blogpost';
+	private string $namespace           = 'try-wp/v1';
+	private string $subject_type_plural = 'blog-posts';
+	private string $endpoint;
 	private Blogpost_Controller $blogpost_controller;
 
 	protected function setUp(): void {
 		parent::setUp();
 
 		$storage_post_type = 'lib_1';
+
+		$this->endpoint = '/' . $this->namespace . '/' . $this->subject_type_plural;
 
 		$this->blogpost_controller = new Blogpost_Controller( $storage_post_type );
 	}
@@ -20,13 +23,13 @@ class Blogpost_Controller_Test extends TestCase {
 		do_action( 'rest_api_init' ); // so that register_route() executes.
 
 		$routes = rest_get_server()->get_routes( $this->namespace );
-		$this->assertArrayHasKey( '/' . $this->namespace . '/blogpost', $routes );
-		$this->assertArrayHasKey( '/' . $this->namespace . '/blogpost/(?P<id>\d+)', $routes );
-		$this->assertArrayHasKey( '/' . $this->namespace . '/blogpost/schema', $routes );
+		$this->assertArrayHasKey( $this->endpoint, $routes );
+		$this->assertArrayHasKey( $this->endpoint . '/(?P<id>\d+)', $routes );
+		$this->assertArrayHasKey( $this->endpoint . '/schema', $routes );
 	}
 
 	public function testSchemaEndpoint() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/schema';
+		$api_endpoint = $this->endpoint . '/schema';
 
 		$request  = new WP_REST_Request( 'GET', $api_endpoint );
 		$response = rest_do_request( $request );
@@ -46,7 +49,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemEmptyBody() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 
 		$request = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
@@ -56,7 +59,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemMinimalBody() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$source_url   = 'https://example.org/1';
 
 		$request = new WP_REST_Request( 'POST', $api_endpoint );
@@ -79,7 +82,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testCreateItemFullBody() {
 		$date         = '2000-10-25 18:39:03';
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$source_url   = 'https://example.org/2';
 		$post_title   = 'This is an awesome post title';
 		$post_content = 'This is an awesome post body';
@@ -123,7 +126,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testCreateItemMissingSourceUrl() {
 		$date         = '2000-10-25 18:39:03';
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$post_title   = 'This is an awesome post title';
 		$post_content = 'This is an awesome post body';
 		$author_id    = 23;
@@ -147,7 +150,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testUpdateItem() {
 		// First create a post to update
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$source_url   = 'https://example.org/original';
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
@@ -164,7 +167,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$post_id  = $response->get_data()['id'];
 
 		// Now update the post
-		$update_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/' . $post_id;
+		$update_endpoint = $this->endpoint . '/' . $post_id;
 		$new_title       = 'Updated Title';
 		$new_content     = 'Updated Content';
 
@@ -198,7 +201,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testDeleteItem() {
 		// First create a post to delete
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
@@ -212,7 +215,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$post_id  = $response->get_data()['id'];
 
 		// Now delete the post
-		$delete_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/' . $post_id;
+		$delete_endpoint = $this->endpoint . '/' . $post_id;
 		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
 		$response        = rest_do_request( $request );
 
@@ -225,7 +228,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testDeleteNonexistentItem() {
-		$delete_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/99999';
+		$delete_endpoint = $this->endpoint . '/99999';
 		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
 		$response        = rest_do_request( $request );
 
@@ -233,7 +236,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlNoArgs() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'GET', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 
@@ -243,7 +246,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlNoUrl() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'GET', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
@@ -259,7 +262,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testFindBySourceUrlValidUrl() {
 		// First create a post to lookup
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
@@ -287,7 +290,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlInvalidUrl() {
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'GET', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
@@ -307,7 +310,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$cache_key   = 'try_wp_cache_guid_' . md5( $source_url );
 
 		// First create a post
-		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$api_endpoint = $this->endpoint;
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(

@@ -7,6 +7,7 @@ class Liberate_Controller_Test extends TestCase {
 	private string $storage_post_type = 'lib_2';
 	private string $date              = '2000-10-25 18:39:03';
 	private string $inserted_post_id;
+	private string $endpoint;
 	private Liberate_Controller $liberate_controller;
 
 	protected function setUp(): void {
@@ -18,6 +19,8 @@ class Liberate_Controller_Test extends TestCase {
 				'post_type'  => $this->storage_post_type,
 			)
 		);
+
+		$this->endpoint = '/try-wp/v1/blog-posts';
 	}
 
 	public function testGetStoragePostType() {
@@ -26,7 +29,7 @@ class Liberate_Controller_Test extends TestCase {
 
 	public function testValidRequestForUpdateRule1() {
 		// invalid id, rule 1 violation
-		$api_endpoint = '/try-wp/v1/blogpost/9999';
+		$api_endpoint = $this->endpoint . '/9999';
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_body(
 			wp_json_encode(
@@ -44,7 +47,7 @@ class Liberate_Controller_Test extends TestCase {
 
 	public function testValidRequestForUpdateRule2() {
 		// attempting to update sourceUrl/guid, rule 2 violation
-		$api_endpoint = '/try-wp/v1/blogpost/' . $this->inserted_post_id;
+		$api_endpoint = $this->endpoint . '/' . $this->inserted_post_id;
 		$request      = new WP_REST_Request( 'PUT', $api_endpoint );
 		$request->set_body(
 			wp_json_encode(
@@ -63,7 +66,8 @@ class Liberate_Controller_Test extends TestCase {
 
 	public function testValidRequestForUpdateSuccess() {
 		// valid id and same sourceUrl specified
-		$request = new WP_REST_Request( 'POST', '/try-wp/v1/blogpost/' . $this->inserted_post_id );
+		$api_endpoint = $this->endpoint . '/' . $this->inserted_post_id;
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_query_params( array( 'id' => $this->inserted_post_id ) );
 		$request->set_body(
 			wp_json_encode(
