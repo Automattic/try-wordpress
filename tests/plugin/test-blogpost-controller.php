@@ -25,7 +25,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertArrayHasKey( '/' . $this->namespace . '/blogpost/schema', $routes );
 	}
 
-	public function test_schema_endpoint() {
+	public function testSchemaEndpoint() {
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/schema';
 
 		$request  = new WP_REST_Request( 'GET', $api_endpoint );
@@ -45,7 +45,7 @@ class Blogpost_Controller_Test extends TestCase {
 		return $schema;
 	}
 
-	public function test_create_item_no_body() {
+	public function testCreateItemEmptyBody() {
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
 
 		$request = new WP_REST_Request( 'POST', $api_endpoint );
@@ -55,7 +55,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( 400, $response->get_status() );
 	}
 
-	public function test_create_item_minimal_body() {
+	public function testCreateItemMinimalBody() {
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
 		$source_url   = 'https://example.org/1';
 
@@ -77,7 +77,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( $source_url, $post->guid );
 	}
 
-	public function test_create_item_full_body() {
+	public function testCreateItemFullBody() {
 		$date         = '2000-10-25 18:39:03';
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
 		$source_url   = 'https://example.org/2';
@@ -121,7 +121,31 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( $date, $post->post_date );
 	}
 
-	public function test_update_item() {
+	public function testCreateItemMissingSourceUrl() {
+		$date         = '2000-10-25 18:39:03';
+		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
+		$post_title   = 'This is an awesome post title';
+		$post_content = 'This is an awesome post body';
+		$author_id    = 23;
+
+		$request = new WP_REST_Request( 'POST', $api_endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'title'    => $post_title,
+					'content'  => $post_content,
+					'date'     => $date,
+					'authorId' => $author_id,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function testUpdateItem() {
 		// First create a post to update
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
 		$source_url   = 'https://example.org/original';
@@ -172,7 +196,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( $source_url, $post->guid );
 	}
 
-	public function test_delete_item() {
+	public function testDeleteItem() {
 		// First create a post to delete
 		$api_endpoint = '/' . $this->namespace . '/' . $this->subject_type;
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
@@ -200,7 +224,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( 'trash', $post->post_status );
 	}
 
-	public function test_delete_nonexistent_item() {
+	public function testDeleteNonexistentItem() {
 		$delete_endpoint = '/' . $this->namespace . '/' . $this->subject_type . '/99999';
 		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
 		$response        = rest_do_request( $request );
