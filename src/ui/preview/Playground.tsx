@@ -55,6 +55,8 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
+	const opfsEnabled = true;
+
 	// TODO: We should pass the initialSyncDirection property.
 	// @ts-ignore
 	const mountDescriptor: MountDescriptor = {
@@ -71,8 +73,8 @@ async function initPlayground(
 	const options: StartPlaygroundOptions = {
 		iframe,
 		remoteUrl: `https://playground.wordpress.net/remote.html`,
-		mounts: [ mountDescriptor ],
-		shouldInstallWordPress: ! isWPInstalled,
+		mounts: opfsEnabled ? [ mountDescriptor ] : undefined,
+		shouldInstallWordPress: opfsEnabled ? ! isWPInstalled : undefined,
 		blueprint: {
 			login: true,
 			steps: steps(),
