@@ -1,4 +1,3 @@
-import { ContentBus } from '@/bus/ContentBus';
 import { BlueprintField } from '@/model/blueprint/Blueprint';
 import { Field } from '@/model/field/Field';
 
@@ -37,20 +36,12 @@ export function FieldEditor( props: {
 				</button>
 				<button
 					disabled={ waitingForSelection }
-					onClick={ async () => {
-						onWaitingForSelection( field );
-						await ContentBus.enableHighlighting();
-					} }
+					onClick={ () => onWaitingForSelection( field ) }
 				>
 					Select
 				</button>
 				{ ! waitingForSelection ? null : (
-					<button
-						onClick={ async () => {
-							onWaitingForSelection( false );
-							await ContentBus.disableHighlighting();
-						} }
-					>
+					<button onClick={ () => onWaitingForSelection( false ) }>
 						Cancel
 					</button>
 				) }

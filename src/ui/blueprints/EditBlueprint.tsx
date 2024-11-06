@@ -2,7 +2,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ReactElement, useEffect } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { BlogPostBlueprintEditor } from '@/ui/blueprints/blog-post/BlogPostBlueprintEditor';
-import { ContentBus } from '@/bus/ContentBus';
 import { Toolbar } from '@/ui/blueprints/Toolbar';
 import { parseBlogPostField } from '@/parser/blog-post';
 import { SubjectType } from '@/model/subject/Subject';
@@ -15,6 +14,7 @@ import {
 	BlogPostBlueprint,
 	validateBlogpostBlueprint,
 } from '@/model/blueprint/BlogPost';
+import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -27,7 +27,10 @@ export function EditBlueprint() {
 	// Make the source site navigate to the blueprint's source URL.
 	useEffect( () => {
 		if ( blueprint ) {
-			void ContentBus.navigateTo( blueprint.sourceUrl );
+			void sendCommandToContent( {
+				type: CommandTypes.NavigateTo,
+				payload: { url: blueprint.sourceUrl },
+			} );
 		}
 	}, [ blueprint ] );
 
@@ -110,7 +113,10 @@ export function EditBlueprint() {
 						<button
 							disabled={ ! isValid }
 							onClick={ async () => {
-								await ContentBus.disableHighlighting();
+								void sendCommandToContent( {
+									type: CommandTypes.DisableHighlighting,
+									payload: {},
+								} );
 								navigate(
 									Screens.import( session.id, blueprint!.id )
 								);

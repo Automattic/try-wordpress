@@ -1,43 +1,37 @@
-import { Message } from '@/bus/Message';
-import { ContentBus } from '@/bus/ContentBus';
-import { AppBus } from '@/bus/AppBus';
+import { startListening } from '@/bus/Bus';
+import { CommandTypes } from '@/bus/Command';
+import { EventTypes, sendEventToApp } from '@/bus/Event';
 
 let currentElement: HTMLElement | null = null;
 
-ContentBus.listen(
-	( message: Message, sendResponse: ( response?: any ) => void ) => {
-		switch ( message.action ) {
-			case ContentBus.actions.EnableHighlighting:
-				document.body.addEventListener( 'mouseover', onMouseOver );
-				document.body.addEventListener( 'mouseout', onMouseOut );
-				document.body.addEventListener( 'click', onClick );
-				enableHighlightingCursor();
-				break;
-			case ContentBus.actions.DisableHighlighting:
-				document.body.removeEventListener( 'mouseover', onMouseOver );
-				document.body.removeEventListener( 'mouseout', onMouseOut );
-				document.body.removeEventListener( 'click', onClick );
-				disableHighlightingCursor();
-				removeStyle();
-				break;
-			case ContentBus.actions.GetCurrentPageInfo:
-				sendResponse( {
-					url: document.documentURI,
-					title: document.title,
-				} );
-				break;
-			case ContentBus.actions.NavigateTo:
-				const url = ( message.payload as any ).url;
-				if ( document.location.href !== url ) {
-					document.location.href = url;
-				}
-				break;
-			default:
-				console.error( `Unknown action: ${ message.action }` );
-				break;
-		}
+startListening( CommandTypes.GetCurrentPageInfo, ( event ) => {
+	event.sendResponse( {
+		url: document.documentURI,
+		title: document.title,
+	} );
+} );
+
+startListening( CommandTypes.NavigateTo, ( event ) => {
+	const url = ( event.event.payload as any ).url;
+	if ( document.location.href !== url ) {
+		document.location.href = url;
 	}
-);
+} );
+
+startListening( CommandTypes.EnableHighlighting, () => {
+	document.body.addEventListener( 'mouseover', onMouseOver );
+	document.body.addEventListener( 'mouseout', onMouseOut );
+	document.body.addEventListener( 'click', onClick );
+	enableHighlightingCursor();
+} );
+
+startListening( CommandTypes.DisableHighlighting, () => {
+	document.body.removeEventListener( 'mouseover', onMouseOver );
+	document.body.removeEventListener( 'mouseout', onMouseOut );
+	document.body.removeEventListener( 'click', onClick );
+	disableHighlightingCursor();
+	removeStyle();
+} );
 
 function onClick( event: MouseEvent ) {
 	event.preventDefault();
@@ -49,7 +43,10 @@ function onClick( event: MouseEvent ) {
 	clone.style.outline = '';
 	let content = clone.outerHTML.trim();
 	content = content.replaceAll( ' style=""', '' );
-	void AppBus.elementClicked( content );
+	void sendEventToApp( {
+		type: EventTypes.OnElementClick,
+		payload: { content },
+	} );
 }
 
 function onMouseOver( event: MouseEvent ) {
