@@ -129,6 +129,13 @@ function steps(): StepDefinition[] {
 			password: 'password',
 		},
 		{
+			step: 'updateUserMeta',
+			userId: 1,
+			meta: {
+				admin_color: 'modern',
+			},
+		},
+		{
 			step: 'runPHP',
 			code: deleteDefaultContent(),
 		},
