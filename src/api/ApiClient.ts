@@ -44,8 +44,8 @@ export class ApiClient {
 	async get(
 		route: string,
 		params?: Record< string, string >
-	): Promise< object > {
-		let url = `/index.php?rest_route=/wp/v2${ route }`;
+	): Promise< object | null > {
+		let url = `/index.php?rest_route=/try-wp/v1${ route }`;
 		for ( const name in params ) {
 			const encoded = encodeURIComponent( params[ name ] );
 			url += `&${ name }=${ encoded }`;
@@ -56,6 +56,9 @@ export class ApiClient {
 		} );
 		if ( response.httpStatusCode !== 200 ) {
 			console.error( response, params, response.json );
+			if ( response.httpStatusCode === 404 ) {
+				return null;
+			}
 			throw Error( response.json.message );
 		}
 		return response.json;
@@ -63,7 +66,7 @@ export class ApiClient {
 
 	async post( route: string, body: object ): Promise< object > {
 		const response = await this.playgroundClient.request( {
-			url: `/index.php?rest_route=/wp/v2${ route }`,
+			url: `/index.php?rest_route=/try-wp/v1${ route }`,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

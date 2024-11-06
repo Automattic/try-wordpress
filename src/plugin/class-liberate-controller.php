@@ -2,6 +2,8 @@
 
 namespace DotOrg\TryWordPress;
 
+use DateTime;
+use DateTimeZone;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
@@ -74,11 +76,27 @@ class Liberate_Controller extends WP_REST_Controller {
 		$prepared_post = array();
 		$request_data  = json_decode( $request->get_body(), true );
 
+		if ( isset( $request_data['parsedDate'] ) ) {
+			try {
+				$datetime      = new DateTime( $request_data['parsedDate'], new DateTimeZone( 'UTC' ) );
+				$post_date     = $datetime->format( 'Y-m-d H:i:s' );
+				$post_date_gmt = get_gmt_from_date( $post_date );
+			} catch ( \Exception $e ) {
+				return new WP_Error(
+					'invalid_date_format',
+					// translators: %s: Error message describing the invalid date format.
+					sprintf( __( 'Invalid date format: %s', 'try_wordpress' ), $e->getMessage() ),
+					array( 'status' => 400 )
+				);
+			}
+		}
+
 		// Prepare $postarr that can be passed to wp_insert_post()
 		$prepared_post['ID']                    = $request['id'];
 		$prepared_post['post_type']             = $this->storage_post_type;
 		$prepared_post['post_title']            = $request_data['parsedTitle'] ?? '';
-		$prepared_post['post_date']             = $request_data['parsedDate'] ?? '';
+		$prepared_post['post_date']             = $post_date ?? '';
+		$prepared_post['post_date_gmt']         = $post_date_gmt ?? '';
 		$prepared_post['post_content']          = $request_data['parsedContent'] ?? '';
 		$prepared_post['post_content_filtered'] = $request_data['rawContent'] ?? '';
 		$prepared_post['guid']                  = $request_data['sourceUrl'] ?? '';

@@ -8,11 +8,11 @@ import { Field } from '@/model/field/Field';
 export function parseBlogPostField( name: string, field: Field ): Field {
 	switch ( name ) {
 		case 'date':
-			return parseBlogPostDate( field.original );
+			return parseBlogPostDate( field.rawValue );
 		case 'title':
-			return parseBlogPostTitle( field.original );
+			return parseBlogPostTitle( field.rawValue );
 		case 'content':
-			return parseBlogPostContent( field.original );
+			return parseBlogPostContent( field.rawValue );
 		default:
 			throw Error( `unknown field type ${ field.type }` );
 	}

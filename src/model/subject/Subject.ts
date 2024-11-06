@@ -11,4 +11,5 @@ export interface Subject {
 	id: number;
 	transformedId: number;
 	sourceUrl: string;
+	previewUrl: string;
 }

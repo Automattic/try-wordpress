@@ -11,12 +11,13 @@ class Blogpost_Controller_Test extends TestCase {
 	private string $endpoint;
 	private string $storage_post_type = 'lib_1';
 
-	private string $raw_title      = '<h1>This is the test title</h1>';
-	private string $parsed_title   = 'This is the test title';
-	private string $raw_date       = '25 Oct 2000 18:39:03';
-	private string $parsed_date    = '2000-10-25 18:39:03';
-	private string $raw_content    = '<div><p>This is the test content.</p></div>';
-	private string $parsed_content = '<p>This is the test content.</p>';
+	private string $raw_title       = '<h1>This is the test title</h1>';
+	private string $parsed_title    = 'This is the test title';
+	private string $raw_date        = '<time>25 Oct 2024 18:39:20</time>';
+	private string $parsed_date     = '2024-10-25 18:39:20';
+	private string $date_iso_string = '2024-10-25T18:39:20.000Z';
+	private string $raw_content     = '<div><p>This is the test content.</p></div>';
+	private string $parsed_content  = '<p>This is the test content.</p>';
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -112,7 +113,7 @@ class Blogpost_Controller_Test extends TestCase {
 					'rawContent'    => $this->raw_content,
 					'parsedContent' => $this->parsed_content,
 					'rawDate'       => $this->raw_date,
-					'parsedDate'    => $this->parsed_date,
+					'parsedDate'    => $this->date_iso_string,
 					'authorId'      => $author_id,
 				)
 			)

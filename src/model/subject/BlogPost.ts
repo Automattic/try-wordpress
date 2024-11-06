@@ -13,8 +13,9 @@ export interface BlogPost extends Subject {
 export function newBlogPost( sourceUrl: string ): BlogPost {
 	return {
 		id: 0,
-		transformedId: 0,
 		type: SubjectType.BlogPost,
+		transformedId: 0,
+		previewUrl: '',
 		sourceUrl,
 		date: newDateField(),
 		title: newTextField(),
@@ -26,7 +27,7 @@ export function validateBlogPost( blogPost: BlogPost ): boolean {
 	const fields = [ blogPost.title, blogPost.date, blogPost.content ];
 	let isValid = true;
 	for ( const f of fields ) {
-		if ( f.original === '' || f.parsed === '' ) {
+		if ( f.rawValue === '' || f.parsedValue === '' ) {
 			isValid = false;
 			break;
 		}
