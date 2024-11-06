@@ -190,14 +190,19 @@ class Blogpost_Controller extends Liberate_Controller {
 	}
 
 	public function create_item( $request ): WP_REST_Response|WP_Error {
-		$item = $this->prepare_item_for_database( $request );
+		$item      = $this->prepare_item_for_database( $request );
+		$item_meta = $item['meta'];
+		unset( $item['meta'] );
 
 		$result = wp_insert_post( $item, true );
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
-
 		$item['ID'] = $result;
+
+		foreach ( $item_meta as $key => $value ) {
+			update_post_meta( $item['ID'], $key, $value );
+		}
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
@@ -208,12 +213,17 @@ class Blogpost_Controller extends Liberate_Controller {
 			return $valid_request_for_update;
 		}
 
-		$item       = $this->prepare_item_for_database( $request );
-		$item['ID'] = $request['id'];
+		$item      = $this->prepare_item_for_database( $request );
+		$item_meta = $item['meta'];
+		unset( $item['meta'] );
 
 		$result = wp_insert_post( $item, true );
 		if ( is_wp_error( $result ) ) {
 			return $result;
+		}
+
+		foreach ( $item_meta as $key => $value ) {
+			update_post_meta( $item['ID'], $key, $value );
 		}
 
 		return $this->prepare_item_for_response( $item, $request );

@@ -4,19 +4,26 @@ use DotOrg\TryWordPress\Blogpost_Controller;
 use PHPUnit\Framework\TestCase;
 
 class Blogpost_Controller_Test extends TestCase {
+	private Blogpost_Controller $blogpost_controller;
+
 	private string $namespace           = 'try-wp/v1';
 	private string $subject_type_plural = 'blog-posts';
 	private string $endpoint;
-	private Blogpost_Controller $blogpost_controller;
+	private string $storage_post_type = 'lib_1';
+
+	private string $raw_title      = '<h1>This is the test title</h1>';
+	private string $parsed_title   = 'This is the test title';
+	private string $raw_date       = '25 Oct 2000 18:39:03';
+	private string $parsed_date    = '2000-10-25 18:39:03';
+	private string $raw_content    = '<div><p>This is the test content.</p></div>';
+	private string $parsed_content = '<p>This is the test content.</p>';
 
 	protected function setUp(): void {
 		parent::setUp();
 
-		$storage_post_type = 'lib_1';
-
 		$this->endpoint = '/' . $this->namespace . '/' . $this->subject_type_plural;
 
-		$this->blogpost_controller = new Blogpost_Controller( $storage_post_type );
+		$this->blogpost_controller = new Blogpost_Controller( $this->storage_post_type );
 	}
 
 	public function testRegisterRoutes(): void {
@@ -81,23 +88,32 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemFullBody() {
-		$date         = '2000-10-25 18:39:03';
-		$api_endpoint = $this->endpoint;
-		$source_url   = 'https://example.org/2';
-		$post_title   = 'This is an awesome post title';
-		$post_content = 'This is an awesome post body';
-		$author_id    = 23;
+		global $wpdb;
 
-		$request = new WP_REST_Request( 'POST', $api_endpoint );
+		$source_url = 'https://example.org/2';
+		$author_id  = 23;
+
+		// phpcs:ignore
+		$biggest_post_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE post_type = %s ORDER BY ID DESC LIMIT 1",
+				$this->storage_post_type
+			)
+		);
+
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'sourceUrl' => $source_url,
-					'title'     => $post_title,
-					'content'   => $post_content,
-					'date'      => $date,
-					'authorId'  => $author_id,
+					'sourceUrl'     => $source_url,
+					'rawTitle'      => $this->raw_title,
+					'parsedTitle'   => $this->parsed_title,
+					'rawContent'    => $this->raw_content,
+					'parsedContent' => $this->parsed_content,
+					'rawDate'       => $this->raw_date,
+					'parsedDate'    => $this->parsed_date,
+					'authorId'      => $author_id,
 				)
 			)
 		);
@@ -106,22 +122,25 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$response_data = $response->get_data();
 
-		$this->assertEquals( 6, $response_data['id'] );
+		$this->assertGreaterThan( $biggest_post_id, $response_data['id'] );
 		$this->assertEquals( $author_id, $response_data['authorId'] );
-		$this->assertEquals( $post_title, $response_data['title'] );
-		$this->assertEquals( $post_content, $response_data['content'] );
-		$this->assertEquals( $date, $response_data['date'] );
+		$this->assertEquals( $this->raw_title, $response_data['rawTitle'] );
+		$this->assertEquals( $this->parsed_title, $response_data['parsedTitle'] );
+		$this->assertEquals( $this->raw_content, $response_data['rawContent'] );
+		$this->assertEquals( $this->parsed_content, $response_data['parsedContent'] );
+		$this->assertEquals( $this->raw_date, $response_data['rawDate'] );
+		$this->assertEquals( $this->parsed_date, $response_data['parsedDate'] );
 		$this->assertEquals( $source_url, $response_data['sourceUrl'] );
 
-		$this->assertNotEmpty( $response_data['previewUrl'] );
+		$this->assertNotEmpty( $response_data['transformedId'] );
 
 		// read from db
 		$post = get_post( $response_data['id'] );
 		$this->assertEquals( $source_url, $post->guid );
-		$this->assertEquals( $post_title, $post->post_title );
-		$this->assertEquals( $post_content, $post->post_content );
+		$this->assertEquals( $this->parsed_title, $post->post_title );
+		$this->assertEquals( $this->parsed_content, $post->post_content );
 		$this->assertEquals( $author_id, $post->post_author );
-		$this->assertEquals( $date, $post->post_date );
+		$this->assertEquals( $this->parsed_date, $post->post_date );
 	}
 
 	public function testCreateItemMissingSourceUrl() {
@@ -150,16 +169,15 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testUpdateItem() {
 		// First create a post to update
-		$api_endpoint = $this->endpoint;
-		$source_url   = 'https://example.org/original';
-		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$source_url = 'https://example.org/original';
+		$request    = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'sourceUrl' => $source_url,
-					'title'     => 'Original Title',
-					'content'   => 'Original Content',
+					'sourceUrl'     => $source_url,
+					'parsedTitle'   => 'Original Title',
+					'parsedContent' => 'Original Content',
 				)
 			)
 		);
@@ -176,9 +194,9 @@ class Blogpost_Controller_Test extends TestCase {
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'title'     => $new_title,
-					'content'   => $new_content,
-					'sourceUrl' => $source_url,
+					'parsedTitle'   => $new_title,
+					'parsedContent' => $new_content,
+					'sourceUrl'     => $source_url,
 				)
 			)
 		);
@@ -188,8 +206,8 @@ class Blogpost_Controller_Test extends TestCase {
 
 		// Verify response data
 		$this->assertEquals( $post_id, $response_data['id'] );
-		$this->assertEquals( $new_title, $response_data['title'] );
-		$this->assertEquals( $new_content, $response_data['content'] );
+		$this->assertEquals( $new_title, $response_data['parsedTitle'] );
+		$this->assertEquals( $new_content, $response_data['parsedContent'] );
 		$this->assertEquals( $source_url, $response_data['sourceUrl'] );
 
 		// Verify database update
