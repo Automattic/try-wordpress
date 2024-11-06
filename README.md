@@ -17,14 +17,16 @@ npm install
 Then build the extension:
 
 ```shell
-npm run build
+npm run build:firefox
+# or
+npm run build:chrome
 ```
 
 You can then use the `start` script to start a browser instance separate from your main instance that has the extension automatically installed:
 
 ```shell
-npm run start # currently defaults to Firefox
 npm run start:firefox
+# or
 npm run start:chrome
 ```
 
