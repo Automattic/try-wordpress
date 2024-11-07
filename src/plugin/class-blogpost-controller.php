@@ -123,38 +123,71 @@ class Blogpost_Controller extends Liberate_Controller {
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'title'         => array(
-					'description' => __( 'Title of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
+				'authorId'      => array(
+					'description' => __( 'Author ID of the blogpost', 'try_wordpress' ),
+					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'date'          => array(
-					'description' => __( 'Published datetime of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'content'       => array(
-					'description' => __( 'Content of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field', // we don't want to modify any HTML
-					),
 				),
 				'sourceUrl'     => array(
 					'description' => __( 'Source URL from where the blogpost was liberated', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => true,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawTitle'      => array(
+					'description' => __( 'Raw title of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedTitle'   => array(
+					'description' => __( 'Parsed title of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawDate'       => array(
+					'description' => __( 'Raw date of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedDate'    => array(
+					'description' => __( 'Parsed date of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawContent'    => array(
+					'description' => __( 'Raw content of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedContent' => array(
+					'description' => __( 'Parsed content of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
 					'arg_options' => array(
 						'sanitize_callback' => 'sanitize_text_field',
 					),
