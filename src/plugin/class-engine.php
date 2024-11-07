@@ -10,7 +10,6 @@ class Engine {
 		require 'class-post-type-ui.php';
 		require 'class-promoter.php';
 		require 'class-meta-fields-manager.php';
-		require 'class-rest-api-extender.php';
 		require 'class-liberate-controller.php';
 		require 'class-blogpost-controller.php';
 		require 'class-page-controller.php';
@@ -25,7 +24,6 @@ class Engine {
 			// REST API
 			new Blogpost_Controller( $this->storage_post_type );
 			new Page_Controller( $this->storage_post_type );
-			new Rest_API_Extender( $this->storage_post_type, $promoter );
 
 			new Storage( $this->storage_post_type );
 		} )();
