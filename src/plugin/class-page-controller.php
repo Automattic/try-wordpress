@@ -12,7 +12,6 @@ class Page_Controller extends Liberate_Controller {
 		parent::__construct( $storage_post_type );
 
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
-		$this->attach_filters();
 	}
 
 	public function register_routes(): void {
@@ -77,33 +76,6 @@ class Page_Controller extends Liberate_Controller {
 				'callback'            => array( $this, 'get_public_item_schema' ),
 				'permission_callback' => '__return_true',
 			)
-		);
-	}
-
-	public function attach_filters(): void {
-		add_filter(
-			'wp_insert_post_empty_content',
-			function ( $maybe_empty, $postarr ) {
-				if ( $postarr['post_type'] === $this->storage_post_type ) {
-					return false;
-				}
-				return $maybe_empty;
-			},
-			10,
-			2
-		);
-
-		// Bust guid -> postId cache when a post is deleted
-		add_filter(
-			'delete_post_' . $this->storage_post_type,
-			function ( $post_id, $post ) {
-				$cache_group = 'try_wp';
-				$cache_key   = 'try_wp_cache_guid_' . md5( $post->guid );
-
-				wp_cache_delete( $cache_key, $cache_group );
-			},
-			10,
-			2
 		);
 	}
 
