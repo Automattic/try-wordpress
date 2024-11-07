@@ -24,6 +24,7 @@ class Engine {
 
 			// REST API
 			new Blogpost_Controller( $this->storage_post_type );
+			new Page_Controller( $this->storage_post_type );
 			new Rest_API_Extender( $this->storage_post_type, $promoter );
 
 			new Storage( $this->storage_post_type );
