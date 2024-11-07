@@ -4,11 +4,11 @@ namespace DotOrg\TryWordPress;
 
 class Post_Type_UI {
 	private string $post_type;
-	private Promoter $promoter;
+	private Transformer $transformer;
 
-	public function __construct( $custom_post_type, Promoter $promoter ) {
-		$this->post_type = $custom_post_type;
-		$this->promoter  = $promoter;
+	public function __construct( $custom_post_type, Transformer $transformer ) {
+		$this->post_type   = $custom_post_type;
+		$this->transformer = $transformer;
 
 		$this->remove_add_new_option( $this->post_type );
 
@@ -94,18 +94,18 @@ class Post_Type_UI {
 				// remove_meta_box( 'trackbacksdiv', $post_type, 'normal' );
 
 				add_meta_box(
-					'promotedpost',
-					'Promoted To',
+					'transformedpost',
+					'Transformed To',
 					function () {
 						global $post;
 
-						$post_id          = $post->ID;
-						$promoted_post_id = $this->promoter->get_promoted_post_id( $post_id );
+						$post_id             = $post->ID;
+						$transformed_post_id = $this->transformer->get_transformed_post_id( $post_id );
 
-						if ( $promoted_post_id ) {
-							echo '<pre>PostID: ' . esc_html( $promoted_post_id ) . '</pre>';
-							$preview_link = get_permalink( $promoted_post_id );
-							$edit_link    = get_edit_post_link( $promoted_post_id );
+						if ( $transformed_post_id ) {
+							echo '<pre>PostID: ' . esc_html( $transformed_post_id ) . '</pre>';
+							$preview_link = get_permalink( $transformed_post_id );
+							$edit_link    = get_edit_post_link( $transformed_post_id );
 							?>
 							<p>
 								<a href="<?php echo esc_url( $preview_link ); ?>" target="_blank">Preview Post</a> |
@@ -113,7 +113,7 @@ class Post_Type_UI {
 							</p>
 							<?php
 						} else {
-							echo "<p>This post hasn't been promoted yet.</p>";
+							echo "<p>This post hasn't been transformed yet.</p>";
 						}
 					},
 					$this->post_type,

@@ -1,10 +1,10 @@
 <?php
 
-use DotOrg\TryWordPress\Promoter;
+use DotOrg\TryWordPress\Transformer;
 use PHPUnit\Framework\TestCase;
 
-class Promoter_Test extends TestCase {
-	private Promoter $promoter;
+class Transformer_Test extends TestCase {
+	private Transformer $transformer;
 	private int $post_id_in_db;
 
 	protected function setUp(): void {
@@ -26,45 +26,45 @@ class Promoter_Test extends TestCase {
 		);
 		update_post_meta( $this->post_id_in_db, 'subject_type', 'blog-post' );
 
-		$this->promoter = new Promoter( 'lib_x' );
+		$this->transformer = new Transformer( 'lib_x' );
 	}
 
 	protected function tearDown(): void {
 		parent::tearDown();
 
-		$promoted_post_id = $this->promoter->get_promoted_post_id( $this->post_id_in_db );
-		wp_delete_post( $promoted_post_id, true );
+		$transformed_post_id = $this->transformer->get_transformed_post_id( $this->post_id_in_db );
+		wp_delete_post( $transformed_post_id, true );
 		wp_delete_post( $this->post_id_in_db, true );
 
 		delete_post_meta( 99, '_dl_transformed' );
 	}
 
-	public function testGetPostTypeForPromotedPost() {
-		$reflection = new ReflectionClass( $this->promoter );
-		$method     = $reflection->getMethod( 'get_post_type_for_promoted_post' );
+	public function testGetPostTypeForTransformedPost() {
+		$reflection = new ReflectionClass( $this->transformer );
+		$method     = $reflection->getMethod( 'get_post_type_for_transformed_post' );
 
-		$result = $method->invokeArgs( $this->promoter, array( $this->post_id_in_db ) );
+		$result = $method->invokeArgs( $this->transformer, array( $this->post_id_in_db ) );
 		$this->assertEquals( 'post', $result );
 
 		update_post_meta( $this->post_id_in_db, 'subject_type', 'product' );
 
-		$result = $method->invokeArgs( $this->promoter, array( $this->post_id_in_db ) );
+		$result = $method->invokeArgs( $this->transformer, array( $this->post_id_in_db ) );
 		$this->assertEquals( 'product', $result );
 	}
 
-	public function testGetPromotedPost() {
+	public function testGetTransformedPost() {
 		add_post_meta( 99, '_dl_transformed', 999 );
 
-		$this->assertEquals( 999, $this->promoter->get_promoted_post_id( 99 ) );
-		$this->assertEquals( null, $this->promoter->get_promoted_post_id( 88 ) );
+		$this->assertEquals( 999, $this->transformer->get_transformed_post_id( 99 ) );
+		$this->assertEquals( null, $this->transformer->get_transformed_post_id( 88 ) );
 	}
 
-	public function testPromote(): void {
-		$result = $this->promoter->promote( get_post( $this->post_id_in_db ) );
+	public function testTransform(): void {
+		$result = $this->transformer->transform( get_post( $this->post_id_in_db ) );
 
-		$promoted_post_id = absint( get_post_meta( $this->post_id_in_db, '_dl_transformed', true ) );
+		$transformed_post_id = absint( get_post_meta( $this->post_id_in_db, '_dl_transformed', true ) );
 
-		$this->assertEquals( $this->post_id_in_db + 1, $promoted_post_id );
+		$this->assertEquals( $this->post_id_in_db + 1, $transformed_post_id );
 		$this->assertTrue( $result );
 	}
 }

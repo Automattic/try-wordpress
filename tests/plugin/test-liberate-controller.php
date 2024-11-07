@@ -25,8 +25,8 @@ class Liberate_Controller_Test extends TestCase {
 
 		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
 
-		// we instantiate Promoter class so that sample post we insert also has its transformed post saved in the database
-		new \DotOrg\TryWordPress\Promoter( $this->storage_post_type );
+		// we instantiate Promoter class so that the sample post we insert also has its transformed post saved in the database
+		new \DotOrg\TryWordPress\Transformer( $this->storage_post_type );
 
 		$this->inserted_post_id = wp_insert_post(
 			array(
