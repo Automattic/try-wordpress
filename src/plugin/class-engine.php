@@ -9,7 +9,6 @@ class Engine {
 	public function __construct() {
 		require 'class-post-type-ui.php';
 		require 'class-promoter.php';
-		require 'class-meta-fields-manager.php';
 		require 'class-liberate-controller.php';
 		require 'class-blogpost-controller.php';
 		require 'class-page-controller.php';
@@ -19,7 +18,6 @@ class Engine {
 			$promoter = new Promoter( $this->storage_post_type );
 
 			new Post_Type_UI( $this->storage_post_type, $promoter );
-			new Meta_Fields_Manager( $this->storage_post_type );
 
 			// REST API
 			new Blogpost_Controller( $this->storage_post_type );
