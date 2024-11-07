@@ -4,8 +4,7 @@ namespace DotOrg\TryWordPress;
 
 class Engine {
 
-	private string $storage_post_type      = 'liberated_data';
-	private array $liberated_content_types = array( 'blogpost', 'nav' );
+	private string $storage_post_type = 'liberated_data';
 
 	public function __construct() {
 		require 'class-post-type-ui.php';

@@ -208,6 +208,7 @@ class Page_Controller extends Liberate_Controller {
 		foreach ( $item_meta as $key => $value ) {
 			update_post_meta( $item['ID'], $key, $value );
 		}
+		update_post_meta( $item['ID'], 'subject_type', 'page' );
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
