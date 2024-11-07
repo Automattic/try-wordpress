@@ -13,6 +13,7 @@ class Engine {
 		require 'class-rest-api-extender.php';
 		require 'class-liberate-controller.php';
 		require 'class-blogpost-controller.php';
+		require 'class-page-controller.php';
 		require 'class-storage.php';
 
 		( function () {
