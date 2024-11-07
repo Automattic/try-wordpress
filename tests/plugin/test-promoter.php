@@ -24,7 +24,7 @@ class Promoter_Test extends TestCase {
 				'post_type'             => 'liberated_data',
 			)
 		);
-		update_post_meta( $this->post_id_in_db, 'subject_type', 'blogpost' );
+		update_post_meta( $this->post_id_in_db, 'subject_type', 'blog-post' );
 
 		$this->promoter = new Promoter( 'lib_x' );
 	}
