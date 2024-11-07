@@ -57,9 +57,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemEmptyBody() {
-		$api_endpoint = $this->endpoint;
-
-		$request = new WP_REST_Request( 'POST', $api_endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$response = rest_do_request( $request );
 
@@ -67,10 +65,9 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemMinimalBody() {
-		$api_endpoint = $this->endpoint;
-		$source_url   = 'https://example.org/1';
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
 
-		$request = new WP_REST_Request( 'POST', $api_endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
@@ -91,7 +88,7 @@ class Blogpost_Controller_Test extends TestCase {
 	public function testCreateItemFullBody() {
 		global $wpdb;
 
-		$source_url = 'https://example.org/2';
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
 		$author_id  = 23;
 
 		// phpcs:ignore
@@ -145,21 +142,20 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testCreateItemMissingSourceUrl() {
-		$date         = '2000-10-25 18:39:03';
-		$api_endpoint = $this->endpoint;
-		$post_title   = 'This is an awesome post title';
-		$post_content = 'This is an awesome post body';
-		$author_id    = 23;
+		$author_id = 23;
 
-		$request = new WP_REST_Request( 'POST', $api_endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'title'    => $post_title,
-					'content'  => $post_content,
-					'date'     => $date,
-					'authorId' => $author_id,
+					'rawTitle'      => $this->raw_title,
+					'parsedTitle'   => $this->parsed_title,
+					'rawContent'    => $this->raw_content,
+					'parsedContent' => $this->parsed_content,
+					'rawDate'       => $this->raw_date,
+					'parsedDate'    => $this->date_iso_string,
+					'authorId'      => $author_id,
 				)
 			)
 		);
@@ -169,9 +165,10 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testUpdateItem() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
 		// First create a post to update
-		$source_url = 'https://example.org/original';
-		$request    = new WP_REST_Request( 'POST', $this->endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
@@ -219,14 +216,15 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testDeleteItem() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
 		// First create a post to delete
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
 				array(
-					'sourceUrl' => 'https://example.org/to-delete',
+					'sourceUrl' => $source_url,
 				)
 			)
 		);
@@ -247,7 +245,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testDeleteNonexistentItem() {
-		$delete_endpoint = $this->endpoint . '/99999';
+		$delete_endpoint = $this->endpoint . '/' . PHP_INT_MAX;
 		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
 		$response        = rest_do_request( $request );
 
@@ -255,8 +253,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlNoArgs() {
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'GET', $api_endpoint );
+		$request = new WP_REST_Request( 'GET', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 
 		$response = rest_do_request( $request );
@@ -265,8 +262,7 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlNoUrl() {
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'GET', $api_endpoint );
+		$request = new WP_REST_Request( 'GET', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
 			array(
@@ -280,57 +276,10 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testFindBySourceUrlValidUrl() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
 		// First create a post to lookup
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'POST', $api_endpoint );
-		$request->set_header( 'Content-Type', 'application/json' );
-		$request->set_body(
-			wp_json_encode(
-				array(
-					'sourceUrl' => 'https://example.org/lookmeup',
-				)
-			)
-		);
-		$response = rest_do_request( $request );
-		$post_id  = $response->get_data()['id'];
-
-		$request = new WP_REST_Request( 'GET', $api_endpoint );
-		$request->set_header( 'Content-Type', 'application/json' );
-		$request->set_query_params(
-			array(
-				'sourceurl' => 'https://example.org/lookmeup',
-			)
-		);
-
-		$response = rest_do_request( $request );
-
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( $post_id, $response->get_data()['id'] );
-	}
-
-	public function testFindBySourceUrlInvalidUrl() {
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'GET', $api_endpoint );
-		$request->set_header( 'Content-Type', 'application/json' );
-		$request->set_query_params(
-			array(
-				'sourceurl' => 'https://example.org/nonexistent',
-			)
-		);
-
-		$response = rest_do_request( $request );
-
-		$this->assertEquals( 404, $response->get_status() );
-	}
-
-	public function testGuidCache(): void {
-		$source_url  = 'https://example.org/guidcachetesting';
-		$cache_group = 'try_wp';
-		$cache_key   = 'try_wp_cache_guid_' . md5( $source_url );
-
-		// First create a post
-		$api_endpoint = $this->endpoint;
-		$request      = new WP_REST_Request( 'POST', $api_endpoint );
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
@@ -342,8 +291,55 @@ class Blogpost_Controller_Test extends TestCase {
 		$response = rest_do_request( $request );
 		$post_id  = $response->get_data()['id'];
 
-		// do a look up, so that it gets cached
-		$request = new WP_REST_Request( 'GET', $api_endpoint );
+		$request = new WP_REST_Request( 'GET', $this->endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => $source_url,
+			)
+		);
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( $post_id, $response->get_data()['id'] );
+	}
+
+	public function testFindBySourceUrlInvalidUrl() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+		$request    = new WP_REST_Request( 'GET', $this->endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_query_params(
+			array(
+				'sourceurl' => $source_url,
+			)
+		);
+
+		$response = rest_do_request( $request );
+
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function testGuidCache(): void {
+		$source_url  = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+		$cache_group = 'try_wp';
+		$cache_key   = 'try_wp_cache_guid_' . md5( $source_url );
+
+		// First create a post
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => $source_url,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+		$post_id  = $response->get_data()['id'];
+
+		// do a look-up, so that it gets cached
+		$request = new WP_REST_Request( 'GET', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
 			array(
