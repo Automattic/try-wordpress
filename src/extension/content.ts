@@ -29,27 +29,17 @@ startListening( CommandTypes.NavigateTo, ( event ) => {
 
 startListening( CommandTypes.SwitchToNavigationSelectionMode, () => {
 	currentMode = Modes.NavigationSelection;
-	document.body.addEventListener( 'mouseover', onMouseOver );
-	document.body.addEventListener( 'mouseout', onMouseOut );
-	document.body.addEventListener( 'click', onClick );
-	enableHighlightingCursor();
+	enableHighlighting();
 } );
 
 startListening( CommandTypes.SwitchToGenericSelectionMode, () => {
 	currentMode = Modes.GenericSelection;
-	document.body.addEventListener( 'mouseover', onMouseOver );
-	document.body.addEventListener( 'mouseout', onMouseOut );
-	document.body.addEventListener( 'click', onClick );
-	enableHighlightingCursor();
+	enableHighlighting();
 } );
 
 startListening( CommandTypes.SwitchToDefaultMode, () => {
 	currentMode = Modes.Default;
-	document.body.removeEventListener( 'mouseover', onMouseOver );
-	document.body.removeEventListener( 'mouseout', onMouseOut );
-	document.body.removeEventListener( 'click', onClick );
-	disableHighlightingCursor();
-	removeStyle();
+	disableHighlighting();
 } );
 
 function onClick( event: MouseEvent ) {
@@ -88,16 +78,13 @@ function onMouseOut( event: MouseEvent ) {
 	highlightedElement = null;
 }
 
-function removeStyle() {
-	if ( ! highlightedElement ) {
-		return;
-	}
-	highlightedElement.style.outline = '';
-}
-
 const cursorStyleId = 'hover-highlighter-style';
 
-function enableHighlightingCursor() {
+function enableHighlighting() {
+	document.body.addEventListener( 'mouseover', onMouseOver );
+	document.body.addEventListener( 'mouseout', onMouseOut );
+	document.body.addEventListener( 'click', onClick );
+
 	let style = document.getElementById( cursorStyleId );
 	if ( style ) {
 		// The highlighting cursor is already enabled.
@@ -109,9 +96,22 @@ function enableHighlightingCursor() {
 	document.head.append( style );
 }
 
-function disableHighlightingCursor() {
+function disableHighlighting() {
+	document.body.removeEventListener( 'mouseover', onMouseOver );
+	document.body.removeEventListener( 'mouseout', onMouseOut );
+	document.body.removeEventListener( 'click', onClick );
+
 	const style = document.getElementById( cursorStyleId );
 	if ( style ) {
 		style.remove();
 	}
+
+	removeStyle();
+}
+
+function removeStyle() {
+	if ( ! highlightedElement ) {
+		return;
+	}
+	highlightedElement.style.outline = '';
 }
