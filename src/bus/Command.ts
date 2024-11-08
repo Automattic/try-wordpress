@@ -5,6 +5,7 @@ export enum CommandTypes {
 	NavigateTo = 'NavigateTo',
 	SwitchToDefaultMode = 'SwitchToDefaultMode',
 	SwitchToGenericSelectionMode = 'SwitchToGenericSelectionMode',
+	SwitchToNavigationSelectionMode = 'SwitchToNavigationSelectionMode',
 }
 
 export interface CurrentPageInfo {

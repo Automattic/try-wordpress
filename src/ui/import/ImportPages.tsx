@@ -21,7 +21,7 @@ export function ImportPages() {
 	useEffect( () => {
 		const type =
 			step === Steps.SelectNavigation
-				? CommandTypes.SwitchToGenericSelectionMode
+				? CommandTypes.SwitchToNavigationSelectionMode
 				: CommandTypes.SwitchToDefaultMode;
 		void sendCommandToContent( { type, payload: {} } );
 	}, [ step ] );

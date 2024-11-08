@@ -7,6 +7,8 @@ enum Modes {
 	Default = 0,
 	// Generic element selection mode.
 	GenericSelection,
+	// Selection mode specific to navigation.
+	NavigationSelection,
 }
 
 let currentMode = Modes.Default;
@@ -23,6 +25,14 @@ startListening( CommandTypes.NavigateTo, ( event ) => {
 	if ( document.location.href !== url ) {
 		document.location.href = url;
 	}
+} );
+
+startListening( CommandTypes.SwitchToNavigationSelectionMode, () => {
+	currentMode = Modes.NavigationSelection;
+	document.body.addEventListener( 'mouseover', onMouseOver );
+	document.body.addEventListener( 'mouseout', onMouseOut );
+	document.body.addEventListener( 'click', onClick );
+	enableHighlightingCursor();
 } );
 
 startListening( CommandTypes.SwitchToGenericSelectionMode, () => {
