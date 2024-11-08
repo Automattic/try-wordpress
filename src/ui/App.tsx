@@ -26,6 +26,7 @@ import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
 import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
+import { ImportPages } from '@/ui/import/ImportPages';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -39,6 +40,8 @@ export const Screens = {
 	},
 	importWithBlueprint: ( sessionId: string, blueprintId: string ) =>
 		`/session/${ sessionId }/import-with-blueprint/${ blueprintId }`,
+	importPages: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages`,
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -88,6 +91,7 @@ function Routes( props: { initialScreen: string } ) {
 					path="import-with-blueprint/:blueprintId"
 					element={ <ImportWithBlueprint /> }
 				/>
+				<Route path="import-pages" element={ <ImportPages /> } />
 			</Route>
 		</Route>
 	);
