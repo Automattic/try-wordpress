@@ -21,7 +21,7 @@ import { PlaceholderPreview } from '@/ui/preview/PlaceholderPreview';
 import { SessionContext, SessionProvider } from '@/ui/session/SessionProvider';
 import { ApiClient } from '@/api/ApiClient';
 import { PlaygroundClient } from '@wp-playground/client';
-import { Breadcrumbs } from '@/ui/breadcrumbs/Breadcrumbs';
+import { Breadcrumbs } from '@/ui/components/Breadcrumbs';
 import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
