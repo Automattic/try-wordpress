@@ -9,6 +9,7 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 enum Steps {
 	Init = 0,
 	SelectNavigation,
+	SelectPagesFromNavigation,
 }
 
 export function ImportPages() {
@@ -57,6 +58,9 @@ export function ImportPages() {
 				</>
 			);
 			break;
+		case Steps.SelectPagesFromNavigation:
+			element = <SelectPages />;
+			break;
 		default:
 			throw Error( `unknown step: ${ step }` );
 	}
@@ -100,11 +104,16 @@ export function ImportPages() {
 						sessionId,
 						( event.event.payload as any ).content
 					);
+					navigate( Screens.importPages( sessionId, step + 1 ) );
 				} }
 			/>
 			{ element }
 		</>
 	);
+}
+
+function SelectPages() {
+	return <p>Select the pages you want to import.</p>;
 }
 
 function isLastStep( step: number ) {
