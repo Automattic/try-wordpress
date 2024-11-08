@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBlueprint } from '@/ui/blueprints/useBlueprint';
 import { humanReadableSubjectType } from '@/model/subject/Subject';
-import { Toolbar } from '@/ui/blueprints/Toolbar';
+import { Toolbar } from '@/ui/components/Toolbar';
 import { ReactElement, useEffect } from 'react';
 import { Screens } from '@/ui/App';
 import { useSessionContext } from '@/ui/session/SessionProvider';

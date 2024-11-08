@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Screens } from '@/ui/App';
-import { Toolbar } from '@/ui/blueprints/Toolbar';
+import { Toolbar } from '@/ui/components/Toolbar';
 import { humanReadableSubjectType, SubjectType } from '@/model/subject/Subject';
 import { newBlogPostBlueprint } from '@/model/blueprint/BlogPost';
 import { newPageBlueprint } from '@/model/blueprint/Page';

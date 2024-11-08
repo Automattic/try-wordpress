@@ -3,7 +3,7 @@ import { ReactElement, useEffect } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { BlogPostBlueprintEditor } from '@/ui/blueprints/blog-post/BlogPostBlueprintEditor';
 import { PageBlueprintEditor } from '@/ui/blueprints/blog-post/PageBlueprintEditor';
-import { Toolbar } from '@/ui/blueprints/Toolbar';
+import { Toolbar } from '@/ui/components/Toolbar';
 import { parseBlogPostField } from '@/parser/blog-post';
 import { parsePageField } from '@/parser/page';
 import { SubjectType } from '@/model/subject/Subject';
