@@ -4,8 +4,7 @@ namespace DotOrg\TryWordPress;
 
 class Engine {
 
-	private string $storage_post_type      = 'liberated_data';
-	private array $liberated_content_types = array( 'blogpost', 'nav' );
+	private string $storage_post_type = 'liberated_data';
 
 	public function __construct() {
 		require 'class-post-type-ui.php';
@@ -14,6 +13,7 @@ class Engine {
 		require 'class-rest-api-extender.php';
 		require 'class-liberate-controller.php';
 		require 'class-blogpost-controller.php';
+		require 'class-page-controller.php';
 		require 'class-storage.php';
 
 		( function () {
@@ -24,6 +24,7 @@ class Engine {
 
 			// REST API
 			new Blogpost_Controller( $this->storage_post_type );
+			new Page_Controller( $this->storage_post_type );
 			new Rest_API_Extender( $this->storage_post_type, $promoter );
 
 			new Storage( $this->storage_post_type );

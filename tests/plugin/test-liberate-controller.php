@@ -26,7 +26,7 @@ class Liberate_Controller_Test extends TestCase {
 		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
 
 		// we instantiate Promoter class so that sample post we insert also has its transformed post saved in the database
-		$promoter = new \DotOrg\TryWordPress\Promoter( $this->storage_post_type );
+		new \DotOrg\TryWordPress\Promoter( $this->storage_post_type );
 
 		$this->inserted_post_id = wp_insert_post(
 			array(
@@ -70,7 +70,7 @@ class Liberate_Controller_Test extends TestCase {
 
 	public function testValidRequestForUpdateRule1() {
 		// invalid id, rule 1 violation
-		$api_endpoint = $this->endpoint . '/9999';
+		$api_endpoint = $this->endpoint . '/' . PHP_INT_MAX;
 		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_body(
 			wp_json_encode(
@@ -133,6 +133,7 @@ class Liberate_Controller_Test extends TestCase {
 	}
 
 	public function testPrepareItemForResponse() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
 		// Note: Not all fields are currently used, so we only look up for fields that we do use
 		// When we start using a new field, this test would fail and require an update :)
 		$post_array = array(
@@ -140,7 +141,7 @@ class Liberate_Controller_Test extends TestCase {
 			'post_author'           => 23,
 			'post_date'             => $this->parsed_date,
 			'post_date_gmt'         => $this->parsed_date,
-			'post_content'          => '<p>This is the test content.</p>',
+			'post_content'          => $this->parsed_content,
 			'post_title'            => 'This is the test title',
 			'post_excerpt'          => 'This is the test excerpt',
 			'post_status'           => 'publish',
@@ -152,9 +153,9 @@ class Liberate_Controller_Test extends TestCase {
 			'pinged'                => $this->parsed_date,
 			'post_modified'         => $this->parsed_date,
 			'post_modified_gmt'     => $this->parsed_date,
-			'post_content_filtered' => '<div><p>This is the test content.</p></div>',
+			'post_content_filtered' => $this->raw_content,
 			'post_parent'           => 0,
-			'guid'                  => 'https://example.org/prepare',
+			'guid'                  => $source_url,
 			'menu_order'            => 0,
 			'post_type'             => $this->liberate_controller->get_storage_post_type(),
 			'comment_count'         => 0,
@@ -169,7 +170,7 @@ class Liberate_Controller_Test extends TestCase {
 			array(
 				'id'            => $this->inserted_post_id,
 				'authorId'      => 23,
-				'sourceUrl'     => 'https://example.org/prepare',
+				'sourceUrl'     => $source_url,
 				'rawTitle'      => $this->raw_title,
 				'parsedTitle'   => $this->parsed_title,
 				'rawDate'       => $this->raw_date,
@@ -184,6 +185,8 @@ class Liberate_Controller_Test extends TestCase {
 	}
 
 	public function testPrepareItemForDatabase() {
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
 		// prepare the request object
 		$request = new WP_REST_Request( 'POST', $this->endpoint . '/777' );
 		$request->set_body(
@@ -191,13 +194,13 @@ class Liberate_Controller_Test extends TestCase {
 				array(
 					'id'            => 777,
 					'authorId'      => 23,
-					'sourceUrl'     => 'https://example.org/prepare',
-					'rawTitle'      => '<h1>This is the test title</h1>',
-					'parsedTitle'   => 'This is the test title',
+					'sourceUrl'     => $source_url,
+					'rawTitle'      => $this->raw_title,
+					'parsedTitle'   => $this->parsed_title,
 					'rawDate'       => $this->raw_date,
 					'parsedDate'    => $this->date_iso_string,
-					'rawContent'    => '<div><p>This is the test content.</p></div>',
-					'parsedContent' => '<p>This is the test content.</p>',
+					'rawContent'    => $this->raw_content,
+					'parsedContent' => $this->parsed_content,
 				)
 			)
 		);
@@ -208,25 +211,25 @@ class Liberate_Controller_Test extends TestCase {
 
 		$this->assertEquals( 777, $prepared_post['ID'] );
 		$this->assertEquals( 23, $prepared_post['post_author'] );
-		$this->assertEquals( 'https://example.org/prepare', $prepared_post['guid'] );
+		$this->assertEquals( $source_url, $prepared_post['guid'] );
 		$this->assertEquals(
 			$this->liberate_controller->get_storage_post_type(),
 			$prepared_post['post_type']
 		);
 		$this->assertEquals(
-			'This is the test title',
+			$this->parsed_title,
 			$prepared_post['post_title']
 		);
 		$this->assertEquals(
-			'<h1>This is the test title</h1>',
+			$this->raw_title,
 			$prepared_post['meta']['raw_title']
 		);
 		$this->assertEquals(
-			'<p>This is the test content.</p>',
+			$this->parsed_content,
 			$prepared_post['post_content']
 		);
 		$this->assertEquals(
-			'<div><p>This is the test content.</p></div>',
+			$this->raw_content,
 			$prepared_post['post_content_filtered']
 		);
 		$this->assertEquals( $this->parsed_date, $prepared_post['post_date'] );

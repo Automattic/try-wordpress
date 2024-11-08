@@ -24,14 +24,16 @@ class Promoter {
 			$liberated_post = get_post( $liberated_post );
 		}
 
-		$content_type = get_post_meta( $liberated_post->ID, 'content_type', true );
-		switch ( $content_type ) {
-			case 'blogpost':
-			case 'post':
+		$subject_type = get_post_meta( $liberated_post->ID, 'subject_type', true );
+		switch ( $subject_type ) {
+			case 'blog-post':
 				$post_type = 'post';
 				break;
 			case 'product':
 				$post_type = 'product';
+				break;
+			case 'page':
+				$post_type = 'page';
 				break;
 			default:
 				$post_type = 'post';

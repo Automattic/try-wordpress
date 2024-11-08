@@ -24,7 +24,7 @@ class Promoter_Test extends TestCase {
 				'post_type'             => 'liberated_data',
 			)
 		);
-		update_post_meta( $this->post_id_in_db, 'content_type', 'blogpost' );
+		update_post_meta( $this->post_id_in_db, 'subject_type', 'blogpost' );
 
 		$this->promoter = new Promoter( 'lib_x' );
 	}
@@ -46,7 +46,7 @@ class Promoter_Test extends TestCase {
 		$result = $method->invokeArgs( $this->promoter, array( $this->post_id_in_db ) );
 		$this->assertEquals( 'post', $result );
 
-		update_post_meta( $this->post_id_in_db, 'content_type', 'product' );
+		update_post_meta( $this->post_id_in_db, 'subject_type', 'product' );
 
 		$result = $method->invokeArgs( $this->promoter, array( $this->post_id_in_db ) );
 		$this->assertEquals( 'product', $result );

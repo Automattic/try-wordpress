@@ -1,15 +1,15 @@
 <?php
 
-use DotOrg\TryWordPress\Blogpost_Controller;
+use DotOrg\TryWordPress\Page_Controller;
 use PHPUnit\Framework\TestCase;
 
-class Blogpost_Controller_Test extends TestCase {
-	private Blogpost_Controller $blogpost_controller;
+class Page_Controller_Test extends TestCase {
+	private Page_Controller $page_controller;
 
 	private string $namespace           = 'try-wp/v1';
-	private string $subject_type_plural = 'blog-posts';
+	private string $subject_type_plural = 'pages';
 	private string $endpoint;
-	private string $storage_post_type = 'lib_1';
+	private string $storage_post_type = 'lib_3';
 
 	private string $raw_title       = '<h1>This is the test title</h1>';
 	private string $parsed_title    = 'This is the test title';
@@ -24,7 +24,7 @@ class Blogpost_Controller_Test extends TestCase {
 
 		$this->endpoint = '/' . $this->namespace . '/' . $this->subject_type_plural;
 
-		$this->blogpost_controller = new Blogpost_Controller( $this->storage_post_type );
+		$this->page_controller = new Page_Controller( $this->storage_post_type );
 	}
 
 	public function testRegisterRoutes(): void {
@@ -42,7 +42,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$request  = new WP_REST_Request( 'GET', $api_endpoint );
 		$response = rest_do_request( $request );
 
-		$schema = $this->blogpost_controller->get_item_schema();
+		$schema = $this->page_controller->get_item_schema();
 		$this->assertEquals(
 			$this->remove_arg_options_from_schema( $schema ),
 			$response->get_data()
@@ -219,7 +219,8 @@ class Blogpost_Controller_Test extends TestCase {
 		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
 
 		// First create a post to delete
-		$request = new WP_REST_Request( 'POST', $this->endpoint );
+		$api_endpoint = $this->endpoint;
+		$request      = new WP_REST_Request( 'POST', $api_endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			wp_json_encode(
@@ -307,7 +308,8 @@ class Blogpost_Controller_Test extends TestCase {
 
 	public function testFindBySourceUrlInvalidUrl() {
 		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
-		$request    = new WP_REST_Request( 'GET', $this->endpoint );
+
+		$request = new WP_REST_Request( 'GET', $this->endpoint );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_query_params(
 			array(
@@ -321,7 +323,8 @@ class Blogpost_Controller_Test extends TestCase {
 	}
 
 	public function testGuidCache(): void {
-		$source_url  = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+		$source_url = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
 		$cache_group = 'try_wp';
 		$cache_key   = 'try_wp_cache_guid_' . md5( $source_url );
 

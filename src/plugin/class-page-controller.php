@@ -6,7 +6,7 @@ use WP_Error;
 use WP_REST_Response;
 use WP_REST_Server;
 
-class Blogpost_Controller extends Liberate_Controller {
+class Page_Controller extends Liberate_Controller {
 
 	public function __construct( $storage_post_type ) {
 		parent::__construct( $storage_post_type );
@@ -17,7 +17,7 @@ class Blogpost_Controller extends Liberate_Controller {
 	public function register_routes(): void {
 		$version             = '1';
 		$namespace           = 'try-wp/v' . $version;
-		$subject_type_plural = 'blog-posts';
+		$subject_type_plural = 'pages';
 		register_rest_route(
 			$namespace,
 			'/' . $subject_type_plural,
@@ -86,23 +86,23 @@ class Blogpost_Controller extends Liberate_Controller {
 
 		$schema = array(
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
-			'title'      => 'blogpost',
+			'title'      => 'page',
 			'type'       => 'object',
 			'properties' => array(
 				'id'            => array(
-					'description' => __( 'Unique identifier for liberated blogpost', 'try_wordpress' ),
+					'description' => __( 'Unique identifier for liberated page', 'try_wordpress' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
 				'authorId'      => array(
-					'description' => __( 'Author ID of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Author ID of the page', 'try_wordpress' ),
 					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
 				),
 				'sourceUrl'     => array(
-					'description' => __( 'Source URL from where the blogpost was liberated', 'try_wordpress' ),
+					'description' => __( 'Source URL from where the page was liberated', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => true,
@@ -111,7 +111,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'rawTitle'      => array(
-					'description' => __( 'Raw title of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Raw title of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -120,7 +120,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'parsedTitle'   => array(
-					'description' => __( 'Parsed title of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Parsed title of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -129,7 +129,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'rawDate'       => array(
-					'description' => __( 'Raw date of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Raw date of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -138,7 +138,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'parsedDate'    => array(
-					'description' => __( 'Parsed date of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Parsed date of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -147,7 +147,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'rawContent'    => array(
-					'description' => __( 'Raw content of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Raw content of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -156,7 +156,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'parsedContent' => array(
-					'description' => __( 'Parsed content of the blogpost', 'try_wordpress' ),
+					'description' => __( 'Parsed content of the page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -165,7 +165,7 @@ class Blogpost_Controller extends Liberate_Controller {
 					),
 				),
 				'transformedId' => array(
-					'description' => __( 'Post ID of transformed result of this liberated blogpost', 'try_wordpress' ),
+					'description' => __( 'Post ID of transformed result of this liberated page', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
@@ -208,7 +208,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		foreach ( $item_meta as $key => $value ) {
 			update_post_meta( $item['ID'], $key, $value );
 		}
-		update_post_meta( $item['ID'], 'subject_type', 'blog-post' );
+		update_post_meta( $item['ID'], 'subject_type', 'page' );
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
