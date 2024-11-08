@@ -32,7 +32,9 @@ export function NewBlueprint() {
 				await apiClient!.blueprints.findBySubjectType( subjectType );
 			const blueprint = blueprints.length > 0 ? blueprints[ 0 ] : null;
 			if ( blueprint && blueprint.valid ) {
-				navigate( Screens.import( session.id, blueprint.id ) );
+				navigate(
+					Screens.importWithBlueprint( session.id, blueprint.id )
+				);
 				return;
 			} else if ( blueprint ) {
 				navigate( Screens.blueprints.edit( session.id, blueprint.id ) );

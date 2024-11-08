@@ -143,7 +143,10 @@ export function EditBlueprint() {
 									payload: {},
 								} );
 								navigate(
-									Screens.import( session.id, blueprint!.id )
+									Screens.importWithBlueprint(
+										session.id,
+										blueprint!.id
+									)
 								);
 							} }
 						>

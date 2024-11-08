@@ -25,7 +25,7 @@ import { Breadcrumbs } from '@/ui/breadcrumbs/Breadcrumbs';
 import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
-import { Import } from '@/ui/import/Import';
+import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -37,8 +37,8 @@ export const Screens = {
 		edit: ( sessionId: string, postId: string ) =>
 			`/session/${ sessionId }/blueprints/${ postId }`,
 	},
-	import: ( sessionId: string, blueprintId: string ) =>
-		`/session/${ sessionId }/import/${ blueprintId }`,
+	importWithBlueprint: ( sessionId: string, blueprintId: string ) =>
+		`/session/${ sessionId }/import-with-blueprint/${ blueprintId }`,
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -84,7 +84,10 @@ function Routes( props: { initialScreen: string } ) {
 					/>
 					<Route path=":blueprintId" element={ <EditBlueprint /> } />
 				</Route>
-				<Route path="import/:blueprintId" element={ <Import /> } />
+				<Route
+					path="import-with-blueprint/:blueprintId"
+					element={ <ImportWithBlueprint /> }
+				/>
 			</Route>
 		</Route>
 	);

@@ -6,7 +6,7 @@ import { ReactElement, useEffect } from 'react';
 import { Screens } from '@/ui/App';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 
-export function Import() {
+export function ImportWithBlueprint() {
 	const params = useParams();
 	const blueprintId = params.blueprintId!;
 	const [ blueprint ] = useBlueprint( blueprintId );
