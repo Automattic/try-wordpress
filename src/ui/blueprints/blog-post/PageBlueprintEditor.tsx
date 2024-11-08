@@ -21,6 +21,7 @@ export function PageBlueprintEditor( props: Props ) {
 
 	const subjectFields: { name: string; field: Field }[] = [
 		{ name: 'title', field: subject.title },
+		{ name: 'date', field: subject.date },
 		{ name: 'content', field: subject.content },
 	];
 
@@ -60,8 +61,8 @@ export function PageBlueprintEditor( props: Props ) {
 					}
 				} }
 				onClear={ async () => {
-					field.original = '';
-					field.parsed = '';
+					field.rawValue = '';
+					field.parsedValue = '';
 					onFieldChanged( name, field, '' );
 				} }
 			/>
@@ -84,7 +85,7 @@ export function PageBlueprintEditor( props: Props ) {
 						return;
 					}
 					const selector = 'TODO';
-					fieldWaitingForSelection.field.original = (
+					fieldWaitingForSelection.field.rawValue = (
 						event.event.payload as any
 					 ).content;
 					onFieldChanged(

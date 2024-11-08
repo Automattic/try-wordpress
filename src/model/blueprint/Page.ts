@@ -6,6 +6,7 @@ export interface PageBlueprint extends Blueprint {
 	type: SubjectType.Page;
 	fields: {
 		title: { type: FieldType.Text; selector?: string };
+		date: { type: FieldType.Date; selector?: string };
 		content: { type: FieldType.Html; selector?: string };
 	};
 }
@@ -17,6 +18,10 @@ export function newPageBlueprint( sourceUrl: string ): PageBlueprint {
 		sourceUrl,
 		valid: false,
 		fields: {
+			date: {
+				type: FieldType.Date,
+				selector: '',
+			},
 			title: {
 				type: FieldType.Text,
 				selector: '',
@@ -29,9 +34,7 @@ export function newPageBlueprint( sourceUrl: string ): PageBlueprint {
 	};
 }
 
-export function validatePageBlueprint(
-	blueprint: PageBlueprint
-): boolean {
+export function validatePageBlueprint( blueprint: PageBlueprint ): boolean {
 	let isValid = true;
 	for ( const f of Object.values( blueprint.fields ) ) {
 		if ( f.selector === '' ) {

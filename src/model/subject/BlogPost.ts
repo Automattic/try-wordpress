@@ -1,7 +1,7 @@
 import { Subject, SubjectType } from '@/model/subject/Subject';
-import { DateField, newDateField } from '@/model/field/DateField';
 import { newTextField, TextField } from '@/model/field/TextField';
 import { HtmlField, newHtmlField } from '@/model/field/HtmlField';
+import { DateField, newDateField } from '@/model/field/DateField';
 
 export interface BlogPost extends Subject {
 	type: SubjectType.BlogPost;
