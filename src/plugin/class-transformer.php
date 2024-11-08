@@ -4,22 +4,21 @@ namespace DotOrg\TryWordPress;
 
 use WP_Post;
 
-class Promoter {
-	private string $meta_key_for_promoted_post = '_dl_transformed';
+class Transformer {
+	private string $meta_key_for_transformed_post = '_dl_transformed';
 
 	public function __construct( $post_type ) {
-		// constantly promote for now
 		add_action(
 			'save_post_' . $post_type,
 			function ( $post_id, $post ) {
-				$this->promote( $post );
+				$this->transform( $post );
 			},
 			10,
 			2
 		);
 	}
 
-	private function get_post_type_for_promoted_post( int|WP_Post $liberated_post ): string {
+	private function get_post_type_for_transformed_post( int|WP_Post $liberated_post ): string {
 		if ( is_int( $liberated_post ) ) {
 			$liberated_post = get_post( $liberated_post );
 		}
@@ -39,12 +38,12 @@ class Promoter {
 				$post_type = 'post';
 		}
 
-		// @TODO: filter name would be changed w.r.t new verb in place of 'promoted' once its decided
-		return apply_filters( 'post_type_for_promoted_post', $post_type, $liberated_post );
+		// @TODO: filter name would be changed w.r.t new verb in place of 'transformed' once its decided
+		return apply_filters( 'post_type_for_transformed_post', $post_type, $liberated_post );
 	}
 
-	public function get_promoted_post_id( $liberated_post_id ): int|null {
-		$value = get_post_meta( $liberated_post_id, $this->meta_key_for_promoted_post, true );
+	public function get_transformed_post_id( $liberated_post_id ): int|null {
+		$value = get_post_meta( $liberated_post_id, $this->meta_key_for_transformed_post, true );
 		if ( '' === $value ) {
 			return null;
 		}
@@ -52,15 +51,8 @@ class Promoter {
 		return absint( $value );
 	}
 
-	/**
-	 * This function copies over the liberated_* custom post types to its destined post type.
-	 *
-	 * @param int|WP_Post $liberated_post Post id or Post object.
-	 * @return bool
-	 */
-	public function promote( int|WP_Post $liberated_post ): bool {
-		// @TODO: filter name would be changed w.r.t new verb in place of 'promoted' once its decided
-		if ( apply_filters( 'skip_native_promotion', false ) ) {
+	public function transform( int|WP_Post $liberated_post ): bool {
+		if ( apply_filters( 'skip_native_transformation', false ) ) {
 			return true;
 		}
 
@@ -68,7 +60,7 @@ class Promoter {
 			$liberated_post = get_post( $liberated_post );
 		}
 
-		$promoted_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_promoted_post, true );
+		$transformed_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, true );
 
 		$title = $liberated_post->post_title;
 		if ( empty( $title ) ) {
@@ -93,10 +85,10 @@ class Promoter {
 			'ping_status'       => $liberated_post->ping_status,
 			'post_password'     => $liberated_post->post_password,
 			'post_name'         => $liberated_post->post_name,
-			'post_type'         => $this->get_post_type_for_promoted_post( $liberated_post->ID ),
+			'post_type'         => $this->get_post_type_for_transformed_post( $liberated_post->ID ),
 		);
-		if ( ! empty( $promoted_post_id ) ) {
-			$args['ID'] = $promoted_post_id;
+		if ( ! empty( $transformed_post_id ) ) {
+			$args['ID'] = $transformed_post_id;
 		}
 
 		add_filter( 'wp_insert_post_empty_content', '__return_false' );
@@ -111,7 +103,7 @@ class Promoter {
 			return false;
 		}
 
-		add_post_meta( $liberated_post->ID, $this->meta_key_for_promoted_post, $inserted_post_id );
+		add_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, $inserted_post_id );
 		return true;
 	}
 }

@@ -12,6 +12,7 @@ class Storage_Test extends TestCase {
 	}
 
 	public function testRegisterPostTypes(): void {
+		do_action( 'init' );
 		$this->assertTrue( post_type_exists( 'lib_x' ), 'Custom post type meant for storage not registered' );
 	}
 }
