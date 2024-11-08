@@ -5,6 +5,7 @@ import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { EventTypes } from '@/bus/Event';
 import { useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
+import { findDeepestChild } from '@/parser/util';
 
 enum Steps {
 	Init = 0,
@@ -59,7 +60,7 @@ export function ImportPages() {
 			);
 			break;
 		case Steps.SelectPagesFromNavigation:
-			element = <SelectPages />;
+			element = <SelectPages sessionId={ sessionId } />;
 			break;
 		default:
 			throw Error( `unknown step: ${ step }` );
@@ -132,6 +133,39 @@ function SelectPages( props: { sessionId: string } ) {
 		}
 		loadNavigation().catch( console.error );
 	}, [ sessionId, navigate ] );
+
+	// Parse the navigation html into a list of links.
+	const links = useMemo< { text: string; url: string }[] >( () => {
+		if ( ! navigationHtml ) {
+			return [];
+		}
+		const container = document.createElement( 'ul' );
+		container.innerHTML = navigationHtml.trim();
+		const liElements = container
+			.querySelectorAll( 'li' )
+			.values()
+			.toArray();
+		const anchors: HTMLAnchorElement[] = liElements
+			.map( ( element ) => {
+				const anchorElement = findDeepestChild( element.innerHTML );
+				if (
+					anchorElement &&
+					anchorElement.tagName.toLowerCase() === 'a'
+				) {
+					return anchorElement as HTMLAnchorElement;
+				}
+				return undefined;
+			} )
+			.filter( ( link ) => !! link );
+		return anchors.map( ( anchor ) => {
+			return {
+				text: anchor.text,
+				url: anchor.href,
+			};
+		} );
+	}, [ navigationHtml ] );
+
+	console.log( links );
 
 	return <p>Select the pages you want to import.</p>;
 }
