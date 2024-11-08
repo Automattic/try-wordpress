@@ -91,7 +91,7 @@ export function ImportPages() {
 						}
 					} }
 				>
-					Continue
+					Continue{ isLastStep( step ) ? ' (TODO)' : '' }
 				</button>
 			</Toolbar>
 			<ContentEventHandler
@@ -168,9 +168,9 @@ function SelectPages( props: { sessionId: string } ) {
 	const elements: ReactNode[] = [];
 	links.forEach( ( link ) => {
 		elements.push(
-			<li style={ { border: '1px solid black' } }>
+			<li key={ link.url } style={ { border: '1px solid black' } }>
 				<input type="checkbox" />
-				<p>Text: { link.text }</p>
+				<p>Title: { link.text }</p>
 				<p>URL: { link.url }</p>
 			</li>
 		);
@@ -179,6 +179,11 @@ function SelectPages( props: { sessionId: string } ) {
 	return (
 		<>
 			<p>Select the pages you want to import.</p>
+			<p>
+				Do not select pages that should be automatically generated, like
+				your blog posts index page, as those will automatically be
+				created.
+			</p>
 			<ul>{ elements }</ul>
 		</>
 	);
