@@ -71,9 +71,13 @@ export function EditBlueprint() {
 		const bp = await apiClient!.blueprints.update( blueprint );
 		setBlueprint( bp );
 
+		const updatedSubject = {
+			...subject,
+			...subjectFieldsToUpdate,
+		} as BlogPost;
 		const p = await apiClient!.blogPosts.update(
 			subject.id,
-			subjectFieldsToUpdate
+			updatedSubject
 		);
 		setSubject( p );
 		void playgroundClient!.goTo( '/?p=' + subject.transformedId );

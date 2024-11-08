@@ -61,8 +61,8 @@ export function BlogPostBlueprintEditor( props: Props ) {
 					}
 				} }
 				onClear={ async () => {
-					field.original = '';
-					field.parsed = '';
+					field.rawValue = '';
+					field.parsedValue = '';
 					onFieldChanged( name, field, '' );
 				} }
 			/>
@@ -85,7 +85,7 @@ export function BlogPostBlueprintEditor( props: Props ) {
 						return;
 					}
 					const selector = 'TODO';
-					fieldWaitingForSelection.field.original = (
+					fieldWaitingForSelection.field.rawValue = (
 						event.event.payload as any
 					 ).content;
 					onFieldChanged(

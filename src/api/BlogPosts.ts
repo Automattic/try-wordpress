@@ -1,105 +1,79 @@
 import { BlogPost } from '@/model/subject/BlogPost';
 import { ApiClient } from '@/api/ApiClient';
 import { SubjectType } from '@/model/subject/Subject';
-import { DateField, newDateField } from '@/model/field/DateField';
-import { newTextField, TextField } from '@/model/field/TextField';
-import { HtmlField, newHtmlField } from '@/model/field/HtmlField';
+import { newDateField } from '@/model/field/DateField';
+import { newTextField } from '@/model/field/TextField';
+import { newHtmlField } from '@/model/field/HtmlField';
 import { ApiPost } from '@/api/ApiTypes';
-
-interface UpdateBody {
-	date?: DateField;
-	title?: TextField;
-	content?: HtmlField;
-}
-
-interface PostMeta {
-	guid: string;
-	raw_title: string;
-	raw_date: string;
-	raw_content: string;
-}
 
 export class BlogPostsApi {
 	// eslint-disable-next-line no-useless-constructor
 	constructor( private readonly client: ApiClient ) {}
 
 	async create( blogPost: BlogPost ): Promise< BlogPost > {
-		const response = ( await this.client.post( '/liberated_data', {
-			meta: {
-				guid: blogPost.sourceUrl,
-			},
+		const response = ( await this.client.post( '/blog-posts', {
+			sourceUrl: blogPost.sourceUrl,
 		} ) ) as ApiPost;
 		return fromApiResponse( response );
 	}
 
-	async update( id: number, body: UpdateBody ): Promise< BlogPost > {
-		const actualBody: any = {};
-		if ( body.date || body.title || body.content ) {
-			actualBody.meta = {};
-		}
-		if ( body.date ) {
-			actualBody.date = body.date.value.toISOString();
-			actualBody.meta.raw_date = body.date.original;
-		}
-		if ( body.title ) {
-			actualBody.title = body.title.parsed;
-			actualBody.meta.raw_title = body.title.original;
-		}
-		if ( body.content ) {
-			actualBody.content = body.content.parsed;
-			actualBody.meta.raw_content = body.content.original;
-		}
-		if ( Object.keys( actualBody ).length === 0 ) {
-			throw Error( 'attempting to update zero fields' );
-		}
+	async update( id: number, post: BlogPost ): Promise< BlogPost > {
 		const response = ( await this.client.post(
-			`/liberated_data/${ id }`,
-			actualBody
+			`/blog-posts/${ id }`,
+			toApiRequest( post )
 		) ) as ApiPost;
 		return fromApiResponse( response );
 	}
 
 	async findById( id: string ): Promise< BlogPost | null > {
-		// eslint-disable-next-line react/no-is-mounted
-		const posts = await this.find( { id } );
-		return posts.length === 0 ? null : fromApiResponse( posts[ 0 ] );
+		const post = ( await this.client.get(
+			'/blog-posts/' + id
+		) ) as ApiPost;
+		return post ? fromApiResponse( post ) : null;
 	}
 
 	async findBySourceUrl( sourceUrl: string ): Promise< BlogPost | null > {
-		// eslint-disable-next-line react/no-is-mounted
-		const posts = await this.find( { guid: sourceUrl } );
-		return posts.length === 0 ? null : fromApiResponse( posts[ 0 ] );
-	}
-
-	private async find(
-		params: Record< string, string >
-	): Promise< ApiPost[] > {
-		params.status = 'draft';
-		// Must set context to 'edit' to have all fields in the response.
-		params.context = 'edit';
-		return ( await this.client.get(
-			`/liberated_data`,
-			params
-		) ) as ApiPost[];
+		const post = ( await this.client.get(
+			'/blog-posts?sourceurl=' + sourceUrl
+		) ) as ApiPost;
+		return post ? fromApiResponse( post ) : null;
 	}
 }
 
 function fromApiResponse( response: ApiPost ): BlogPost {
-	const meta = response.meta as unknown as PostMeta;
-	const date = newDateField( meta.raw_date, response.date_gmt );
-	const title = newTextField( meta.raw_title, response.title.raw ?? '' );
+	const date = newDateField( response.rawDate, response.parsedDate );
+	const title = newTextField( response.rawTitle, response.parsedTitle ?? '' );
 	const content = newHtmlField(
-		meta.raw_content,
-		response.content.raw ?? ''
+		response.rawContent,
+		response.parsedContent ?? ''
 	);
 
 	return {
-		type: SubjectType.BlogPost,
-		sourceUrl: meta.guid,
 		id: response.id,
-		transformedId: response.transformed_id,
+		type: SubjectType.BlogPost,
+		sourceUrl: response.sourceUrl,
+		transformedId: response.transformedId,
+		previewUrl: response.previewUrl,
 		title,
 		date,
 		content,
+	};
+}
+
+function toApiRequest( post: BlogPost ): ApiPost {
+	return {
+		id: post.id,
+		// read-only from api perspective, so including it has no effect
+		transformedId: post.transformedId,
+		// update not allowed so will be a bad request if you try to do it
+		sourceUrl: post.sourceUrl,
+		// read-only from api perspective, so including it has no effect
+		previewUrl: post.previewUrl,
+		rawDate: post.date.rawValue,
+		parsedDate: post.date.parsedValue.toISOString(),
+		rawTitle: post.title.rawValue,
+		parsedTitle: post.title.parsedValue,
+		rawContent: post.content.rawValue,
+		parsedContent: post.content.parsedValue,
 	};
 }

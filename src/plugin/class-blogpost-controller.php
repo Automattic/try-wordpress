@@ -16,12 +16,12 @@ class Blogpost_Controller extends Liberate_Controller {
 	}
 
 	public function register_routes(): void {
-		$version      = '1';
-		$namespace    = 'try-wp/v' . $version;
-		$subject_type = 'blogpost';
+		$version             = '1';
+		$namespace           = 'try-wp/v' . $version;
+		$subject_type_plural = 'blog-posts';
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type,
+			'/' . $subject_type_plural,
 			array(
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -39,7 +39,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		);
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type . '/(?P<id>\d+)',
+			'/' . $subject_type_plural . '/(?P<id>\d+)',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
@@ -71,7 +71,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		);
 		register_rest_route(
 			$namespace,
-			'/' . $subject_type . '/schema',
+			'/' . $subject_type_plural . '/schema',
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_public_item_schema' ),
@@ -123,38 +123,71 @@ class Blogpost_Controller extends Liberate_Controller {
 					'context'     => array( 'view', 'edit' ),
 					'readonly'    => true,
 				),
-				'title'         => array(
-					'description' => __( 'Title of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
+				'authorId'      => array(
+					'description' => __( 'Author ID of the blogpost', 'try_wordpress' ),
+					'type'        => 'integer',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'date'          => array(
-					'description' => __( 'Published datetime of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-				'content'       => array(
-					'description' => __( 'Content of the liberated blogpost', 'try_wordpress' ),
-					'type'        => 'string',
-					'context'     => array( 'view', 'edit' ),
-					'required'    => false,
-					'arg_options' => array(
-						'sanitize_callback' => 'sanitize_text_field', // we don't want to modify any HTML
-					),
 				),
 				'sourceUrl'     => array(
 					'description' => __( 'Source URL from where the blogpost was liberated', 'try_wordpress' ),
 					'type'        => 'string',
 					'context'     => array( 'view', 'edit' ),
 					'required'    => true,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawTitle'      => array(
+					'description' => __( 'Raw title of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedTitle'   => array(
+					'description' => __( 'Parsed title of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawDate'       => array(
+					'description' => __( 'Raw date of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedDate'    => array(
+					'description' => __( 'Parsed date of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'rawContent'    => array(
+					'description' => __( 'Raw content of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
+				'parsedContent' => array(
+					'description' => __( 'Parsed content of the blogpost', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
 					'arg_options' => array(
 						'sanitize_callback' => 'sanitize_text_field',
 					),
@@ -190,14 +223,19 @@ class Blogpost_Controller extends Liberate_Controller {
 	}
 
 	public function create_item( $request ): WP_REST_Response|WP_Error {
-		$item = $this->prepare_item_for_database( $request );
+		$item      = $this->prepare_item_for_database( $request );
+		$item_meta = $item['meta'];
+		unset( $item['meta'] );
 
 		$result = wp_insert_post( $item, true );
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
-
 		$item['ID'] = $result;
+
+		foreach ( $item_meta as $key => $value ) {
+			update_post_meta( $item['ID'], $key, $value );
+		}
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
@@ -208,12 +246,17 @@ class Blogpost_Controller extends Liberate_Controller {
 			return $valid_request_for_update;
 		}
 
-		$item       = $this->prepare_item_for_database( $request );
-		$item['ID'] = $request['id'];
+		$item      = $this->prepare_item_for_database( $request );
+		$item_meta = $item['meta'];
+		unset( $item['meta'] );
 
 		$result = wp_insert_post( $item, true );
 		if ( is_wp_error( $result ) ) {
 			return $result;
+		}
+
+		foreach ( $item_meta as $key => $value ) {
+			update_post_meta( $item['ID'], $key, $value );
 		}
 
 		return $this->prepare_item_for_response( $item, $request );

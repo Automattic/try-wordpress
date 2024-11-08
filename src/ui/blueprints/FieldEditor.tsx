@@ -29,7 +29,7 @@ export function FieldEditor( props: {
 			<div>
 				{ label }{ ' ' }
 				<button
-					disabled={ waitingForSelection || field.original === '' }
+					disabled={ waitingForSelection || field.rawValue === '' }
 					onClick={ onClear }
 				>
 					Clear
@@ -50,9 +50,11 @@ export function FieldEditor( props: {
 				selector: { blueprintField.selector }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
-				original: { field.original }
+				original: { field.rawValue }
 			</div>
-			<div style={ { paddingTop: '1rem' } }>parsed: { field.parsed }</div>
+			<div style={ { paddingTop: '1rem' } }>
+				parsed: { field.parsedValue.toString() }
+			</div>
 		</div>
 	);
 }

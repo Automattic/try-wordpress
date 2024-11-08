@@ -2,6 +2,8 @@
 
 namespace DotOrg\TryWordPress;
 
+use DateTime;
+use DateTimeZone;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
@@ -44,21 +46,28 @@ class Liberate_Controller extends WP_REST_Controller {
 	}
 
 	public function prepare_item_for_response( $item, $request ): WP_REST_Response|WP_Error {
+		if ( empty( $item['ID'] ) ) {
+			return new WP_Error(
+				'rest_post_missing_id',
+				__( 'Missing post ID when preparing item for response.', 'try_wordpress' ),
+				array( 'status' => 500 )
+			);
+		}
+
 		$response = array(
-			'id'        => $item['ID'] ?? '',
-			'authorId'  => $item['post_author'] ?? '',
-			'title'     => $item['post_title'] ?? '',
-			'content'   => $item['post_content'] ?? '',
-			'date'      => $item['post_date'] ?? '',
-			'sourceUrl' => $item['guid'] ?? '',
+			'id'            => $item['ID'],
+			'authorId'      => $item['post_author'] ?? '',
+			'sourceUrl'     => $item['guid'] ?? '',
+			'rawTitle'      => get_post_meta( $item['ID'], 'raw_title', true ),
+			'parsedTitle'   => $item['post_title'] ?? '',
+			'rawDate'       => get_post_meta( $item['ID'], 'raw_date', true ),
+			'parsedDate'    => $item['post_date'] ?? '',
+			'rawContent'    => $item['post_content_filtered'] ?? '',
+			'parsedContent' => $item['post_content'] ?? '',
+			'transformedId' => get_post_meta( $item['ID'], '_dl_transformed', true ),
 		);
 
-		if ( ! empty( $item['ID'] ) ) {
-			$transformed_post = get_post_meta( $item['ID'], '_dl_transformed', true );
-			if ( $transformed_post ) {
-				$response['previewUrl'] = get_post_permalink( $transformed_post );
-			}
-		}
+		$response['previewUrl'] = get_permalink( $response['transformedId'] );
 
 		return new WP_REST_Response( $response );
 	}
@@ -67,13 +76,36 @@ class Liberate_Controller extends WP_REST_Controller {
 		$prepared_post = array();
 		$request_data  = json_decode( $request->get_body(), true );
 
+		if ( isset( $request_data['parsedDate'] ) ) {
+			try {
+				$datetime      = new DateTime( $request_data['parsedDate'], new DateTimeZone( 'UTC' ) );
+				$post_date     = $datetime->format( 'Y-m-d H:i:s' );
+				$post_date_gmt = get_gmt_from_date( $post_date );
+			} catch ( \Exception $e ) {
+				return new WP_Error(
+					'invalid_date_format',
+					// translators: %s: Error message describing the invalid date format.
+					sprintf( __( 'Invalid date format: %s', 'try_wordpress' ), $e->getMessage() ),
+					array( 'status' => 400 )
+				);
+			}
+		}
+
 		// Prepare $postarr that can be passed to wp_insert_post()
-		$prepared_post['post_type']    = $this->storage_post_type;
-		$prepared_post['post_title']   = $request_data['title'] ?? '';
-		$prepared_post['post_content'] = $request_data['content'] ?? '';
-		$prepared_post['guid']         = $request_data['sourceUrl'] ?? '';
-		$prepared_post['post_date']    = $request_data['date'] ?? '';
-		$prepared_post['post_author']  = $request_data['authorId'] ?? '';
+		$prepared_post['ID']                    = $request['id'];
+		$prepared_post['post_type']             = $this->storage_post_type;
+		$prepared_post['post_title']            = $request_data['parsedTitle'] ?? '';
+		$prepared_post['post_date']             = $post_date ?? '';
+		$prepared_post['post_date_gmt']         = $post_date_gmt ?? '';
+		$prepared_post['post_content']          = $request_data['parsedContent'] ?? '';
+		$prepared_post['post_content_filtered'] = $request_data['rawContent'] ?? '';
+		$prepared_post['guid']                  = $request_data['sourceUrl'] ?? '';
+		$prepared_post['post_author']           = $request_data['authorId'] ?? '';
+
+		$prepared_post['meta'] = array(
+			'raw_title' => $request_data['rawTitle'] ?? '',
+			'raw_date'  => $request_data['rawDate'] ?? '',
+		);
 
 		return $prepared_post;
 	}

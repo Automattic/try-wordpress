@@ -6,6 +6,6 @@ export enum FieldType {
 
 export interface Field {
 	type: FieldType;
-	original: string;
-	parsed: string;
+	rawValue: string;
+	parsedValue: any;
 }
