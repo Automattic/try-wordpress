@@ -48,10 +48,26 @@ function onClick( event: MouseEvent ) {
 	if ( ! element ) {
 		return;
 	}
-	const clone = element.cloneNode( true ) as HTMLElement;
-	clone.style.outline = '';
-	let content = clone.outerHTML.trim();
-	content = content.replaceAll( ' style=""', '' );
+
+	let content = '';
+	switch ( currentMode ) {
+		case Modes.GenericSelection:
+			const clone = element.cloneNode( true ) as HTMLElement;
+			clone.style.outline = '';
+			content = clone.outerHTML.trim();
+			content = content.replaceAll( ' style=""', '' );
+			break;
+		case Modes.NavigationSelection:
+			content = 'TODO';
+			break;
+		default:
+			throw Error( `unknown mode ${ currentMode }` );
+	}
+
+	if ( ! content || content === '' ) {
+		return;
+	}
+
 	void sendEventToApp( {
 		type: EventTypes.OnElementClick,
 		payload: { content },
