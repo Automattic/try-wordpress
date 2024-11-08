@@ -139,7 +139,7 @@ export function EditBlueprint() {
 							disabled={ ! isValid }
 							onClick={ async () => {
 								void sendCommandToContent( {
-									type: CommandTypes.DisableHighlighting,
+									type: CommandTypes.SwitchToDefaultMode,
 									payload: {},
 								} );
 								navigate(

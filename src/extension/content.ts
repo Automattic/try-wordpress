@@ -2,6 +2,15 @@ import { startListening } from '@/bus/Bus';
 import { CommandTypes } from '@/bus/Command';
 import { EventTypes, sendEventToApp } from '@/bus/Event';
 
+enum Modes {
+	// Default mode, nothing is happening.
+	Default = 0,
+	// Generic element selection mode.
+	GenericSelection,
+}
+
+let currentMode = Modes.Default;
+
 startListening( CommandTypes.GetCurrentPageInfo, ( event ) => {
 	event.sendResponse( {
 		url: document.documentURI,
@@ -16,14 +25,16 @@ startListening( CommandTypes.NavigateTo, ( event ) => {
 	}
 } );
 
-startListening( CommandTypes.EnableHighlighting, () => {
+startListening( CommandTypes.SwitchToGenericSelectionMode, () => {
+	currentMode = Modes.GenericSelection;
 	document.body.addEventListener( 'mouseover', onMouseOver );
 	document.body.addEventListener( 'mouseout', onMouseOut );
 	document.body.addEventListener( 'click', onClick );
 	enableHighlightingCursor();
 } );
 
-startListening( CommandTypes.DisableHighlighting, () => {
+startListening( CommandTypes.SwitchToDefaultMode, () => {
+	currentMode = Modes.Default;
 	document.body.removeEventListener( 'mouseover', onMouseOver );
 	document.body.removeEventListener( 'mouseout', onMouseOut );
 	document.body.removeEventListener( 'click', onClick );

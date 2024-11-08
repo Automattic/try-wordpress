@@ -21,8 +21,8 @@ export function ImportPages() {
 	useEffect( () => {
 		const type =
 			step === Steps.SelectNavigation
-				? CommandTypes.EnableHighlighting
-				: CommandTypes.DisableHighlighting;
+				? CommandTypes.SwitchToGenericSelectionMode
+				: CommandTypes.SwitchToDefaultMode;
 		void sendCommandToContent( { type, payload: {} } );
 	}, [ step ] );
 
@@ -30,7 +30,7 @@ export function ImportPages() {
 	useEffect( () => {
 		return () => {
 			void sendCommandToContent( {
-				type: CommandTypes.DisableHighlighting,
+				type: CommandTypes.SwitchToDefaultMode,
 				payload: {},
 			} );
 		};
@@ -93,7 +93,7 @@ export function ImportPages() {
 				eventType={ EventTypes.OnElementClick }
 				onEvent={ ( event ) => {
 					void sendCommandToContent( {
-						type: CommandTypes.DisableHighlighting,
+						type: CommandTypes.SwitchToDefaultMode,
 						payload: {},
 					} );
 					console.log( event );

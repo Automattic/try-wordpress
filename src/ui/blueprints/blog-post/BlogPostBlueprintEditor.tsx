@@ -29,8 +29,8 @@ export function BlogPostBlueprintEditor( props: Props ) {
 	useEffect( () => {
 		const type =
 			fieldWaitingForSelection === false
-				? CommandTypes.DisableHighlighting
-				: CommandTypes.EnableHighlighting;
+				? CommandTypes.SwitchToDefaultMode
+				: CommandTypes.SwitchToGenericSelectionMode;
 		void sendCommandToContent( { type, payload: {} } );
 	}, [ fieldWaitingForSelection ] );
 
