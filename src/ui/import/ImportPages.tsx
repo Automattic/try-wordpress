@@ -3,7 +3,7 @@ import { Screens } from '@/ui/App';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { EventTypes } from '@/bus/Event';
-import { useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { findDeepestChild } from '@/parser/util';
 
@@ -165,9 +165,23 @@ function SelectPages( props: { sessionId: string } ) {
 		} );
 	}, [ navigationHtml ] );
 
-	console.log( links );
+	const elements: ReactNode[] = [];
+	links.forEach( ( link ) => {
+		elements.push(
+			<li style={ { border: '1px solid black' } }>
+				<input type="checkbox" />
+				<p>Text: { link.text }</p>
+				<p>URL: { link.url }</p>
+			</li>
+		);
+	} );
 
-	return <p>Select the pages you want to import.</p>;
+	return (
+		<>
+			<p>Select the pages you want to import.</p>
+			<ul>{ elements }</ul>
+		</>
+	);
 }
 
 function isLastStep( step: number ) {
