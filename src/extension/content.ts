@@ -55,19 +55,26 @@ function onClick( event: MouseEvent ) {
 			const clone = element.cloneNode( true ) as HTMLElement;
 			clone.style.outline = '';
 			content = clone.outerHTML.trim();
-			content = content.replaceAll( ' style=""', '' );
 			break;
 		case Modes.NavigationSelection:
-			content = 'TODO';
+			// The user should have clicked on one of the navigation entries.
+			// Look for the parent ul or ol.
+			let navigationContainer;
+			let currentElement: HTMLElement | null = element;
+			while ( currentElement ) {
+				if ( currentElement.tagName.toLowerCase() === 'li' ) {
+					navigationContainer = currentElement.parentElement;
+					break;
+				}
+				currentElement = currentElement.parentElement;
+			}
+			content = navigationContainer ? navigationContainer.innerHTML : '';
 			break;
 		default:
 			throw Error( `unknown mode ${ currentMode }` );
 	}
 
-	if ( ! content || content === '' ) {
-		return;
-	}
-
+	content = content.replaceAll( ' style=""', '' );
 	void sendEventToApp( {
 		type: EventTypes.OnElementClick,
 		payload: { content },
