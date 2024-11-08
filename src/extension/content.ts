@@ -2,8 +2,6 @@ import { startListening } from '@/bus/Bus';
 import { CommandTypes } from '@/bus/Command';
 import { EventTypes, sendEventToApp } from '@/bus/Event';
 
-let currentElement: HTMLElement | null = null;
-
 startListening( CommandTypes.GetCurrentPageInfo, ( event ) => {
 	event.sendResponse( {
 		url: document.documentURI,
@@ -49,13 +47,15 @@ function onClick( event: MouseEvent ) {
 	} );
 }
 
+let highlightedElement: HTMLElement | null = null;
+
 function onMouseOver( event: MouseEvent ) {
 	const element = event.target as HTMLElement | null;
 	if ( ! element ) {
 		return;
 	}
-	currentElement = element;
-	currentElement.style.outline = '1px solid blue';
+	highlightedElement = element;
+	highlightedElement.style.outline = '1px solid blue';
 }
 
 function onMouseOut( event: MouseEvent ) {
@@ -64,14 +64,14 @@ function onMouseOut( event: MouseEvent ) {
 		return;
 	}
 	removeStyle();
-	currentElement = null;
+	highlightedElement = null;
 }
 
 function removeStyle() {
-	if ( ! currentElement ) {
+	if ( ! highlightedElement ) {
 		return;
 	}
-	currentElement.style.outline = '';
+	highlightedElement.style.outline = '';
 }
 
 const cursorStyleId = 'hover-highlighter-style';
