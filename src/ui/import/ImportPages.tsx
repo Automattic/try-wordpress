@@ -1,6 +1,10 @@
 import { Toolbar } from '@/ui/components/Toolbar';
 import { Screens } from '@/ui/App';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
+import { EventTypes } from '@/bus/Event';
+import { useEffect } from 'react';
+import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 
 enum Steps {
 	Init = 0,
@@ -12,6 +16,25 @@ export function ImportPages() {
 	const sessionId = params.sessionId!;
 	const step = parseInt( params.step!, 10 );
 	const navigate = useNavigate();
+
+	// Enable or disable highlighting in source site, if step requires it.
+	useEffect( () => {
+		const type =
+			step === Steps.SelectNavigation
+				? CommandTypes.EnableHighlighting
+				: CommandTypes.DisableHighlighting;
+		void sendCommandToContent( { type, payload: {} } );
+	}, [ step ] );
+
+	// Disable highlighting on unmount.
+	useEffect( () => {
+		return () => {
+			void sendCommandToContent( {
+				type: CommandTypes.DisableHighlighting,
+				payload: {},
+			} );
+		};
+	}, [] );
 
 	let element = <></>;
 	switch ( step ) {
@@ -46,6 +69,16 @@ export function ImportPages() {
 					Continue
 				</button>
 			</Toolbar>
+			<ContentEventHandler
+				eventType={ EventTypes.OnElementClick }
+				onEvent={ ( event ) => {
+					void sendCommandToContent( {
+						type: CommandTypes.DisableHighlighting,
+						payload: {},
+					} );
+					console.log( event );
+				} }
+			/>
 			{ element }
 		</>
 	);
