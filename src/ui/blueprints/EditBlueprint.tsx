@@ -17,10 +17,7 @@ import {
 	validateBlogpostBlueprint,
 } from '@/model/blueprint/BlogPost';
 import { Page, validatePage } from '@/model/subject/Page';
-import {
-	PageBlueprint,
-	validatePageBlueprint,
-} from '@/model/blueprint/Page';
+import { PageBlueprint, validatePageBlueprint } from '@/model/blueprint/Page';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 
 export function EditBlueprint() {
@@ -75,10 +72,7 @@ export function EditBlueprint() {
 				blueprint.valid = validatePageBlueprint(
 					blueprint as PageBlueprint
 				);
-				subjectFieldsToUpdate[ name ] = parsePageField(
-					name,
-					field
-				);
+				subjectFieldsToUpdate[ name ] = parsePageField( name, field );
 				break;
 			default:
 				throw Error( `unknown subject type ${ subject.type }` );
