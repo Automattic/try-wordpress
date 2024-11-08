@@ -3,7 +3,7 @@ import { Screens } from '@/ui/App';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { EventTypes } from '@/bus/Event';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 
 enum Steps {
@@ -112,7 +112,27 @@ export function ImportPages() {
 	);
 }
 
-function SelectPages() {
+function SelectPages( props: { sessionId: string } ) {
+	const { sessionId } = props;
+	const [ navigationHtml, setNavigationHtml ] = useState< string >();
+	const navigate = useNavigate();
+
+	// Load navigation html from local storage.
+	// If it's empty, redirect back to the previous step.
+	useEffect( () => {
+		async function loadNavigation() {
+			const html = await getNavigationHtml( sessionId );
+			if ( html === '' ) {
+				navigate(
+					Screens.importPages( sessionId, Steps.SelectNavigation )
+				);
+				return;
+			}
+			setNavigationHtml( html );
+		}
+		loadNavigation().catch( console.error );
+	}, [ sessionId, navigate ] );
+
 	return <p>Select the pages you want to import.</p>;
 }
 
