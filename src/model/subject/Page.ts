@@ -3,19 +3,19 @@ import { newTextField, TextField } from '@/model/field/TextField';
 import { HtmlField, newHtmlField } from '@/model/field/HtmlField';
 import { DateField, newDateField } from '@/model/field/DateField';
 
-export interface BlogPost extends Subject {
-	type: SubjectType.BlogPost;
+export interface Page extends Subject {
+	type: SubjectType.Page;
 	date: DateField;
 	title: TextField;
 	content: HtmlField;
 }
 
-export function newBlogPost( sourceUrl: string ): BlogPost {
+export function newPage( sourceUrl: string ): Page {
 	return {
 		id: 0,
-		type: SubjectType.BlogPost,
 		transformedId: 0,
 		previewUrl: '',
+		type: SubjectType.Page,
 		sourceUrl,
 		date: newDateField(),
 		title: newTextField(),
@@ -23,8 +23,8 @@ export function newBlogPost( sourceUrl: string ): BlogPost {
 	};
 }
 
-export function validateBlogPost( blogPost: BlogPost ): boolean {
-	const fields = [ blogPost.title, blogPost.date, blogPost.content ];
+export function validatePage( page: Page ): boolean {
+	const fields = [ page.title, page.date, page.content ];
 	let isValid = true;
 	for ( const f of fields ) {
 		if ( f.rawValue === '' || f.parsedValue === '' ) {

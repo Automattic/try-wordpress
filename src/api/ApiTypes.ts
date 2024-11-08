@@ -14,6 +14,8 @@ export type ApiPost = {
 	parsedContent: string;
 };
 
+export type ApiPage = ApiPost;
+
 export type ApiUser = WP_REST_API_User;
 
 export type ApiSettings = WP_REST_API_Settings;

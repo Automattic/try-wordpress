@@ -18,7 +18,7 @@ export function Import() {
 		if ( blueprint && ! blueprint.valid ) {
 			navigate( Screens.blueprints.edit( session.id, blueprint.id ) );
 		}
-	}, [ session.id, blueprint ] );
+	}, [ session.id, blueprint, navigate ] );
 
 	const fields: ReactElement[] = [];
 	if ( blueprint ) {
