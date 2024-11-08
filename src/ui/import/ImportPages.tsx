@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 enum Steps {
 	Init = 0,
+	SelectNavigation,
 }
 
 export function ImportPages() {
@@ -15,8 +16,13 @@ export function ImportPages() {
 	let element = <></>;
 	switch ( step ) {
 		case Steps.Init:
+			element = <>Navigate to a page that shows the navigation menu</>;
+			break;
+		case Steps.SelectNavigation:
 			element = (
-				<>Please navigate to a page that shows the navigation menu</>
+				<>
+					<>Click on the navigation menu</>
+				</>
 			);
 			break;
 		default:
