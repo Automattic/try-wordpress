@@ -39,12 +39,21 @@ export function ImportPages() {
 	let element = <></>;
 	switch ( step ) {
 		case Steps.Init:
-			element = <>Navigate to a page that shows the navigation menu</>;
+			element = (
+				<p>
+					Navigate to a page that shows the navigation menu. Make sure
+					the menu is shown on screen before clicking Continue.
+				</p>
+			);
 			break;
 		case Steps.SelectNavigation:
 			element = (
 				<>
-					<>Click on the navigation menu</>
+					<p>Click on one of the entries of the navigation menu.</p>
+					<p>
+						If the menu is not shown on screen, click the Back
+						button and then open the menu.
+					</p>
 				</>
 			);
 			break;
@@ -55,6 +64,17 @@ export function ImportPages() {
 	return (
 		<>
 			<Toolbar>
+				{ step === 0 ? undefined : (
+					<button
+						onClick={ () => {
+							navigate(
+								Screens.importPages( sessionId, step - 1 )
+							);
+						} }
+					>
+						Back
+					</button>
+				) }
 				<button
 					onClick={ () => {
 						if ( isLastStep( step ) ) {
