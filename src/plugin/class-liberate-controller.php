@@ -23,7 +23,7 @@ class Liberate_Controller extends WP_REST_Controller {
 	}
 
 	public function valid_request_for_update( $request ): bool|WP_Error {
-		// Rule1: if post id is specified, it must be a valid id
+		// Rule1: post id must be a valid id
 		$post_id = $request['id'];
 		$item    = get_post( $post_id );
 		if ( is_null( $item ) ) {
