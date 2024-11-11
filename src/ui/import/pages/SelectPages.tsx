@@ -7,15 +7,10 @@ import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 
-interface Page {
-	title: string;
-	url: string;
-}
-
 export function SelectPages() {
 	const { session } = useSessionContext();
 	const [ navigationHtml, setNavigationHtml ] = useState< string >();
-	const [ selected, setSelected ] = useState< Page[] >( [] );
+	const [ selected, setSelected ] = useState< string[] >( [] );
 	const navigate = useNavigate();
 
 	// Load navigation html from local storage.
@@ -48,17 +43,15 @@ export function SelectPages() {
 				<input
 					type="checkbox"
 					onChange={ () => {
-						const isChecked = selected.some(
-							( page ) => page.url === url
-						);
+						const isChecked = selected.some( ( u ) => u === url );
 						if ( isChecked ) {
 							// It was previously selected, now it becomes not selected.
 							// So we keep other ones.
 							setSelected(
-								selected.filter( ( page ) => page.url !== url )
+								selected.filter( ( u ) => u !== url )
 							);
 						} else {
-							setSelected( selected.concat( { url, title } ) );
+							setSelected( selected.concat( url ) );
 						}
 					} }
 				/>
