@@ -4,10 +4,10 @@
 
 /* Variables */
 :root {
-	--color-base: white;
+	--color-base: #fff;
 	--color-text: #1e1e1e;
 	--color-contrast: #3857e9;
-	--color-border: rgba(0,0,0,0.075);
+	--color-border: rgba(0, 0, 0, 0.075);
 	--color-gray-700: #757575;
 	--color-gray-600: #949494;
 
@@ -45,7 +45,9 @@ body {
 	color: var(--color-text);
 }
 
-textarea, input, button {
+textarea,
+input,
+button {
 	font: inherit;
 	line-height: inherit;
 	border-radius: var(--radius-sm);
