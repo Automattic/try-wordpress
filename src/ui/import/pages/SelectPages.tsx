@@ -44,10 +44,7 @@ export function SelectPages() {
 		const url = link.parsedValue.url;
 		const title = link.parsedValue.title;
 		elements.push(
-			<li
-				key={ link.parsedValue.url }
-				style={ { border: '1px solid black' } }
-			>
+			<li key={ url } style={ { border: '1px solid black' } }>
 				<input
 					type="checkbox"
 					onChange={ () => {
@@ -65,8 +62,8 @@ export function SelectPages() {
 						}
 					} }
 				/>
-				<p>Title: { link.parsedValue.title }</p>
-				<p>URL: { link.parsedValue.url }</p>
+				<p>Title: { title }</p>
+				<p>URL: { url }</p>
 			</li>
 		);
 	} );
