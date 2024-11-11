@@ -114,9 +114,15 @@ export function ImportPages() {
 	);
 }
 
+interface Page {
+	title: string;
+	url: string;
+}
+
 function SelectPages( props: { sessionId: string } ) {
 	const { sessionId } = props;
 	const [ navigationHtml, setNavigationHtml ] = useState< string >();
+	const [ selected, setSelected ] = useState< Page[] >( [] );
 	const navigate = useNavigate();
 
 	// Load navigation html from local storage.
@@ -142,12 +148,30 @@ function SelectPages( props: { sessionId: string } ) {
 
 	const elements: ReactNode[] = [];
 	links.forEach( ( link ) => {
+		const url = link.parsedValue.url;
+		const title = link.parsedValue.title;
 		elements.push(
 			<li
 				key={ link.parsedValue.url }
 				style={ { border: '1px solid black' } }
 			>
-				<input type="checkbox" />
+				<input
+					type="checkbox"
+					onChange={ () => {
+						const isChecked = selected.some(
+							( page ) => page.url === url
+						);
+						if ( isChecked ) {
+							// It was previously selected, now it becomes not selected.
+							// So we keep other ones.
+							setSelected(
+								selected.filter( ( page ) => page.url !== url )
+							);
+						} else {
+							setSelected( selected.concat( { url, title } ) );
+						}
+					} }
+				/>
 				<p>Title: { link.parsedValue.title }</p>
 				<p>URL: { link.parsedValue.url }</p>
 			</li>
