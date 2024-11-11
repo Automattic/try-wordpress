@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getNavigationHtml } from '@/storage/navigation';
 import { Screens } from '@/ui/App';
-import { Steps } from '@/ui/import/pages/ImportPages';
+import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 

@@ -26,7 +26,7 @@ import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
 import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
-import { ImportPages } from '@/ui/import/pages/ImportPages';
+import { ImportPagesFlow } from '@/ui/import/pages/ImportPagesFlow';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -91,7 +91,10 @@ function Routes( props: { initialScreen: string } ) {
 					path="import-with-blueprint/:blueprintId"
 					element={ <ImportWithBlueprint /> }
 				/>
-				<Route path="import-pages/:step" element={ <ImportPages /> } />
+				<Route
+					path="import-pages/:step"
+					element={ <ImportPagesFlow /> }
+				/>
 			</Route>
 		</Route>
 	);

@@ -14,7 +14,7 @@ export enum Steps {
 	SelectPagesFromNavigation,
 }
 
-export function ImportPages() {
+export function ImportPagesFlow() {
 	const params = useParams();
 	const sessionId = params.sessionId!;
 	const step = parseInt( params.step!, 10 );
