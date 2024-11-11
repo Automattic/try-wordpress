@@ -5,14 +5,15 @@ import { Screens } from '@/ui/App';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
+import { useSessionContext } from '@/ui/session/SessionProvider';
 
 interface Page {
 	title: string;
 	url: string;
 }
 
-export function SelectPages( props: { sessionId: string } ) {
-	const { sessionId } = props;
+export function SelectPages() {
+	const { session } = useSessionContext();
 	const [ navigationHtml, setNavigationHtml ] = useState< string >();
 	const [ selected, setSelected ] = useState< Page[] >( [] );
 	const navigate = useNavigate();
@@ -21,17 +22,17 @@ export function SelectPages( props: { sessionId: string } ) {
 	// If it's empty, redirect back to the previous step.
 	useEffect( () => {
 		async function loadNavigation() {
-			const html = await getNavigationHtml( sessionId );
+			const html = await getNavigationHtml( session.id );
 			if ( html === '' ) {
 				navigate(
-					Screens.importPages( sessionId, Steps.SelectNavigation )
+					Screens.importPages( session.id, Steps.SelectNavigation )
 				);
 				return;
 			}
 			setNavigationHtml( html );
 		}
 		loadNavigation().catch( console.error );
-	}, [ sessionId, navigate ] );
+	}, [ session.id, navigate ] );
 
 	// Parse the navigation html into a list of links.
 	const links = useMemo< LinkField[] >( () => {

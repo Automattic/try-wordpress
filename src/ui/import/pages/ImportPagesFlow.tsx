@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SelectPages } from '@/ui/import/pages/SelectPages';
 import { saveNavigationHtml } from '@/storage/navigation';
+import { useSessionContext } from '@/ui/session/SessionProvider';
 
 export enum Steps {
 	Init = 0,
@@ -16,8 +17,8 @@ export enum Steps {
 
 export function ImportPagesFlow() {
 	const params = useParams();
-	const sessionId = params.sessionId!;
 	const step = parseInt( params.step!, 10 );
+	const { session } = useSessionContext();
 	const navigate = useNavigate();
 
 	// Enable or disable highlighting in source site, if step requires it.
@@ -61,7 +62,7 @@ export function ImportPagesFlow() {
 			);
 			break;
 		case Steps.SelectPagesFromNavigation:
-			element = <SelectPages sessionId={ sessionId } />;
+			element = <SelectPages />;
 			break;
 		default:
 			throw Error( `unknown step: ${ step }` );
@@ -74,7 +75,7 @@ export function ImportPagesFlow() {
 					<button
 						onClick={ () => {
 							navigate(
-								Screens.importPages( sessionId, step - 1 )
+								Screens.importPages( session.id, step - 1 )
 							);
 						} }
 					>
@@ -87,7 +88,7 @@ export function ImportPagesFlow() {
 							console.log( 'TODO' );
 						} else {
 							navigate(
-								Screens.importPages( sessionId, step + 1 )
+								Screens.importPages( session.id, step + 1 )
 							);
 						}
 					} }
@@ -103,10 +104,10 @@ export function ImportPagesFlow() {
 						payload: {},
 					} );
 					await saveNavigationHtml(
-						sessionId,
+						session.id,
 						( event.event.payload as any ).content
 					);
-					navigate( Screens.importPages( sessionId, step + 1 ) );
+					navigate( Screens.importPages( session.id, step + 1 ) );
 				} }
 			/>
 			{ element }
