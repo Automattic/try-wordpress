@@ -1,6 +1,7 @@
 <?php
 
 use DotOrg\TryWordPress\Liberate_Controller;
+use DotOrg\TryWordPress\Transformer;
 use PHPUnit\Framework\TestCase;
 
 class Liberate_Controller_Test extends TestCase {
@@ -26,7 +27,7 @@ class Liberate_Controller_Test extends TestCase {
 		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
 
 		// we instantiate Promoter class so that the sample post we insert also has its transformed post saved in the database
-		new \DotOrg\TryWordPress\Transformer( $this->storage_post_type );
+		new Transformer( $this->storage_post_type );
 
 		$this->inserted_post_id = wp_insert_post(
 			array(
