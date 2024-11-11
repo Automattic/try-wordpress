@@ -6,6 +6,7 @@ import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
+import { saveSelectedPages } from '@/storage/selected-pages';
 
 export function SelectPages() {
 	const { session } = useSessionContext();
@@ -33,6 +34,11 @@ export function SelectPages() {
 	const links = useMemo< LinkField[] >( () => {
 		return parseNavigationHtml( navigationHtml ?? '' );
 	}, [ navigationHtml ] );
+
+	// Save selected urls to local storage.
+	useEffect( () => {
+		void saveSelectedPages( session.id, selected );
+	}, [ session.id, selected ] );
 
 	const elements: ReactNode[] = [];
 	links.forEach( ( link ) => {

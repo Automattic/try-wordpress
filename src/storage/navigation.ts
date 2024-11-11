@@ -3,22 +3,20 @@ export async function saveNavigationHtml(
 	html: string
 ): Promise< void > {
 	const values: Record< string, string > = {};
-	values[ navigationKey( sessionId ) ] = html;
+	values[ key( sessionId ) ] = html;
 	return browser.storage.local.set( values );
 }
 
 export async function getNavigationHtml(
 	sessionId: string
 ): Promise< string > {
-	const values = await browser.storage.local.get(
-		navigationKey( sessionId )
-	);
-	if ( ! values || ! values[ navigationKey( sessionId ) ] ) {
+	const values = await browser.storage.local.get( key( sessionId ) );
+	if ( ! values || ! values[ key( sessionId ) ] ) {
 		return '';
 	}
-	return values[ navigationKey( sessionId ) ] as string;
+	return values[ key( sessionId ) ] as string;
 }
 
-function navigationKey( sessionId: string ): string {
+function key( sessionId: string ): string {
 	return `navigation-${ sessionId }`;
 }
