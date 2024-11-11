@@ -22,6 +22,31 @@ class Liberate_Controller extends WP_REST_Controller {
 		return $this->storage_post_type;
 	}
 
+	public function valid_request_for_insert( $request ): bool|WP_Error {
+		global $wpdb;
+
+		$request_data = json_decode( $request->get_body(), true );
+		$guid         = $request_data['sourceUrl']; // required arg, will always be present at this point
+
+		// Rule1: guid must be unique
+		$post = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts} WHERE guid = %s;",
+				$guid
+			)
+		);
+
+		if ( $post ) {
+			return new WP_Error(
+				'rest_source_url_not_unique',
+				__( 'Source URL specified already exists', 'try_wordpress' ),
+				array( 'status' => 409 )
+			);
+		}
+
+		return true;
+	}
+
 	public function valid_request_for_update( $request ): bool|WP_Error {
 		// Rule1: post id must be a valid id
 		$post_id = $request['id'];

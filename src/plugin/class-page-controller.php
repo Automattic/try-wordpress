@@ -195,6 +195,11 @@ class Page_Controller extends Liberate_Controller {
 	}
 
 	public function create_item( $request ): WP_REST_Response|WP_Error {
+		$valid_request_for_insert = $this->valid_request_for_insert( $request );
+		if ( is_wp_error( $valid_request_for_insert ) ) {
+			return $valid_request_for_insert;
+		}
+
 		$item      = $this->prepare_item_for_database( $request );
 		$item_meta = $item['meta'];
 		unset( $item['meta'] );

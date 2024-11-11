@@ -68,6 +68,27 @@ class Liberate_Controller_Test extends TestCase {
 		$this->assertEquals( $this->storage_post_type, $this->liberate_controller->get_storage_post_type() );
 	}
 
+	public function testValidRequestForInsert() {
+		$source_url = 'https://example.org/default'; // non-unique, already inserted in setUp()
+
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => $source_url,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+
+		$result = $this->liberate_controller->valid_request_for_insert( $request );
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertEquals( 'rest_source_url_not_unique', $result->get_error_code() );
+		$this->assertEquals( 409, $response->get_status() );
+	}
+
 	public function testValidRequestForUpdateRule1() {
 		// invalid id, rule 1 violation
 		$api_endpoint = $this->endpoint . '/' . PHP_INT_MAX;
