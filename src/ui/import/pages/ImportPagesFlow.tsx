@@ -6,9 +6,9 @@ import { EventTypes } from '@/bus/Event';
 import { useEffect } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SelectPages } from '@/ui/import/pages/SelectPages';
-import { saveNavigationHtml } from '@/storage/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
+import { useNavigationHtml } from '@/ui/import/pages/useNavigationHtml';
 
 export enum Steps {
 	Init = 0,
@@ -24,6 +24,7 @@ export function ImportPagesFlow() {
 	const pageIndex = parseInt( params.page! ?? 0, 10 );
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
+	const [ , setNavigationHtml ] = useNavigationHtml();
 
 	// Enable or disable highlighting in source site, if step requires it.
 	useEffect( () => {
@@ -118,10 +119,7 @@ export function ImportPagesFlow() {
 						type: CommandTypes.SwitchToDefaultMode,
 						payload: {},
 					} );
-					await saveNavigationHtml(
-						session.id,
-						( event.event.payload as any ).content
-					);
+					setNavigationHtml( ( event.event.payload as any ).content );
 					navigate( Screens.importPages( session.id, step + 1 ) );
 				} }
 			/>

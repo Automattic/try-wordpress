@@ -1,34 +1,27 @@
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getNavigationHtml } from '@/storage/navigation';
 import { Screens } from '@/ui/App';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
+import { useNavigationHtml } from '@/ui/import/pages/useNavigationHtml';
 
 export function SelectPages() {
 	const { session } = useSessionContext();
-	const [ navigationHtml, setNavigationHtml ] = useState< string >();
+	const [ navigationHtml ] = useNavigationHtml();
 	const [ selected, setSelected ] = useSelectedPages();
 	const navigate = useNavigate();
 
-	// Load navigation html from local storage.
-	// If it's empty, redirect back to the previous step.
+	// If the navigation html is empty, redirect back to the previous step.
 	useEffect( () => {
-		async function loadNavigation() {
-			const html = await getNavigationHtml( session.id );
-			if ( html === '' ) {
-				navigate(
-					Screens.importPages( session.id, Steps.SelectNavigation )
-				);
-				return;
-			}
-			setNavigationHtml( html );
+		if ( navigationHtml === '' ) {
+			navigate(
+				Screens.importPages( session.id, Steps.SelectNavigation )
+			);
 		}
-		loadNavigation().catch( console.error );
-	}, [ session.id, navigate ] );
+	}, [ session.id, navigationHtml, navigate ] );
 
 	// Parse the navigation html into a list of links.
 	const links = useMemo< LinkField[] >( () => {
