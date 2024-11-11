@@ -1,0 +1,48 @@
+import { useCallback, useEffect, useState } from 'react';
+import { useSessionContext } from '@/ui/session/SessionProvider';
+
+// Store and get selected pages from local storage.
+export function useSelectedPages(): [
+	string[] | undefined,
+	( urls: string[] ) => void,
+] {
+	const { session } = useSessionContext();
+	const [ urls, setUrls ] = useState< string[] >();
+
+	// Load from local storage.
+	useEffect( () => {
+		getSelectedPages( session.id ).then( setUrls ).catch( console.error );
+	}, [ session.id ] );
+
+	// Save to local storage.
+	const setSelectedPages = useCallback(
+		( values: string[] ) => {
+			setUrls( values );
+			saveSelectedPages( session.id, values ).catch( console.error );
+		},
+		[ session.id ]
+	);
+
+	return [ urls, setSelectedPages ];
+}
+
+async function saveSelectedPages(
+	sessionId: string,
+	urls: string[]
+): Promise< void > {
+	const values: Record< string, string[] > = {};
+	values[ key( sessionId ) ] = urls;
+	return browser.storage.local.set( values );
+}
+
+async function getSelectedPages( sessionId: string ): Promise< string[] > {
+	const values = await browser.storage.local.get( key( sessionId ) );
+	if ( ! values || ! values[ key( sessionId ) ] ) {
+		return [];
+	}
+	return values[ key( sessionId ) ] as string[];
+}
+
+function key( sessionId: string ): string {
+	return `selected-pages-${ sessionId }`;
+}

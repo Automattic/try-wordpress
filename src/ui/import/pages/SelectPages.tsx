@@ -6,12 +6,12 @@ import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { saveSelectedPages } from '@/storage/selected-pages';
+import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 
 export function SelectPages() {
 	const { session } = useSessionContext();
 	const [ navigationHtml, setNavigationHtml ] = useState< string >();
-	const [ selected, setSelected ] = useState< string[] >( [] );
+	const [ selected, setSelected ] = useSelectedPages();
 	const navigate = useNavigate();
 
 	// Load navigation html from local storage.
@@ -35,11 +35,6 @@ export function SelectPages() {
 		return parseNavigationHtml( navigationHtml ?? '' );
 	}, [ navigationHtml ] );
 
-	// Save selected urls to local storage.
-	useEffect( () => {
-		void saveSelectedPages( session.id, selected );
-	}, [ session.id, selected ] );
-
 	const elements: ReactNode[] = [];
 	links.forEach( ( link ) => {
 		const url = link.parsedValue.url;
@@ -49,6 +44,9 @@ export function SelectPages() {
 				<input
 					type="checkbox"
 					onChange={ () => {
+						if ( ! selected ) {
+							return;
+						}
 						const isChecked = selected.some( ( u ) => u === url );
 						if ( isChecked ) {
 							// It was previously selected, now it becomes not selected.
