@@ -8,11 +8,14 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SelectPages } from '@/ui/import/pages/SelectPages';
 import { saveNavigationHtml } from '@/storage/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
+import { ImportPage } from '@/ui/import/pages/ImportPage';
 
 export enum Steps {
 	Init = 0,
 	SelectNavigation,
 	SelectPagesFromNavigation,
+	// eslint-disable-next-line @typescript-eslint/no-shadow
+	ImportPage,
 }
 
 export function ImportPagesFlow() {
@@ -64,6 +67,9 @@ export function ImportPagesFlow() {
 		case Steps.SelectPagesFromNavigation:
 			element = <SelectPages />;
 			break;
+		case Steps.ImportPage:
+			element = <ImportPage />;
+			break;
 		default:
 			throw Error( `unknown step: ${ step }` );
 	}
@@ -93,7 +99,7 @@ export function ImportPagesFlow() {
 						}
 					} }
 				>
-					Continue{ isLastStep( step ) ? ' (TODO)' : '' }
+					Continue{ isLastStep( step ) }
 				</button>
 			</Toolbar>
 			<ContentEventHandler
