@@ -5,7 +5,8 @@ import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { EventTypes } from '@/bus/Event';
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
-import { findDeepestChild } from '@/parser/util';
+import { LinkField } from '@/model/field/LinkField';
+import { parseNavigationHtml } from '@/parser/navigation';
 
 enum Steps {
 	Init = 0,
@@ -135,43 +136,20 @@ function SelectPages( props: { sessionId: string } ) {
 	}, [ sessionId, navigate ] );
 
 	// Parse the navigation html into a list of links.
-	const links = useMemo< { text: string; url: string }[] >( () => {
-		if ( ! navigationHtml ) {
-			return [];
-		}
-		const container = document.createElement( 'ul' );
-		container.innerHTML = navigationHtml.trim();
-		const liElements = container
-			.querySelectorAll( 'li' )
-			.values()
-			.toArray();
-		const anchors: HTMLAnchorElement[] = liElements
-			.map( ( element ) => {
-				const anchorElement = findDeepestChild( element.innerHTML );
-				if (
-					anchorElement &&
-					anchorElement.tagName.toLowerCase() === 'a'
-				) {
-					return anchorElement as HTMLAnchorElement;
-				}
-				return undefined;
-			} )
-			.filter( ( link ) => !! link );
-		return anchors.map( ( anchor ) => {
-			return {
-				text: anchor.text,
-				url: anchor.href,
-			};
-		} );
+	const links = useMemo< LinkField[] >( () => {
+		return parseNavigationHtml( navigationHtml ?? '' );
 	}, [ navigationHtml ] );
 
 	const elements: ReactNode[] = [];
 	links.forEach( ( link ) => {
 		elements.push(
-			<li key={ link.url } style={ { border: '1px solid black' } }>
+			<li
+				key={ link.parsedValue.url }
+				style={ { border: '1px solid black' } }
+			>
 				<input type="checkbox" />
-				<p>Title: { link.text }</p>
-				<p>URL: { link.url }</p>
+				<p>Title: { link.parsedValue.title }</p>
+				<p>URL: { link.parsedValue.url }</p>
 			</li>
 		);
 	} );
