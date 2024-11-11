@@ -99,7 +99,7 @@ export function ImportPagesFlow() {
 						}
 					} }
 				>
-					Continue{ isLastStep( step ) }
+					Continue
 				</button>
 			</Toolbar>
 			<ContentEventHandler
