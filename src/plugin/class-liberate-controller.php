@@ -86,7 +86,7 @@ class Liberate_Controller extends WP_REST_Controller {
 		);
 
 		// Bust guid -> postId cache when a post is deleted
-		add_filter(
+		add_action(
 			'delete_post_' . $this->storage_post_type,
 			function ( $post_id, $post ) {
 				$cache_group = 'try_wp';
