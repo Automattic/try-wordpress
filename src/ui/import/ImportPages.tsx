@@ -7,6 +7,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
+import { getNavigationHtml, saveNavigationHtml } from '@/storage/navigation';
 
 enum Steps {
 	Init = 0,
@@ -196,27 +197,4 @@ function isLastStep( step: number ) {
 		.filter( ( [ , val ] ) => typeof val === 'number' )
 		.map( ( [ , val ] ) => val ) as number[];
 	return step === Math.max( ...values );
-}
-
-async function saveNavigationHtml(
-	sessionId: string,
-	html: string
-): Promise< void > {
-	const values: Record< string, string > = {};
-	values[ navigationKey( sessionId ) ] = html;
-	return browser.storage.local.set( values );
-}
-
-async function getNavigationHtml( sessionId: string ): Promise< string > {
-	const values = await browser.storage.local.get(
-		navigationKey( sessionId )
-	);
-	if ( ! values || ! values[ navigationKey( sessionId ) ] ) {
-		return '';
-	}
-	return values[ navigationKey( sessionId ) ] as string;
-}
-
-function navigationKey( sessionId: string ): string {
-	return `navigation-${ sessionId }`;
 }
