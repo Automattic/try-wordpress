@@ -26,7 +26,7 @@ import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
 import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
-import { ImportPages } from '@/ui/import/ImportPages';
+import { ImportPages } from '@/ui/import/pages/ImportPages';
 
 export const Screens = {
 	home: () => '/start/home',
