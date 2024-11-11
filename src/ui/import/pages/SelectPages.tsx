@@ -36,6 +36,7 @@ export function SelectPages() {
 			<li key={ url } style={ { border: '1px solid black' } }>
 				<input
 					type="checkbox"
+					checked={ selected && selected.some( ( u ) => u === url ) }
 					onChange={ () => {
 						if ( ! selected ) {
 							return;
