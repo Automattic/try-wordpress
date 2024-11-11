@@ -23,20 +23,13 @@ class Liberate_Controller extends WP_REST_Controller {
 	}
 
 	public function valid_request_for_insert( $request ): bool|WP_Error {
-		global $wpdb;
-
 		$request_data = json_decode( $request->get_body(), true );
-		$guid         = $request_data['sourceUrl']; // required arg, will always be present at this point
+		$guid        = $request_data['sourceUrl']; // required arg, will always be present at this point
 
 		// Rule1: guid must be unique
-		$post = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT ID FROM {$wpdb->posts} WHERE guid = %s;",
-				$guid
-			)
-		);
+		$post_id = $this->get_post_id_by_guid( $guid );
 
-		if ( $post ) {
+		if ( $post_id ) {
 			return new WP_Error(
 				'rest_source_url_not_unique',
 				__( 'Source URL specified already exists', 'try_wordpress' ),
