@@ -21,6 +21,7 @@ export enum Steps {
 export function ImportPagesFlow() {
 	const params = useParams();
 	const step = parseInt( params.step!, 10 );
+	const pageIndex = parseInt( params.page! ?? 0, 10 );
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
 
@@ -92,6 +93,14 @@ export function ImportPagesFlow() {
 					onClick={ () => {
 						if ( isLastStep( step ) ) {
 							console.log( 'TODO' );
+						} else if ( step === Steps.ImportPage ) {
+							navigate(
+								Screens.importPages(
+									session.id,
+									step + 1,
+									pageIndex
+								)
+							);
 						} else {
 							navigate(
 								Screens.importPages( session.id, step + 1 )

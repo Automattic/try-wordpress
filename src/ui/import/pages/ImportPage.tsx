@@ -3,19 +3,25 @@ import { getSelectedPages } from '@/storage/selected-pages';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { Screens } from '@/ui/App';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export function ImportPage() {
+	const params = useParams();
+	const pageIndex = parseInt( params.page! ?? 0, 10 );
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
-	const [ urls, setUrls ] = useState< string[] >( [] );
+	const [ url, setUrl ] = useState< string >();
 
-	// Load selected pages from local storage.
+	// Load url of the page to import from local storage.
 	// If it's empty, redirect back to the previous step.
 	useEffect( () => {
 		async function loadSelectedPages() {
-			const selectedUrls = await getSelectedPages( session.id );
-			if ( selectedUrls.length === 0 ) {
+			const urls = await getSelectedPages( session.id );
+			if (
+				urls.length === 0 ||
+				pageIndex + 1 > urls.length ||
+				urls[ pageIndex ] === ''
+			) {
 				navigate(
 					Screens.importPages(
 						session.id,
@@ -24,10 +30,10 @@ export function ImportPage() {
 				);
 				return;
 			}
-			setUrls( selectedUrls );
+			setUrl( urls[ pageIndex ] );
 		}
 		loadSelectedPages().catch( console.error );
-	}, [ session.id, navigate ] );
+	}, [ session.id, pageIndex, navigate ] );
 
-	return <>{ urls }</>;
+	return <>{ url }</>;
 }

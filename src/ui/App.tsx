@@ -40,8 +40,13 @@ export const Screens = {
 	},
 	importWithBlueprint: ( sessionId: string, blueprintId: string ) =>
 		`/session/${ sessionId }/import-with-blueprint/${ blueprintId }`,
-	importPages: ( sessionId: string, step?: number ) =>
-		`/session/${ sessionId }/import-pages/${ step ?? 0 }`,
+	importPages: ( sessionId: string, step?: number, page?: number ) => {
+		let url = `/session/${ sessionId }/import-pages/${ step ?? 0 }`;
+		if ( page ) {
+			url = `${ url }/${ page }`;
+		}
+		return url;
+	},
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -92,7 +97,7 @@ function Routes( props: { initialScreen: string } ) {
 					element={ <ImportWithBlueprint /> }
 				/>
 				<Route
-					path="import-pages/:step"
+					path="import-pages/:step/:page?"
 					element={ <ImportPagesFlow /> }
 				/>
 			</Route>
