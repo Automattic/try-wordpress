@@ -24,7 +24,7 @@ class Liberate_Controller extends WP_REST_Controller {
 
 	public function valid_request_for_insert( $request ): bool|WP_Error {
 		$request_data = json_decode( $request->get_body(), true );
-		$guid        = $request_data['sourceUrl']; // required arg, will always be present at this point
+		$guid         = $request_data['sourceUrl']; // required arg, will always be present at this point
 
 		// Rule1: guid must be unique
 		$post_id = $this->get_post_id_by_guid( $guid );

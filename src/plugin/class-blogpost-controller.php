@@ -271,7 +271,7 @@ class Blogpost_Controller extends Liberate_Controller {
 		}
 
 		$post_id = $this->get_post_id_by_guid( $guid );
-		
+
 		if ( $post_id ) {
 			$post = get_post( $post_id, ARRAY_A );
 			return $this->prepare_item_for_response( $post, $request );
