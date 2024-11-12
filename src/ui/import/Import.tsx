@@ -39,6 +39,7 @@ export function Import() {
 				<>
 					<Toolbar>
 						<button
+							className="button-block"
 							onClick={ async () => {
 								navigate(
 									Screens.blueprints.edit(
@@ -51,6 +52,7 @@ export function Import() {
 							Edit blueprint
 						</button>
 						<button
+							className="button-block"
 							onClick={ async () => {
 								console.log( 'TODO' );
 							} }

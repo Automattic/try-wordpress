@@ -135,6 +135,7 @@ export function EditBlueprint() {
 				<>
 					<Toolbar>
 						<button
+							className="button-block"
 							disabled={ ! isValid }
 							onClick={ async () => {
 								void sendCommandToContent( {

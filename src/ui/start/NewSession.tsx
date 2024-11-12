@@ -36,7 +36,9 @@ export function NewSession() {
 				Start by navigating to the main page of your site, then click
 				Continue.
 			</p>
-			<button onClick={ handleContinue }>Continue</button>
+			<button className="button-block" onClick={ handleContinue }>
+				Continue
+			</button>
 		</>
 	);
 }
