@@ -9,6 +9,7 @@ class Liberate_Controller_Test extends TestCase {
 
 	private string $storage_post_type = 'lib_2';
 	private string $endpoint          = '/try-wp/v1/blog-posts';
+	private string $source_html;
 
 	private string $raw_title       = '<h1>This is the test title</h1>';
 	private string $parsed_title    = 'This is the test title';
@@ -25,6 +26,8 @@ class Liberate_Controller_Test extends TestCase {
 		parent::setUp();
 
 		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
+
+		$this->source_html = '<html><head><title></title></head><body>' . $this->raw_content . '</body></html>';
 
 		// we instantiate Promoter class so that the sample post we insert also has its transformed post saved in the database
 		new Transformer( $this->storage_post_type );
@@ -56,6 +59,7 @@ class Liberate_Controller_Test extends TestCase {
 		);
 		update_post_meta( $this->inserted_post_id, 'raw_date', $this->raw_date );
 		update_post_meta( $this->inserted_post_id, 'raw_title', $this->raw_title );
+		update_post_meta( $this->inserted_post_id, 'raw_content', $this->raw_content );
 
 		$this->transformed_post_id = get_post_meta( $this->inserted_post_id, '_dl_transformed', true );
 	}
@@ -175,7 +179,7 @@ class Liberate_Controller_Test extends TestCase {
 			'pinged'                => $this->parsed_date,
 			'post_modified'         => $this->parsed_date,
 			'post_modified_gmt'     => $this->parsed_date,
-			'post_content_filtered' => $this->raw_content,
+			'post_content_filtered' => $this->source_html,
 			'post_parent'           => 0,
 			'guid'                  => $source_url,
 			'menu_order'            => 0,
@@ -193,6 +197,7 @@ class Liberate_Controller_Test extends TestCase {
 				'id'            => $this->inserted_post_id,
 				'authorId'      => 23,
 				'sourceUrl'     => $source_url,
+				'sourceHtml'    => $this->source_html,
 				'rawTitle'      => $this->raw_title,
 				'parsedTitle'   => $this->parsed_title,
 				'rawDate'       => $this->raw_date,
@@ -217,6 +222,7 @@ class Liberate_Controller_Test extends TestCase {
 					'id'            => 777,
 					'authorId'      => 23,
 					'sourceUrl'     => $source_url,
+					'sourceHtml'    => $this->source_html,
 					'rawTitle'      => $this->raw_title,
 					'parsedTitle'   => $this->parsed_title,
 					'rawDate'       => $this->raw_date,
@@ -251,11 +257,12 @@ class Liberate_Controller_Test extends TestCase {
 			$prepared_post['post_content']
 		);
 		$this->assertEquals(
-			$this->raw_content,
+			$this->source_html,
 			$prepared_post['post_content_filtered']
 		);
 		$this->assertEquals( $this->parsed_date, $prepared_post['post_date'] );
 		$this->assertEquals( $this->raw_date, $prepared_post['meta']['raw_date'] );
+		$this->assertEquals( $this->raw_content, $prepared_post['meta']['raw_content'] );
 	}
 
 	public function testGetPostIdByGuidWithExistingPost() {

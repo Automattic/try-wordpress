@@ -10,6 +10,7 @@ class Page_Controller_Test extends TestCase {
 	private string $subject_type_plural = 'pages';
 	private string $endpoint;
 	private string $storage_post_type = 'lib_3';
+	private string $source_html;
 
 	private string $raw_title       = '<h1>This is the test title</h1>';
 	private string $parsed_title    = 'This is the test title';
@@ -22,7 +23,8 @@ class Page_Controller_Test extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->endpoint = '/' . $this->namespace . '/' . $this->subject_type_plural;
+		$this->endpoint    = '/' . $this->namespace . '/' . $this->subject_type_plural;
+		$this->source_html = '<html><head><title></title></head><body>' . $this->raw_content . '</body></html>';
 
 		$this->page_controller = new Page_Controller( $this->storage_post_type );
 	}
@@ -105,6 +107,7 @@ class Page_Controller_Test extends TestCase {
 			wp_json_encode(
 				array(
 					'sourceUrl'     => $source_url,
+					'sourceHtml'    => $this->source_html,
 					'rawTitle'      => $this->raw_title,
 					'parsedTitle'   => $this->parsed_title,
 					'rawContent'    => $this->raw_content,
@@ -129,6 +132,7 @@ class Page_Controller_Test extends TestCase {
 		$this->assertEquals( $this->raw_date, $response_data['rawDate'] );
 		$this->assertEquals( $this->parsed_date, $response_data['parsedDate'] );
 		$this->assertEquals( $source_url, $response_data['sourceUrl'] );
+		$this->assertEquals( $this->source_html, $response_data['sourceHtml'] );
 
 		$this->assertNotEmpty( $response_data['transformedId'] );
 

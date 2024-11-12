@@ -110,6 +110,15 @@ class Page_Controller extends Liberate_Controller {
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 				),
+				'sourceHtml'    => array(
+					'description' => __( 'Source HTML from where the page was liberated', 'try_wordpress' ),
+					'type'        => 'string',
+					'context'     => array( 'view', 'edit' ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 				'rawTitle'      => array(
 					'description' => __( 'Raw title of the page', 'try_wordpress' ),
 					'type'        => 'string',
