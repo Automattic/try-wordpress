@@ -84,7 +84,7 @@ export function BlogPostBlueprintEditor( props: Props ) {
 						);
 						return;
 					}
-					const selector = 'TODO';
+					const selector = ' ';
 					fieldWaitingForSelection.field.rawValue = (
 						event.event.payload as any
 					 ).content;
