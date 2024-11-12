@@ -7,6 +7,7 @@ export function PlaceholderPreview() {
 				display: 'flex',
 				justifyContent: 'center',
 				alignItems: 'center',
+				opacity: '0.3',
 			} }
 		>
 			<img
