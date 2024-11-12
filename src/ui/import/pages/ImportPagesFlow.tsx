@@ -5,6 +5,7 @@ import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavi
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
+import { Start } from '@/ui/import/pages/Start';
 
 /* eslint-disable @typescript-eslint/no-shadow */
 export enum Steps {
@@ -25,12 +26,7 @@ export function ImportPagesFlow() {
 	let element = <></>;
 	switch ( step ) {
 		case Steps.Init:
-			element = (
-				<p>
-					Navigate to a page that shows the navigation menu. Make sure
-					the menu is shown on screen before clicking Continue.
-				</p>
-			);
+			element = <Start />;
 			break;
 		case Steps.SelectNavigation:
 			element = <SelectNavigation />;
