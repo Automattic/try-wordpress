@@ -23,13 +23,6 @@ export function FieldEditor( props: {
 			<legend>{ label } </legend>
 			<div>
 				<button
-					className="outline"
-					disabled={ waitingForSelection || field.rawValue === '' }
-					onClick={ onClear }
-				>
-					Clear
-				</button>
-				<button
 					disabled={ waitingForSelection }
 					onClick={ () => onWaitingForSelection( field ) }
 				>
@@ -45,7 +38,19 @@ export function FieldEditor( props: {
 				) }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
-				<pre>selector:</pre>
+				<pre>
+					selector (
+					<button
+						className="minimal"
+						disabled={
+							waitingForSelection || field.rawValue === ''
+						}
+						onClick={ onClear }
+					>
+						Clear
+					</button>
+					) :
+				</pre>
 				{ blueprintField.selector }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>

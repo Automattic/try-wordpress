@@ -70,11 +70,18 @@ li {
 button {
 	background: var(--color-contrast);
 	color: var(--color-base);
-	border: none;
+	border: solid 1px var(--color-contrast);
+	margin: 1px;
 	cursor: pointer;
 }
 
 button.outline {
+	background: var(--color-base);
+	color: var(--color-contrast);
+	border: solid 1px var(--color-contrast);
+}
+
+button.minimal {
 	background: var(--color-base);
 	color: var(--color-contrast);
 	border: none;
