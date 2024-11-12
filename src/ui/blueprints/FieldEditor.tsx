@@ -37,11 +37,11 @@ export function FieldEditor( props: {
 					</button>
 				) }
 			</div>
-			<div style={ { paddingTop: '1rem' } }>
-				<pre>
-					selector (
+			<div>
+				<p>
+					Selector (
 					<button
-						className="minimal"
+						className="button-inline"
 						disabled={
 							waitingForSelection || field.rawValue === ''
 						}
@@ -49,16 +49,16 @@ export function FieldEditor( props: {
 					>
 						Clear
 					</button>
-					) :
-				</pre>
+					):
+				</p>
 				{ blueprintField.selector }
 			</div>
-			<div style={ { paddingTop: '1rem' } }>
+			<div>
 				Original:
 				<br />
 				<div className="string">{ field.rawValue }</div>
 			</div>
-			<div style={ { paddingTop: '1rem' } }>
+			<div>
 				Parsed:
 				<br />
 				<div className="string">{ field.parsedValue.toString() }</div>

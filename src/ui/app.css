@@ -10,7 +10,7 @@
 	--color-border: rgba(0, 0, 0, 0.075);
 	--color-gray-700: #757575;
 	--color-gray-600: #949494;
-	--color-gray-100: #fefefe;
+	--color-gray-100: #f9f9f9;
 
 	--spacing-sm: 0.5rem;
 	--spacing-md: 1rem;
@@ -19,11 +19,12 @@
 
 	--radius-sm: 2px;
 
+	--font-size-xs: 13px;
 	--font-size-sm: 16px;
 	--font-size-md: 20px;
 	--font-size-lg: 24px;
 
-	--col-width: 320px;
+	--col-width: 320px; /* By default the extension opens at 216px wide, setting it to 200px shows the preview peeking in, but is pretty small. */
 }
 
 * {
@@ -40,10 +41,20 @@ body {
 	padding: 0;
 }
 
+html,
+body,
+#app {
+	height: 100%;
+}
+
 body {
-	font: var(--font-size-sm)/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font: var(--font-size-xs)/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 	text-wrap: pretty;
 	color: var(--color-text);
+}
+
+pre {
+	margin: 0;
 }
 
 textarea,
@@ -53,6 +64,7 @@ button {
 	line-height: inherit;
 	border-radius: var(--radius-sm);
 	padding: var(--spacing-sm) var(--spacing-md);
+	word-break: break-word;
 }
 
 ul,
@@ -88,8 +100,19 @@ button.minimal {
 	border: none;
 }
 
+.button-block {
+	width: 100%;
+}
+
+.button-inline {
+	background: var(--color-base);
+	color: var(--color-contrast);
+	border: none;
+	padding: 0;
+}
+
 h1 {
-	font-size: var(--font-size-md);
+	font-size: var(--font-size-sm);
 }
 
 h2,
@@ -98,6 +121,16 @@ h4,
 h5,
 h6 {
 	font-size: var(--font-size-md);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top: var(--spacing-sm);
+	margin-bottom: var(--spacing-md);
 }
 
 .section {
@@ -112,13 +145,13 @@ h6 {
 /* Two-column layout */
 #app {
 	display: flex;
-	height: 100vh;
 }
 
 /* First column */
 #app > div:first-child {
 	border-right: 1px solid var(--color-border);
 	min-width: var(--col-width);
+	width: var(--col-width);
 	max-width: var(--col-width);
 }
 
@@ -130,7 +163,7 @@ h6 {
 
 /* Breadcrumbs */
 .breadcrumbs {
-	padding: var(--spacing-sm) var(--spacing-lg);
+	padding: var(--spacing-sm) var(--spacing-md);
 	border-bottom: 1px solid var(--color-border);
 	color: var(--color-gray-600);
 }
@@ -159,7 +192,9 @@ h6 {
 
 /* App Main */
 .app-main {
-	padding: var(--spacing-md) var(--spacing-lg);
+	padding: var(--spacing-md) var(--spacing-md);
+	max-height: 100%;
+	overflow: auto;
 }
 
 /* Preview */
@@ -211,7 +246,7 @@ h6 {
 
 .preview-tabs-tab.selected {
 	cursor: default;
-	box-shadow: 0 1px 0 0 var(--color-contrast), inset 0 -0.5px 0 0 var(--color-contrast);
+	box-shadow: inset 0 1.5px 0 0 var(--color-contrast);
 }
 
 .preview-tabs-tab > * {
@@ -229,11 +264,8 @@ h6 {
 /* Posts */
 .posts-toolbar {
 	display: flex;
-	margin-bottom: 1rem;
-}
-
-.posts-toolbar button {
-	margin-left: auto;
+	margin-bottom: var(--spacing-lg);
+	gap: var(--spacing-md);
 }
 
 /* Section pickers */
@@ -251,4 +283,5 @@ legend {
 .string {
 	background: var(--color-gray-100);
 	border-radius: var(--radius-sm);
+	word-break: break-word;
 }

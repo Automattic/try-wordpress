@@ -15,6 +15,7 @@ export function ViewSession() {
 			<ul>
 				<li>
 					<button
+						className="button-block"
 						onClick={ () =>
 							navigate(
 								Screens.blueprints.new(
@@ -24,11 +25,12 @@ export function ViewSession() {
 							)
 						}
 					>
-						Import Blog Posts
+						Import Posts
 					</button>
 				</li>
 				<li>
 					<button
+						className="button-block"
 						onClick={ () =>
 							navigate(
 								Screens.blueprints.new(

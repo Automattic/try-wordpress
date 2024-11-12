@@ -46,7 +46,7 @@ export function NewBlueprint() {
 	const navigateMessage = (
 		<>
 			Navigate to the page of a{ ' ' }
-			{ humanReadableSubjectType.get( subjectType ) }
+			{ humanReadableSubjectType.get( subjectType ) }.
 		</>
 	);
 
@@ -54,6 +54,7 @@ export function NewBlueprint() {
 		<>
 			<Toolbar>
 				<button
+					className="button-block"
 					onClick={ async () => {
 						const currentPage = ( await sendCommandToContent( {
 							type: CommandTypes.GetCurrentPageInfo,

@@ -8,13 +8,16 @@ export function Home() {
 	return (
 		<>
 			<h1 className="hidden">Try WordPress</h1>
-			<p className="section">
-				<strong>Try WordPress</strong>.<br />
-				Import a site and preview immediately.
+			<p>
+				<strong>Migrate from any site to WordPress.</strong>
 			</p>
+			<p>Import using this tool, and preview the result immediately.</p>
 			<SessionPicker sessions={ sessions } />
-			<button onClick={ () => navigate( Screens.newSession() ) }>
-				Start a new Import
+			<button
+				className="button-block"
+				onClick={ () => navigate( Screens.newSession() ) }
+			>
+				Start importing
 			</button>
 		</>
 	);
@@ -36,6 +39,7 @@ function SessionPicker( props: { sessions: Session[] } ) {
 					return (
 						<li key={ session.id }>
 							<button
+								className="button-block"
 								onClick={ () =>
 									navigate(
 										Screens.viewSession( session.id )
