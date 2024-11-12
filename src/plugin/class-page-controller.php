@@ -252,8 +252,8 @@ class Page_Controller extends Liberate_Controller {
 			);
 		}
 
-		if ( wp_trash_post( $request['id'] ) ) {
-			return new WP_REST_Response( true, 200 );
+		if ( wp_delete_post( $request['id'], true ) ) {
+			return new WP_REST_Response( true, 204 );
 		}
 
 		return new WP_Error( 'rest_could_not_delete', __( 'Could not delete', 'try_wordpress' ), array( 'status' => 500 ) );
