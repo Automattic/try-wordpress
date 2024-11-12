@@ -7,10 +7,11 @@ export function Home() {
 	const sessions = useLoaderData() as Session[];
 	return (
 		<>
-			<h1>
-				Welcome to <br />
-				Try WordPress
-			</h1>
+			<h1 className="hidden">Try WordPress</h1>
+			<p className="section">
+				<strong>Try WordPress</strong>.<br />
+				Import a site and preview immediately.
+			</p>
 			<SessionPicker sessions={ sessions } />
 			<button onClick={ () => navigate( Screens.newSession() ) }>
 				Start a new Import
@@ -29,8 +30,8 @@ function SessionPicker( props: { sessions: Session[] } ) {
 
 	return (
 		<>
-			<p>Continue a previous Import:</p>
-			<ul>
+			<p>Continue a previous session:</p>
+			<ul className="section">
 				{ sessions.map( ( session ) => {
 					return (
 						<li key={ session.id }>
