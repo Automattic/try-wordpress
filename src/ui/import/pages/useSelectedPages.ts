@@ -4,7 +4,7 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 // Store and get selected pages from local storage.
 export function useSelectedPages(): [
 	string[] | undefined,
-	( urls: string[] ) => void,
+	( urls: string[] | undefined ) => void,
 ] {
 	const { session } = useSessionContext();
 	const [ urls, setUrls ] = useState< string[] >();
@@ -16,9 +16,11 @@ export function useSelectedPages(): [
 
 	// Save to local storage.
 	const setSelectedPages = useCallback(
-		( values: string[] ) => {
+		( values: string[] | undefined ) => {
 			setUrls( values );
-			saveSelectedPages( session.id, values ).catch( console.error );
+			saveSelectedPages( session.id, values ?? [] ).catch(
+				console.error
+			);
 		},
 		[ session.id ]
 	);
