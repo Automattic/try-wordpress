@@ -19,16 +19,11 @@ export function FieldEditor( props: {
 	} = props;
 
 	return (
-		<div
-			style={ {
-				border: '1px solid black',
-				marginBottom: '1rem',
-				padding: '1rem',
-			} }
-		>
+		<fieldset>
+			<legend>{ label } </legend>
 			<div>
-				{ label }{ ' ' }
 				<button
+					className="outline"
 					disabled={ waitingForSelection || field.rawValue === '' }
 					onClick={ onClear }
 				>
@@ -41,13 +36,17 @@ export function FieldEditor( props: {
 					Select
 				</button>
 				{ ! waitingForSelection ? null : (
-					<button onClick={ () => onWaitingForSelection( false ) }>
+					<button
+						className="outline"
+						onClick={ () => onWaitingForSelection( false ) }
+					>
 						Cancel
 					</button>
 				) }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
-				selector: { blueprintField.selector }
+				<pre>selector:</pre>
+				{ blueprintField.selector }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
 				original: { field.rawValue }
@@ -55,6 +54,6 @@ export function FieldEditor( props: {
 			<div style={ { paddingTop: '1rem' } }>
 				parsed: { field.parsedValue.toString() }
 			</div>
-		</div>
+		</fieldset>
 	);
 }

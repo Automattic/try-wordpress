@@ -74,6 +74,12 @@ button {
 	cursor: pointer;
 }
 
+button.outline {
+	background: var(--color-base);
+	color: var(--color-contrast);
+	border: none;
+}
+
 h1 {
 	font-size: var(--font-size-md);
 }
