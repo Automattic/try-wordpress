@@ -10,14 +10,16 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { useNavigationHtml } from '@/ui/import/pages/useNavigationHtml';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
+import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export enum Steps {
 	Init = 0,
 	SelectNavigation,
 	SelectPagesFromNavigation,
-	// eslint-disable-next-line @typescript-eslint/no-shadow
 	ImportPage,
 }
+/* eslint-enable @typescript-eslint/no-shadow */
 
 export function ImportPagesFlow() {
 	const params = useParams();
@@ -58,15 +60,7 @@ export function ImportPagesFlow() {
 			);
 			break;
 		case Steps.SelectNavigation:
-			element = (
-				<>
-					<p>Click on one of the entries of the navigation menu.</p>
-					<p>
-						If the menu is not shown on screen, click the Back
-						button and then open the menu.
-					</p>
-				</>
-			);
+			element = <SelectNavigation />;
 			break;
 		case Steps.SelectPagesFromNavigation:
 			element = <SelectPages />;
