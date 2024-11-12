@@ -8,7 +8,10 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 import { useNavigationHtml } from '@/ui/import/pages/useNavigationHtml';
 
-export function SelectPages() {
+// Parse the navigation html into a list of links.
+// Display page selector for user to select pages to import.
+// Selected pages are stored in local storage.
+export function SelectPagesFromNavigation() {
 	const { session } = useSessionContext();
 	const [ navigationHtml ] = useNavigationHtml();
 	const [ selected, setSelected ] = useSelectedPages();

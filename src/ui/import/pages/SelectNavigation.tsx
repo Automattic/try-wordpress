@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { useEffect } from 'react';
 
+// Ask user where the navigation is and store its html in local storage.
 export function SelectNavigation() {
 	const { session } = useSessionContext();
 	const navigate = useNavigate();

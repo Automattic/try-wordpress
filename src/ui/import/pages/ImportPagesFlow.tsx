@@ -1,7 +1,7 @@
 import { Toolbar } from '@/ui/components/Toolbar';
 import { Screens } from '@/ui/App';
 import { useNavigate, useParams } from 'react-router-dom';
-import { SelectPages } from '@/ui/import/pages/SelectPages';
+import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
@@ -36,7 +36,7 @@ export function ImportPagesFlow() {
 			element = <SelectNavigation />;
 			break;
 		case Steps.SelectPagesFromNavigation:
-			element = <SelectPages />;
+			element = <SelectPagesFromNavigation />;
 			break;
 		case Steps.ImportPage:
 			element = <ImportPage />;

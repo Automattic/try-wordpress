@@ -5,6 +5,8 @@ import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 
+// Import a specific page.
+// The urls of pages to import come from local storage.
 export function ImportPage() {
 	const params = useParams();
 	const pageIndex = parseInt( params.page! ?? 0, 10 );
