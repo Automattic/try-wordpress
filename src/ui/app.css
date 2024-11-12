@@ -108,6 +108,12 @@ h6 {
 	max-width: var(--col-width);
 }
 
+/* Second column */
+#app > div:last-child {
+	flex: 1;
+	min-width: var(--col-width);
+}
+
 /* Breadcrumbs */
 .breadcrumbs {
 	padding: var(--spacing-sm) var(--spacing-lg);
