@@ -1,6 +1,7 @@
 <?php
 
 use DotOrg\TryWordPress\Liberate_Controller;
+use DotOrg\TryWordPress\Transformer;
 use PHPUnit\Framework\TestCase;
 
 class Liberate_Controller_Test extends TestCase {
@@ -26,7 +27,7 @@ class Liberate_Controller_Test extends TestCase {
 		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
 
 		// we instantiate Promoter class so that the sample post we insert also has its transformed post saved in the database
-		new \DotOrg\TryWordPress\Transformer( $this->storage_post_type );
+		new Transformer( $this->storage_post_type );
 
 		$this->inserted_post_id = wp_insert_post(
 			array(
@@ -66,6 +67,27 @@ class Liberate_Controller_Test extends TestCase {
 
 	public function testGetStoragePostType() {
 		$this->assertEquals( $this->storage_post_type, $this->liberate_controller->get_storage_post_type() );
+	}
+
+	public function testValidRequestForInsert() {
+		$source_url = 'https://example.org/default'; // non-unique, already inserted in setUp()
+
+		$request = new WP_REST_Request( 'POST', $this->endpoint );
+		$request->set_header( 'Content-Type', 'application/json' );
+		$request->set_body(
+			wp_json_encode(
+				array(
+					'sourceUrl' => $source_url,
+				)
+			)
+		);
+		$response = rest_do_request( $request );
+
+		$result = $this->liberate_controller->valid_request_for_insert( $request );
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertEquals( 'rest_source_url_not_unique', $result->get_error_code() );
+		$this->assertEquals( 409, $response->get_status() );
 	}
 
 	public function testValidRequestForUpdateRule1() {
@@ -234,5 +256,80 @@ class Liberate_Controller_Test extends TestCase {
 		);
 		$this->assertEquals( $this->parsed_date, $prepared_post['post_date'] );
 		$this->assertEquals( $this->raw_date, $prepared_post['meta']['raw_date'] );
+	}
+
+	public function testGetPostIdByGuidWithExistingPost() {
+		$guid = 'https://example.org/default'; // This GUID was set in setUp()
+
+		$post_id = $this->liberate_controller->get_post_id_by_guid( $guid );
+		$this->assertEquals( $this->inserted_post_id, $post_id );
+
+		// Test that it's cached
+		$cache_key = 'try_wp_cache_guid_' . md5( $guid );
+		$cached_id = wp_cache_get( $cache_key, 'try_wp' );
+		$this->assertEquals( $post_id, $cached_id );
+	}
+
+	public function testGetPostIdByGuidWithNonExistentPost() {
+		$guid = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
+		$post_id = $this->liberate_controller->get_post_id_by_guid( $guid );
+		$this->assertNull( $post_id );
+
+		// Verify no cache was set
+		$cache_key = 'try_wp_cache_guid_' . md5( $guid );
+		$cached_id = wp_cache_get( $cache_key, 'try_wp' );
+		$this->assertFalse( $cached_id );
+	}
+
+	public function testCacheIsInvalidatedWhenPostIsDeleted() {
+		$guid = 'https://example.org/' . __CLASS__ . '/' . __FUNCTION__;
+
+		// Create a new post
+		$new_post_id = wp_insert_post(
+			array(
+				'post_author'           => 23,
+				'post_date'             => $this->parsed_date,
+				'post_date_gmt'         => $this->parsed_date,
+				'post_content'          => $this->parsed_content,
+				'post_title'            => $this->parsed_title,
+				'post_excerpt'          => 'This is the test excerpt',
+				'post_status'           => 'draft',
+				'comment_status'        => 'closed',
+				'ping_status'           => 'closed',
+				'post_password'         => '',
+				'post_name'             => '',
+				'to_ping'               => '',
+				'pinged'                => $this->parsed_date,
+				'post_modified'         => $this->parsed_date,
+				'post_modified_gmt'     => $this->parsed_date,
+				'post_content_filtered' => $this->raw_content,
+				'post_parent'           => 0,
+				'guid'                  => $guid,
+				'menu_order'            => 0,
+				'post_type'             => $this->storage_post_type,
+				'comment_count'         => 0,
+			)
+		);
+
+		// First access to cache the post ID
+		$post_id = $this->liberate_controller->get_post_id_by_guid( $guid );
+		$this->assertEquals( $new_post_id, $post_id );
+
+		// Verify it's in cache
+		$cache_key = 'try_wp_cache_guid_' . md5( $guid );
+		$cached_id = wp_cache_get( $cache_key, 'try_wp' );
+		$this->assertEquals( $post_id, $cached_id );
+
+		// Delete the post - this should trigger our delete_post hook
+		wp_delete_post( $new_post_id, true );
+
+		// Verify cache was cleared by the hook
+		$cached_id = wp_cache_get( $cache_key, 'try_wp' );
+		$this->assertFalse( $cached_id );
+
+		// Later lookups should return null
+		$post_id = $this->liberate_controller->get_post_id_by_guid( $guid );
+		$this->assertNull( $post_id );
 	}
 }

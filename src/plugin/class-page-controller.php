@@ -195,6 +195,11 @@ class Page_Controller extends Liberate_Controller {
 	}
 
 	public function create_item( $request ): WP_REST_Response|WP_Error {
+		$valid_request_for_insert = $this->valid_request_for_insert( $request );
+		if ( is_wp_error( $valid_request_for_insert ) ) {
+			return $valid_request_for_insert;
+		}
+
 		$item      = $this->prepare_item_for_database( $request );
 		$item_meta = $item['meta'];
 		unset( $item['meta'] );
@@ -265,35 +270,10 @@ class Page_Controller extends Liberate_Controller {
 			);
 		}
 
-		// Use wp_cache_* for guid -> postId
-		$cache_group = 'try_wp';
-		$cache_key   = 'try_wp_cache_guid_' . md5( $guid );
-		$post_id     = wp_cache_get( $cache_key, $cache_group );
+		$post_id = $this->get_post_id_by_guid( $guid );
 
-		if ( false !== $post_id ) {
-			// Cache hit - get post using WordPress API
+		if ( $post_id ) {
 			$post = get_post( $post_id, ARRAY_A );
-			if ( $post ) {
-				return $this->prepare_item_for_response( $post, $request );
-			}
-			// If post not found despite cache hit, delete the cache
-			wp_cache_delete( $cache_key, $cache_group );
-		}
-
-		// Cache miss - query database
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$post = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT * FROM $wpdb->posts WHERE guid = %s",
-				$guid
-			),
-			ARRAY_A
-		);
-
-		if ( $post ) {
-			// Cache the post ID for future lookups
-			wp_cache_set( $cache_key, $post['ID'], $cache_group, YEAR_IN_SECONDS );
 			return $this->prepare_item_for_response( $post, $request );
 		}
 

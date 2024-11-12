@@ -22,8 +22,26 @@ class Liberate_Controller extends WP_REST_Controller {
 		return $this->storage_post_type;
 	}
 
+	public function valid_request_for_insert( $request ): bool|WP_Error {
+		$request_data = json_decode( $request->get_body(), true );
+		$guid         = $request_data['sourceUrl']; // required arg, will always be present at this point
+
+		// Rule1: guid must be unique
+		$post_id = $this->get_post_id_by_guid( $guid );
+
+		if ( $post_id ) {
+			return new WP_Error(
+				'rest_source_url_not_unique',
+				__( 'Source URL specified already exists', 'try_wordpress' ),
+				array( 'status' => 409 )
+			);
+		}
+
+		return true;
+	}
+
 	public function valid_request_for_update( $request ): bool|WP_Error {
-		// Rule1: if post id is specified, it must be a valid id
+		// Rule1: post id must be a valid id
 		$post_id = $request['id'];
 		$item    = get_post( $post_id );
 		if ( is_null( $item ) ) {
@@ -61,7 +79,7 @@ class Liberate_Controller extends WP_REST_Controller {
 		);
 
 		// Bust guid -> postId cache when a post is deleted
-		add_filter(
+		add_action(
 			'delete_post_' . $this->storage_post_type,
 			function ( $post_id, $post ) {
 				$cache_group = 'try_wp';
@@ -137,5 +155,40 @@ class Liberate_Controller extends WP_REST_Controller {
 		);
 
 		return $prepared_post;
+	}
+
+	public function get_post_id_by_guid( string $guid ): ?int {
+		// Use wp_cache_* for guid -> postId
+		$cache_group = 'try_wp';
+		$cache_key   = 'try_wp_cache_guid_' . md5( $guid );
+		$post_id     = wp_cache_get( $cache_key, $cache_group );
+
+		if ( false !== $post_id ) {
+			// Cache hit - get post using WordPress API
+			$post = get_post( $post_id );
+			if ( $post ) {
+				return (int) $post_id;
+			}
+			// If post not found despite cache hit, delete the cache
+			wp_cache_delete( $cache_key, $cache_group );
+		}
+
+		// Cache miss - query database
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$post_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE guid = %s",
+				$guid
+			)
+		);
+
+		if ( $post_id ) {
+			// Cache the post ID for future lookups
+			wp_cache_set( $cache_key, $post_id, $cache_group, YEAR_IN_SECONDS );
+			return (int) $post_id;
+		}
+
+		return null;
 	}
 }
