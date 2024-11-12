@@ -55,7 +55,7 @@ export function Import() {
 								console.log( 'TODO' );
 							} }
 						>
-							Continue (TODO)
+							Continue
 						</button>
 					</Toolbar>
 					We&apos;ll now import{ ' ' }

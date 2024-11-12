@@ -54,10 +54,14 @@ export function FieldEditor( props: {
 				{ blueprintField.selector }
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
-				original: { field.rawValue }
+				Original:
+				<br />
+				<div className="string">{ field.rawValue }</div>
 			</div>
 			<div style={ { paddingTop: '1rem' } }>
-				parsed: { field.parsedValue.toString() }
+				Parsed:
+				<br />
+				<div className="string">{ field.parsedValue.toString() }</div>
 			</div>
 		</fieldset>
 	);
