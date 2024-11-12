@@ -1,7 +1,6 @@
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 
 export function StartPageImport() {
 	const { session } = useSessionContext();
@@ -9,9 +8,9 @@ export function StartPageImport() {
 		<>
 			<Toolbar
 				canContinue={ true }
-				continueUrl={ Screens.importPages(
-					session.id,
-					Steps.SelectNavigation
+				backUrl={ Screens.viewSession( session.id ) }
+				continueUrl={ Screens.importPagesSelectNavigation(
+					session.id
 				) }
 			/>
 			<p>Navigate to a page that shows the navigation menu.</p>

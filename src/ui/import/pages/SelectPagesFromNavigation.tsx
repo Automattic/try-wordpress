@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
-import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';
 import { useSessionContext } from '@/ui/session/SessionProvider';
@@ -21,9 +20,7 @@ export function SelectPagesFromNavigation() {
 	// If the navigation html is empty, redirect back to the previous step.
 	useEffect( () => {
 		if ( navigationHtml === '' ) {
-			navigate(
-				Screens.importPages( session.id, Steps.SelectNavigation )
-			);
+			navigate( Screens.importPagesSelectNavigation( session.id ) );
 		}
 	}, [ session.id, navigationHtml, navigate ] );
 
@@ -66,16 +63,9 @@ export function SelectPagesFromNavigation() {
 	return (
 		<>
 			<Toolbar
-				backUrl={ Screens.importPages(
-					session.id,
-					Steps.SelectNavigation
-				) }
+				backUrl={ Screens.importPagesSelectNavigation( session.id ) }
 				canContinue={ selected && selected.length > 0 }
-				continueUrl={ Screens.importPages(
-					session.id,
-					Steps.ImportPage,
-					0
-				) }
+				continueUrl={ Screens.importPagesImportPage( session.id, 0 ) }
 			/>
 			<p>Select the pages you want to import.</p>
 			<p>

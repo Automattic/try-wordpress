@@ -32,7 +32,7 @@ export function ViewSession() {
 					<button
 						className="button-block"
 						onClick={ () =>
-							navigate( Screens.importPages( session.id ) )
+							navigate( Screens.importPagesStart( session.id ) )
 						}
 					>
 						Import Pages

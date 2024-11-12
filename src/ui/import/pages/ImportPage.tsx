@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { Screens } from '@/ui/App';
-import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 
@@ -16,7 +14,6 @@ export function ImportPage() {
 	const [ url, setUrl ] = useState< string >();
 
 	// Find the url of the page to import.
-	// Redirect back to the previous step if we can't find it.
 	useEffect( () => {
 		if ( ! selectedPages ) {
 			return;
@@ -26,13 +23,7 @@ export function ImportPage() {
 			! selectedPages[ pageIndex ] ||
 			selectedPages[ pageIndex ] === ''
 		) {
-			navigate(
-				Screens.importPages(
-					session.id,
-					Steps.SelectPagesFromNavigation
-				)
-			);
-			return;
+			throw Error( `page with index ${ pageIndex } not found` );
 		}
 		setUrl( selectedPages[ pageIndex ] );
 	}, [ session.id, pageIndex, navigate, selectedPages ] );

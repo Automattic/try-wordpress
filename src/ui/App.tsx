@@ -26,7 +26,10 @@ import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
 import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
-import { ImportPagesFlow } from '@/ui/import/pages/ImportPagesFlow';
+import { StartPageImport } from '@/ui/import/pages/StartPageImport';
+import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
+import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
+import { ImportPage } from '@/ui/import/pages/ImportPage';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -40,13 +43,14 @@ export const Screens = {
 	},
 	importWithBlueprint: ( sessionId: string, blueprintId: string ) =>
 		`/session/${ sessionId }/import-with-blueprint/${ blueprintId }`,
-	importPages: ( sessionId: string, step?: number, page?: number ) => {
-		let url = `/session/${ sessionId }/import-pages/${ step ?? 0 }`;
-		if ( page ) {
-			url = `${ url }/${ page }`;
-		}
-		return url;
-	},
+	importPagesStart: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/start`,
+	importPagesSelectNavigation: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/select-navigation`,
+	importPagesSelectPages: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/select-pages-from-navigation`,
+	importPagesImportPage: ( sessionId: string, page: number ) =>
+		`/session/${ sessionId }/import-pages/import-page/${ page }`,
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -96,10 +100,21 @@ function Routes( props: { initialScreen: string } ) {
 					path="import-with-blueprint/:blueprintId"
 					element={ <ImportWithBlueprint /> }
 				/>
-				<Route
-					path="import-pages/:step/:page?"
-					element={ <ImportPagesFlow /> }
-				/>
+				<Route path="import-pages">
+					<Route path="start" element={ <StartPageImport /> } />
+					<Route
+						path="select-navigation"
+						element={ <SelectNavigation /> }
+					/>
+					<Route
+						path="select-pages-from-navigation"
+						element={ <SelectPagesFromNavigation /> }
+					/>
+					<Route
+						path="import-page/:page"
+						element={ <ImportPage /> }
+					/>
+				</Route>
 			</Route>
 		</Route>
 	);

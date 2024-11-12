@@ -6,7 +6,6 @@ import { Screens } from '@/ui/App';
 import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate } from 'react-router-dom';
-import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { useEffect } from 'react';
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 
@@ -38,9 +37,7 @@ export function SelectNavigation() {
 
 	return (
 		<>
-			<Toolbar
-				backUrl={ Screens.importPages( session.id, Steps.Init ) }
-			/>
+			<Toolbar backUrl={ Screens.importPagesStart( session.id ) } />
 			<p>Click on one of the entries of the navigation menu.</p>
 			<p>
 				If the menu is not shown on screen, click the Back button and
@@ -55,12 +52,7 @@ export function SelectNavigation() {
 					} );
 					setNavigationHtml( ( event.event.payload as any ).content );
 					setSelectedPages( undefined );
-					navigate(
-						Screens.importPages(
-							session.id,
-							Steps.SelectPagesFromNavigation
-						)
-					);
+					navigate( Screens.importPagesSelectPages( session.id ) );
 				} }
 			/>
 		</>
