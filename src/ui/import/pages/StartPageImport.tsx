@@ -3,7 +3,7 @@ import { Screens } from '@/ui/App';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 
-export function Start() {
+export function StartPageImport() {
 	const { session } = useSessionContext();
 	return (
 		<>

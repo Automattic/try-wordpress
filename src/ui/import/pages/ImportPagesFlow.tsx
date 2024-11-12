@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
-import { Start } from '@/ui/import/pages/Start';
+import { StartPageImport } from '@/ui/import/pages/StartPageImport';
 
 /* eslint-disable @typescript-eslint/no-shadow */
 export enum Steps {
@@ -20,7 +20,7 @@ export function ImportPagesFlow() {
 	let element = <></>;
 	switch ( step ) {
 		case Steps.Init:
-			element = <Start />;
+			element = <StartPageImport />;
 			break;
 		case Steps.SelectNavigation:
 			element = <SelectNavigation />;
