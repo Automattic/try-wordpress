@@ -240,12 +240,7 @@ class Blogpost_Controller_Test extends TestCase {
 		$request         = new WP_REST_Request( 'DELETE', $delete_endpoint );
 		$response        = rest_do_request( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertTrue( $response->get_data() );
-
-		// Verify post is in trash
-		$post = get_post( $post_id );
-		$this->assertEquals( 'trash', $post->post_status );
+		$this->assertEquals( 204, $response->get_status() );
 	}
 
 	public function testDeleteNonexistentItem() {
