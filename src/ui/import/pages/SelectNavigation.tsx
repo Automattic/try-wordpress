@@ -8,8 +8,10 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate } from 'react-router-dom';
 import { Steps } from '@/ui/import/pages/ImportPagesFlow';
 import { useEffect } from 'react';
+import { Toolbar } from '@/ui/import/pages/Toolbar';
 
-// Ask user where the navigation is and store its html in local storage.
+// Ask the user where the navigation is and store its html in local storage.
+// Once we have the navigation html, proceed to next step.
 export function SelectNavigation() {
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
@@ -36,6 +38,9 @@ export function SelectNavigation() {
 
 	return (
 		<>
+			<Toolbar
+				backUrl={ Screens.importPages( session.id, Steps.Init ) }
+			/>
 			<p>Click on one of the entries of the navigation menu.</p>
 			<p>
 				If the menu is not shown on screen, click the Back button and

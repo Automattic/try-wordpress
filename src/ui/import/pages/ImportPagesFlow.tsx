@@ -1,8 +1,5 @@
-import { Toolbar } from '@/ui/components/Toolbar';
-import { Screens } from '@/ui/App';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
-import { useSessionContext } from '@/ui/session/SessionProvider';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 import { Start } from '@/ui/import/pages/Start';
@@ -19,9 +16,6 @@ export enum Steps {
 export function ImportPagesFlow() {
 	const params = useParams();
 	const step = parseInt( params.step!, 10 );
-	const pageIndex = parseInt( params.page! ?? 0, 10 );
-	const { session } = useSessionContext();
-	const navigate = useNavigate();
 
 	let element = <></>;
 	switch ( step ) {
@@ -41,50 +35,5 @@ export function ImportPagesFlow() {
 			throw Error( `unknown step: ${ step }` );
 	}
 
-	return (
-		<>
-			<Toolbar>
-				{ step === 0 ? undefined : (
-					<button
-						onClick={ () => {
-							navigate(
-								Screens.importPages( session.id, step - 1 )
-							);
-						} }
-					>
-						Back
-					</button>
-				) }
-				<button
-					onClick={ () => {
-						if ( isLastStep( step ) ) {
-							console.log( 'TODO' );
-						} else if ( step === Steps.ImportPage ) {
-							navigate(
-								Screens.importPages(
-									session.id,
-									step + 1,
-									pageIndex
-								)
-							);
-						} else {
-							navigate(
-								Screens.importPages( session.id, step + 1 )
-							);
-						}
-					} }
-				>
-					Continue
-				</button>
-			</Toolbar>
-			{ element }
-		</>
-	);
-}
-
-function isLastStep( step: number ) {
-	const values = Object.entries( Steps )
-		.filter( ( [ , val ] ) => typeof val === 'number' )
-		.map( ( [ , val ] ) => val ) as number[];
-	return step === Math.max( ...values );
+	return element;
 }

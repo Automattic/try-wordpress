@@ -2,8 +2,8 @@ import { Toolbar as BaseToolbar } from '@/ui/components/Toolbar';
 import { useNavigate } from 'react-router-dom';
 
 export function Toolbar( props: {
-	canContinue: boolean;
-	continueUrl: string;
+	canContinue?: boolean;
+	continueUrl?: string;
 	backUrl?: string;
 } ) {
 	const { canContinue, continueUrl, backUrl } = props;
@@ -14,12 +14,14 @@ export function Toolbar( props: {
 			{ ! backUrl ? undefined : (
 				<button onClick={ () => navigate( backUrl ) }>Back</button>
 			) }
-			<button
-				disabled={ ! canContinue }
-				onClick={ () => navigate( continueUrl ) }
-			>
-				Continue
-			</button>
+			{ ! continueUrl ? undefined : (
+				<button
+					disabled={ ! canContinue }
+					onClick={ () => navigate( continueUrl ) }
+				>
+					Continue
+				</button>
+			) }
 		</BaseToolbar>
 	);
 }
