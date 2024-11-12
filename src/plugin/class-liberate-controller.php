@@ -105,11 +105,12 @@ class Liberate_Controller extends WP_REST_Controller {
 			'id'            => $item['ID'],
 			'authorId'      => $item['post_author'] ?? '',
 			'sourceUrl'     => $item['guid'] ?? '',
+			'sourceHtml'    => $item['post_content_filtered'] ?? '',
 			'rawTitle'      => get_post_meta( $item['ID'], 'raw_title', true ),
 			'parsedTitle'   => $item['post_title'] ?? '',
 			'rawDate'       => get_post_meta( $item['ID'], 'raw_date', true ),
 			'parsedDate'    => $item['post_date'] ?? '',
-			'rawContent'    => $item['post_content_filtered'] ?? '',
+			'rawContent'    => get_post_meta( $item['ID'], 'raw_content', true ),
 			'parsedContent' => $item['post_content'] ?? '',
 			'transformedId' => get_post_meta( $item['ID'], '_dl_transformed', true ),
 		);
@@ -145,13 +146,14 @@ class Liberate_Controller extends WP_REST_Controller {
 		$prepared_post['post_date']             = $post_date ?? '';
 		$prepared_post['post_date_gmt']         = $post_date_gmt ?? '';
 		$prepared_post['post_content']          = $request_data['parsedContent'] ?? '';
-		$prepared_post['post_content_filtered'] = $request_data['rawContent'] ?? '';
+		$prepared_post['post_content_filtered'] = $request_data['sourceHtml'] ?? '';
 		$prepared_post['guid']                  = $request_data['sourceUrl'] ?? '';
 		$prepared_post['post_author']           = $request_data['authorId'] ?? '';
 
 		$prepared_post['meta'] = array(
-			'raw_title' => $request_data['rawTitle'] ?? '',
-			'raw_date'  => $request_data['rawDate'] ?? '',
+			'raw_title'   => $request_data['rawTitle'] ?? '',
+			'raw_date'    => $request_data['rawDate'] ?? '',
+			'raw_content' => $request_data['rawContent'] ?? '',
 		);
 
 		return $prepared_post;
