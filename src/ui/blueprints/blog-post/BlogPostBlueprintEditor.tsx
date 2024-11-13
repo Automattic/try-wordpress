@@ -1,4 +1,4 @@
-import { Field, FieldType } from '@/model/field/Field';
+import { Field } from '@/model/field/Field';
 import { BlogPost } from '@/model/subject/BlogPost';
 import { BlogPostBlueprint } from '@/model/blueprint/BlogPost';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
@@ -18,24 +18,20 @@ export function BlogPostBlueprintEditor( props: Props ) {
 		{ name: 'content', field: subject.content },
 	];
 
-	const blueprintFields: {
+	const selectors: {
 		name: string;
-		type: FieldType;
 		selector?: string;
 	}[] = [
 		{
 			name: 'title',
-			type: blueprint.fields.title.type,
 			selector: blueprint.fields.title.selector,
 		},
 		{
 			name: 'date',
-			type: blueprint.fields.date.type,
 			selector: blueprint.fields.date.selector,
 		},
 		{
 			name: 'content',
-			type: blueprint.fields.content.type,
 			selector: blueprint.fields.content.selector,
 		},
 	];
@@ -43,7 +39,7 @@ export function BlogPostBlueprintEditor( props: Props ) {
 	return (
 		<FieldsEditor
 			fields={ subjectFields }
-			blueprintFields={ blueprintFields }
+			selectors={ selectors }
 			onFieldChanged={ onFieldChanged }
 		/>
 	);

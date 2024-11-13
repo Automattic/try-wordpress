@@ -1,4 +1,4 @@
-import { Field, FieldType } from '@/model/field/Field';
+import { Field } from '@/model/field/Field';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 import { PageBlueprint } from '@/model/blueprint/Page';
 import { Page } from '@/model/subject/Page';
@@ -17,19 +17,16 @@ export function PageBlueprintEditor( props: Props ) {
 		{ name: 'content', field: subject.content },
 	];
 
-	const blueprintFields: {
+	const selectors: {
 		name: string;
-		type: FieldType;
 		selector?: string;
 	}[] = [
 		{
 			name: 'title',
-			type: blueprint.fields.title.type,
 			selector: blueprint.fields.title.selector,
 		},
 		{
 			name: 'content',
-			type: blueprint.fields.content.type,
 			selector: blueprint.fields.content.selector,
 		},
 	];
@@ -37,7 +34,7 @@ export function PageBlueprintEditor( props: Props ) {
 	return (
 		<FieldsEditor
 			fields={ subjectFields }
-			blueprintFields={ blueprintFields }
+			selectors={ selectors }
 			onFieldChanged={ onFieldChanged }
 		/>
 	);

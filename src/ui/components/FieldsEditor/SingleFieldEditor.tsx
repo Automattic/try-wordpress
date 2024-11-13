@@ -1,18 +1,17 @@
-import { BlueprintField } from '@/model/blueprint/Blueprint';
 import { Field } from '@/model/field/Field';
 
 export function SingleFieldEditor( props: {
 	field: Field;
-	blueprintField: BlueprintField;
 	label: string;
+	selector?: string;
 	waitingForSelection: boolean;
 	onWaitingForSelection: ( field: Field | false ) => void;
 	onClear: () => void;
 } ) {
 	const {
-		blueprintField,
 		field,
 		label,
+		selector,
 		waitingForSelection,
 		onWaitingForSelection,
 		onClear,
@@ -51,7 +50,7 @@ export function SingleFieldEditor( props: {
 					</button>
 					):
 				</p>
-				{ blueprintField.selector }
+				{ selector }
 			</div>
 			<div>
 				Original:

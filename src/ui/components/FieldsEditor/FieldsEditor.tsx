@@ -1,19 +1,16 @@
-import { Field, FieldType } from '@/model/field/Field';
+import { Field } from '@/model/field/Field';
 import { ReactElement, useEffect, useMemo, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEditor';
 import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
 import { EventTypes } from '@/bus/Event';
 
-type BlueprintFieldsMap = Map< string, { type: FieldType; selector?: string } >;
-
 // Displays a list of fields that can be "edited" by selecting the content of each field,
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
 	fields: { name: string; field: Field }[];
-	blueprintFields: {
+	selectors: {
 		name: string;
-		type: FieldType;
 		selector?: string;
 	}[];
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
@@ -24,13 +21,15 @@ export function FieldsEditor( props: {
 	>( false );
 
 	// Transform the blueprint fields into a map queryable by field name.
-	const blueprintFields = useMemo< BlueprintFieldsMap >( () => {
-		const map = new Map< string, { type: FieldType; selector?: string } >();
-		props.blueprintFields.forEach( ( f ) => {
-			map.set( f.name, { type: f.type, selector: f.selector } );
+	const blueprintFields = useMemo<
+		Map< string, string | undefined >
+	>( () => {
+		const map = new Map< string, string >();
+		props.selectors.forEach( ( f ) => {
+			map.set( f.name, f.selector ?? '' );
 		} );
 		return map;
-	}, [ props.blueprintFields ] );
+	}, [ props.selectors ] );
 
 	// Enable or disable highlighting according to whether a field is waiting for selection.
 	useEffect( () => {
@@ -48,17 +47,17 @@ export function FieldsEditor( props: {
 			!! fieldWaitingForSelection &&
 			fieldWaitingForSelection.name === name;
 
-		const blueprintField = blueprintFields.get( name );
-		if ( ! blueprintField ) {
-			throw new Error( `blueprint field ${ name } not found` );
+		const selector = blueprintFields.get( name );
+		if ( selector === undefined ) {
+			throw new Error( `selector for field ${ name } not found` );
 		}
 
 		elements.push(
 			<SingleFieldEditor
 				key={ name }
-				label={ name }
-				blueprintField={ blueprintField }
 				field={ field }
+				label={ name }
+				selector={ selector }
 				waitingForSelection={ isWaitingForSelection }
 				onWaitingForSelection={ async ( f: Field | false ) => {
 					if ( f === false ) {
