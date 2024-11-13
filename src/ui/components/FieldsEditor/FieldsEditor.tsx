@@ -1,0 +1,109 @@
+import { Field, FieldType } from '@/model/field/Field';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
+import { CommandTypes, sendCommandToContent } from '@/bus/Command';
+import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEditor';
+import { ContentEventHandler } from '@/ui/blueprints/ContentEventHandler';
+import { EventTypes } from '@/bus/Event';
+
+type BlueprintFieldsMap = Map< string, { type: FieldType; selector?: string } >;
+
+// Displays a list of fields that can be "edited" by selecting the content of each field,
+// which is done by clicking on elements in the source site.
+export function FieldsEditor( props: {
+	fields: { name: string; field: Field }[];
+	blueprintFields: {
+		name: string;
+		type: FieldType;
+		selector?: string;
+	}[];
+	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
+} ) {
+	const { fields, onFieldChanged } = props;
+	const [ fieldWaitingForSelection, setFieldWaitingForSelection ] = useState<
+		false | { field: Field; name: string }
+	>( false );
+
+	// Transform the blueprint fields into a map queryable by field name.
+	const blueprintFields = useMemo< BlueprintFieldsMap >( () => {
+		const map = new Map< string, { type: FieldType; selector?: string } >();
+		props.blueprintFields.forEach( ( f ) => {
+			map.set( f.name, { type: f.type, selector: f.selector } );
+		} );
+		return map;
+	}, [ props.blueprintFields ] );
+
+	// Enable or disable highlighting according to whether a field is waiting for selection.
+	useEffect( () => {
+		const type =
+			fieldWaitingForSelection === false
+				? CommandTypes.SwitchToDefaultMode
+				: CommandTypes.SwitchToGenericSelectionMode;
+		void sendCommandToContent( { type, payload: {} } );
+	}, [ fieldWaitingForSelection ] );
+
+	// Render each field.
+	const elements: ReactElement[] = [];
+	for ( const { name, field } of fields ) {
+		const isWaitingForSelection =
+			!! fieldWaitingForSelection &&
+			fieldWaitingForSelection.name === name;
+
+		const blueprintField = blueprintFields.get( name );
+		if ( ! blueprintField ) {
+			throw new Error( `blueprint field ${ name } not found` );
+		}
+
+		elements.push(
+			<SingleFieldEditor
+				key={ name }
+				label={ name }
+				blueprintField={ blueprintField }
+				field={ field }
+				waitingForSelection={ isWaitingForSelection }
+				onWaitingForSelection={ async ( f: Field | false ) => {
+					if ( f === false ) {
+						setFieldWaitingForSelection( false );
+					} else {
+						setFieldWaitingForSelection( { field: f, name } );
+					}
+				} }
+				onClear={ async () => {
+					field.rawValue = '';
+					field.parsedValue = '';
+					onFieldChanged( name, field, '' );
+				} }
+			/>
+		);
+	}
+
+	return (
+		<>
+			{ /*
+			Handle a click on an element in the content script,
+			according to which field is currently waiting for selection.
+			*/ }
+			<ContentEventHandler
+				eventType={ EventTypes.OnElementClick }
+				onEvent={ async ( event ) => {
+					if ( fieldWaitingForSelection === false ) {
+						console.warn(
+							'Received an OnElementClick event but no field is waiting for selection'
+						);
+						return;
+					}
+					const selector = ' ';
+					fieldWaitingForSelection.field.rawValue = (
+						event.event.payload as any
+					 ).content;
+					onFieldChanged(
+						fieldWaitingForSelection.name,
+						fieldWaitingForSelection.field,
+						selector
+					);
+					setFieldWaitingForSelection( false );
+				} }
+			/>
+			{ elements }
+		</>
+	);
+}
