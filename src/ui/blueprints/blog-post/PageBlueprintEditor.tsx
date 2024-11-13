@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react';
-import { FieldEditor } from '@/ui/blueprints/FieldEditor';
+import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEditor';
 import { Field } from '@/model/field/Field';
 import { Page } from '@/model/subject/Page';
 import { PageBlueprint } from '@/model/blueprint/Page';
@@ -47,7 +47,7 @@ export function PageBlueprintEditor( props: Props ) {
 		}
 
 		elements.push(
-			<FieldEditor
+			<SingleFieldEditor
 				key={ name }
 				label={ name }
 				blueprintField={ blueprintField }

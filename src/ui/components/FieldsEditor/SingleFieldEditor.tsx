@@ -1,7 +1,7 @@
 import { BlueprintField } from '@/model/blueprint/Blueprint';
 import { Field } from '@/model/field/Field';
 
-export function FieldEditor( props: {
+export function SingleFieldEditor( props: {
 	field: Field;
 	blueprintField: BlueprintField;
 	label: string;
