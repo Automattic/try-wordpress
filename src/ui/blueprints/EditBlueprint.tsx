@@ -41,10 +41,10 @@ export function EditBlueprint() {
 		}
 	}, [ blueprint ] );
 
-	// Make playground navigate to the transformed post of the subject.
+	// Make playground navigate to the transformed post of the page.
 	useEffect( () => {
 		if ( subject && !! playgroundClient ) {
-			void playgroundClient.goTo( '/?p=' + subject.transformedId );
+			void playgroundClient.goTo( subject.previewUrl );
 		}
 	}, [ subject, playgroundClient ] );
 
