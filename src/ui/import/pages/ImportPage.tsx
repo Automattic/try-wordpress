@@ -9,6 +9,8 @@ import { Page } from '@/model/subject/Page';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { parsePageField } from '@/parser/page';
+import { Toolbar } from '@/ui/import/pages/Toolbar';
+import { Screens } from '@/ui/App';
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
@@ -77,16 +79,35 @@ export function ImportPage() {
 		},
 	];
 
+	const backUrl =
+		pageIndex === 0
+			? Screens.importPagesSelectPages( session.id )
+			: Screens.importPagesImportPage( session.id, pageIndex - 1 );
+	const continueUrl =
+		pageIndex === selectedPages!.length - 1
+			? Screens.importPagesDone( session.id )
+			: Screens.importPagesImportPage( session.id, pageIndex + 1 );
+
 	return (
-		<FieldsEditor
-			fields={ fields }
-			selectors={ selectors }
-			onFieldChanged={ async ( name: string, field: Field ) => {
-				// @ts-ignore
-				page[ name ] = parsePageField( name, field );
-				const p = await apiClient!.pages.update( page!.id, page );
-				setPage( p );
-			} }
-		/>
+		<>
+			<Toolbar
+				backUrl={ backUrl }
+				continueUrl={ continueUrl }
+				canContinue={ true }
+			/>
+			<p>
+				Importing page { pageIndex + 1 } of { selectedPages!.length }
+			</p>
+			<FieldsEditor
+				fields={ fields }
+				selectors={ selectors }
+				onFieldChanged={ async ( name: string, field: Field ) => {
+					// @ts-ignore
+					page[ name ] = parsePageField( name, field );
+					const p = await apiClient!.pages.update( page!.id, page );
+					setPage( p );
+				} }
+			/>
+		</>
 	);
 }
