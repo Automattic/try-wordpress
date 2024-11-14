@@ -8,8 +8,8 @@ import { parseBlogPostField } from '@/parser/blog-post';
 import { parsePageField } from '@/parser/page';
 import { SubjectType } from '@/model/subject/Subject';
 import { Screens } from '@/ui/App';
-import { useBlueprint } from '@/ui/blueprints/useBlueprint';
-import { useSubjectForBlueprint } from '@/ui/blueprints/useSubjectForBlueprint';
+import { useBlueprint } from '@/ui/hooks/useBlueprint';
+import { useSubject } from '@/ui/hooks/useSubject';
 import { Field } from '@/model/field/Field';
 import { BlogPost, validateBlogPost } from '@/model/subject/BlogPost';
 import {
@@ -24,7 +24,7 @@ export function EditBlueprint() {
 	const params = useParams();
 	const blueprintId = params.blueprintId!;
 	const [ blueprint, setBlueprint ] = useBlueprint( blueprintId );
-	const [ subject, setSubject ] = useSubjectForBlueprint( blueprint );
+	const [ subject, setSubject ] = useSubject( blueprint );
 	const { session, apiClient, playgroundClient } = useSessionContext();
 	const navigate = useNavigate();
 

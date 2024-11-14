@@ -8,7 +8,7 @@ import { newPage } from '@/model/subject/Page';
 // Create or load a Subject to preview the Blueprint's results.
 // If a Subject already exists for the Blueprint's source URL, we use that Subject,
 // otherwise we create a new one.
-export function useSubjectForBlueprint(
+export function useSubject(
 	blueprint: Blueprint | undefined
 ): [ Subject | undefined, ( subject: Subject ) => void ] {
 	const [ subject, setSubject ] = useState< Subject >();
