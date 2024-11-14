@@ -24,7 +24,10 @@ export function EditBlueprint() {
 	const params = useParams();
 	const blueprintId = params.blueprintId!;
 	const [ blueprint, setBlueprint ] = useBlueprint( blueprintId );
-	const [ subject, setSubject ] = useSubject( blueprint );
+	const [ subject, setSubject ] = useSubject(
+		blueprint?.type,
+		blueprint?.sourceUrl
+	);
 	const { session, apiClient, playgroundClient } = useSessionContext();
 	const navigate = useNavigate();
 
