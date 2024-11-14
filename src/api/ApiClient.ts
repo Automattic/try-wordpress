@@ -61,10 +61,10 @@ export class ApiClient {
 			url,
 			method: 'GET',
 		} );
-		if ( response.httpStatusCode !== 200 ) {
-			if ( response.httpStatusCode === 404 ) {
-				return null;
-			}
+		if ( response.httpStatusCode === 404 ) {
+			return null;
+		}
+		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
 			logFailedRequest( { url, params, response } );
 			throw Error( response.json.message );
 		}
