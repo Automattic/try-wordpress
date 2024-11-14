@@ -8,17 +8,18 @@ import { Field } from '@/model/field/Field';
 import { Page } from '@/model/subject/Page';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
+import { parsePageField } from '@/parser/page';
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
 export function ImportPage() {
 	const params = useParams();
 	const pageIndex = parseInt( params.page! ?? 0, 10 );
-	const { session, playgroundClient } = useSessionContext();
+	const { session, playgroundClient, apiClient } = useSessionContext();
 	const navigate = useNavigate();
 	const [ selectedPages ] = useSelectedPages();
 	const [ sourceUrl, setSourceUrl ] = useState< string >();
-	const [ subject ] = useSubject( SubjectType.Page, sourceUrl );
+	const [ subject, setPage ] = useSubject( SubjectType.Page, sourceUrl );
 	const page: Page | undefined = subject ? ( subject as Page ) : undefined;
 
 	// Find the url of the page to import.
@@ -80,7 +81,12 @@ export function ImportPage() {
 		<FieldsEditor
 			fields={ fields }
 			selectors={ selectors }
-			onFieldChanged={ () => {} }
+			onFieldChanged={ async ( name: string, field: Field ) => {
+				// @ts-ignore
+				page[ name ] = parsePageField( name, field );
+				const p = await apiClient!.pages.update( page!.id, page );
+				setPage( p );
+			} }
 		/>
 	);
 }
