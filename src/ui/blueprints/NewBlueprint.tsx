@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Screens } from '@/ui/App';
-import { Toolbar } from '@/ui/blueprints/Toolbar';
+import { Toolbar } from '@/ui/components/Toolbar';
 import { humanReadableSubjectType, SubjectType } from '@/model/subject/Subject';
 import { newBlogPostBlueprint } from '@/model/blueprint/BlogPost';
 import { newPageBlueprint } from '@/model/blueprint/Page';
@@ -32,7 +32,9 @@ export function NewBlueprint() {
 				await apiClient!.blueprints.findBySubjectType( subjectType );
 			const blueprint = blueprints.length > 0 ? blueprints[ 0 ] : null;
 			if ( blueprint && blueprint.valid ) {
-				navigate( Screens.import( session.id, blueprint.id ) );
+				navigate(
+					Screens.importWithBlueprint( session.id, blueprint.id )
+				);
 				return;
 			} else if ( blueprint ) {
 				navigate( Screens.blueprints.edit( session.id, blueprint.id ) );

@@ -3,8 +3,9 @@ import { Namespace } from '@/bus/Bus';
 export enum CommandTypes {
 	GetCurrentPageInfo = 'GetCurrentPageInfo',
 	NavigateTo = 'NavigateTo',
-	EnableHighlighting = 'EnableHighlighting',
-	DisableHighlighting = 'DisableHighlighting',
+	SwitchToDefaultMode = 'SwitchToDefaultMode',
+	SwitchToGenericSelectionMode = 'SwitchToGenericSelectionMode',
+	SwitchToNavigationSelectionMode = 'SwitchToNavigationSelectionMode',
 }
 
 export interface CurrentPageInfo {

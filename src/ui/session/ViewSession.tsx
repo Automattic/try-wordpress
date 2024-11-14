@@ -32,12 +32,7 @@ export function ViewSession() {
 					<button
 						className="button-block"
 						onClick={ () =>
-							navigate(
-								Screens.blueprints.new(
-									session.id,
-									SubjectType.Page
-								)
-							)
+							navigate( Screens.importPagesStart( session.id ) )
 						}
 					>
 						Import Pages

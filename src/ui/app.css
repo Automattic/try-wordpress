@@ -262,7 +262,7 @@ h6 {
 }
 
 /* Posts */
-.posts-toolbar {
+.toolbar {
 	display: flex;
 	margin-bottom: var(--spacing-lg);
 	gap: var(--spacing-md);

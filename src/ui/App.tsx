@@ -21,11 +21,15 @@ import { PlaceholderPreview } from '@/ui/preview/PlaceholderPreview';
 import { SessionContext, SessionProvider } from '@/ui/session/SessionProvider';
 import { ApiClient } from '@/api/ApiClient';
 import { PlaygroundClient } from '@wp-playground/client';
-import { Breadcrumbs } from '@/ui/breadcrumbs/Breadcrumbs';
+import { Breadcrumbs } from '@/ui/components/Breadcrumbs';
 import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
 import { SubjectType } from '@/model/subject/Subject';
-import { Import } from '@/ui/import/Import';
+import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
+import { StartPageImport } from '@/ui/import/pages/StartPageImport';
+import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
+import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
+import { ImportPage } from '@/ui/import/pages/ImportPage';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -37,8 +41,16 @@ export const Screens = {
 		edit: ( sessionId: string, postId: string ) =>
 			`/session/${ sessionId }/blueprints/${ postId }`,
 	},
-	import: ( sessionId: string, blueprintId: string ) =>
-		`/session/${ sessionId }/import/${ blueprintId }`,
+	importWithBlueprint: ( sessionId: string, blueprintId: string ) =>
+		`/session/${ sessionId }/import-with-blueprint/${ blueprintId }`,
+	importPagesStart: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/start`,
+	importPagesSelectNavigation: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/select-navigation`,
+	importPagesSelectPages: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/select-pages-from-navigation`,
+	importPagesImportPage: ( sessionId: string, page: number ) =>
+		`/session/${ sessionId }/import-pages/import-page/${ page }`,
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -84,7 +96,25 @@ function Routes( props: { initialScreen: string } ) {
 					/>
 					<Route path=":blueprintId" element={ <EditBlueprint /> } />
 				</Route>
-				<Route path="import/:blueprintId" element={ <Import /> } />
+				<Route
+					path="import-with-blueprint/:blueprintId"
+					element={ <ImportWithBlueprint /> }
+				/>
+				<Route path="import-pages">
+					<Route path="start" element={ <StartPageImport /> } />
+					<Route
+						path="select-navigation"
+						element={ <SelectNavigation /> }
+					/>
+					<Route
+						path="select-pages-from-navigation"
+						element={ <SelectPagesFromNavigation /> }
+					/>
+					<Route
+						path="import-page/:page"
+						element={ <ImportPage /> }
+					/>
+				</Route>
 			</Route>
 		</Route>
 	);
