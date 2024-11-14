@@ -30,6 +30,7 @@ import { StartPageImport } from '@/ui/import/pages/StartPageImport';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
+import { Done } from '@/ui/import/pages/Done';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -51,6 +52,8 @@ export const Screens = {
 		`/session/${ sessionId }/import-pages/select-pages-from-navigation`,
 	importPagesImportPage: ( sessionId: string, page: number ) =>
 		`/session/${ sessionId }/import-pages/import-page/${ page }`,
+	importPagesDone: ( sessionId: string ) =>
+		`/session/${ sessionId }/import-pages/done`,
 };
 
 const homeLoader: LoaderFunction = async () => {
@@ -114,6 +117,7 @@ function Routes( props: { initialScreen: string } ) {
 						path="import-page/:page"
 						element={ <ImportPage /> }
 					/>
+					<Route path="done" element={ <Done /> } />
 				</Route>
 			</Route>
 		</Route>

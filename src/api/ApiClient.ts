@@ -1,4 +1,4 @@
-import { PlaygroundClient } from '@wp-playground/client';
+import { PHPResponse, PlaygroundClient } from '@wp-playground/client';
 import { BlogPostsApi } from '@/api/BlogPosts';
 import { PagesApi } from '@/api/Pages';
 import { SettingsApi } from '@/api/Settings';
@@ -61,19 +61,20 @@ export class ApiClient {
 			url,
 			method: 'GET',
 		} );
-		if ( response.httpStatusCode !== 200 ) {
-			console.error( response, params, response.json );
-			if ( response.httpStatusCode === 404 ) {
-				return null;
-			}
+		if ( response.httpStatusCode === 404 ) {
+			return null;
+		}
+		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
+			logFailedRequest( { url, params, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
 	}
 
 	async post( route: string, body: object ): Promise< object > {
+		const url = `/index.php?rest_route=/try-wp/v1${ route }`;
 		const response = await this.playgroundClient.request( {
-			url: `/index.php?rest_route=/try-wp/v1${ route }`,
+			url,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -82,9 +83,23 @@ export class ApiClient {
 		} );
 
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			console.error( response, body, response.json );
+			logFailedRequest( { url, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
+	}
+}
+
+function logFailedRequest( args: {
+	url: string;
+	params?: Record< string, string >;
+	response: PHPResponse;
+} ) {
+	const { url, params, response } = args;
+	const message = `Request to ${ url } failed [${ response.httpStatusCode }]`;
+	if ( params ) {
+		console.error( message, params, response.json, response );
+	} else {
+		console.error( message, response.json, response );
 	}
 }
