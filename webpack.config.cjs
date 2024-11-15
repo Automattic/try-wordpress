@@ -7,11 +7,19 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
+	const mode = env.mode || 'development';
+
+	// Validate environment
+	if ( mode === 'production' && ! env.target ) {
+		throw new Error(
+			'Production builds require a target. Use --env target=firefox or --env target=chrome'
+		);
+	}
+
+	// Set target(s)
 	if ( env.target ) {
 		targets = [ env.target ];
 	}
-
-	const mode = env.mode || 'development';
 
 	let modules = [];
 	for ( const target of targets ) {
@@ -60,6 +68,12 @@ function extensionModules( mode, target ) {
 		browser: 'webextension-polyfill',
 	} );
 
+	const envPlugin = new webpack.DefinePlugin( {
+		'process.env.OPFS_ENABLED': JSON.stringify(
+			mode === 'production' ? 'true' : 'false'
+		),
+	} );
+
 	return [
 		// Extension background script.
 		{
@@ -86,6 +100,7 @@ function extensionModules( mode, target ) {
 					],
 				} ),
 				webExtensionPolyfillPlugin,
+				envPlugin,
 			],
 		},
 		// Extension content script.
@@ -99,7 +114,7 @@ function extensionModules( mode, target ) {
 				path: targetPath,
 				filename: path.join( 'content.js' ),
 			},
-			plugins: [ webExtensionPolyfillPlugin ],
+			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
 		},
 		// The app.
 		{
@@ -150,6 +165,7 @@ function extensionModules( mode, target ) {
 					},
 				} ),
 				webExtensionPolyfillPlugin,
+				envPlugin,
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
 			),
