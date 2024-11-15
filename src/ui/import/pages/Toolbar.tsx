@@ -1,5 +1,6 @@
 import { Toolbar as BaseToolbar } from '@/ui/components/Toolbar';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@wordpress/components';
 
 export function Toolbar( props: {
 	canContinue?: boolean;
@@ -12,15 +13,21 @@ export function Toolbar( props: {
 	return (
 		<BaseToolbar>
 			{ ! backUrl ? undefined : (
-				<button onClick={ () => navigate( backUrl ) }>Back</button>
+				<Button
+					variant="secondary"
+					onClick={ () => navigate( backUrl ) }
+				>
+					Back
+				</Button>
 			) }
 			{ ! continueUrl ? undefined : (
-				<button
+				<Button
+					variant="primary"
 					disabled={ ! canContinue }
 					onClick={ () => navigate( continueUrl ) }
 				>
 					Continue
-				</button>
+				</Button>
 			) }
 		</BaseToolbar>
 	);

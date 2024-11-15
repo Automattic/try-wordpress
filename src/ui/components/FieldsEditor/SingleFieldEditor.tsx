@@ -1,4 +1,5 @@
 import { Field } from '@/model/field/Field';
+import { Button, ButtonGroup } from '@wordpress/components';
 
 export function SingleFieldEditor( props: {
 	field: Field;
@@ -21,25 +22,29 @@ export function SingleFieldEditor( props: {
 		<fieldset>
 			<legend>{ label } </legend>
 			<div>
-				<button
-					disabled={ waitingForSelection }
-					onClick={ () => onWaitingForSelection( field ) }
-				>
-					Select
-				</button>
-				{ ! waitingForSelection ? null : (
-					<button
-						className="outline"
-						onClick={ () => onWaitingForSelection( false ) }
+				<ButtonGroup>
+					<Button
+						variant="primary"
+						disabled={ waitingForSelection }
+						onClick={ () => onWaitingForSelection( field ) }
 					>
-						Cancel
-					</button>
-				) }
+						Select
+					</Button>
+					{ ! waitingForSelection ? null : (
+						<Button
+							variant="secondary"
+							onClick={ () => onWaitingForSelection( false ) }
+						>
+							Cancel
+						</Button>
+					) }
+				</ButtonGroup>
 			</div>
 			<div>
 				<p>
 					Selector (
-					<button
+					<Button
+						variant="link"
 						className="button-inline"
 						disabled={
 							waitingForSelection || field.rawValue === ''
@@ -47,7 +52,7 @@ export function SingleFieldEditor( props: {
 						onClick={ onClear }
 					>
 						Clear
-					</button>
+					</Button>
 					):
 				</p>
 				{ selector }

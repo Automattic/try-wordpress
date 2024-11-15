@@ -12,6 +12,7 @@ import {
 	CurrentPageInfo,
 	sendCommandToContent,
 } from '@/bus/Command';
+import { Button } from '@wordpress/components';
 
 export function NewBlueprint() {
 	const params = useParams();
@@ -27,6 +28,7 @@ export function NewBlueprint() {
 		if ( ! apiClient ) {
 			return;
 		}
+
 		async function maybeRedirect() {
 			const blueprints =
 				await apiClient!.blueprints.findBySubjectType( subjectType );
@@ -42,6 +44,7 @@ export function NewBlueprint() {
 			}
 			setIsLoading( false );
 		}
+
 		maybeRedirect().catch( console.error );
 	}, [ session.id, apiClient, subjectType, navigate ] );
 
@@ -55,7 +58,8 @@ export function NewBlueprint() {
 	const element = (
 		<>
 			<Toolbar>
-				<button
+				<Button
+					variant="primary"
 					className="button-block"
 					onClick={ async () => {
 						const currentPage = ( await sendCommandToContent( {
@@ -85,7 +89,7 @@ export function NewBlueprint() {
 					} }
 				>
 					Continue
-				</button>
+				</Button>
 			</Toolbar>
 			<div>{ navigateMessage }</div>
 		</>

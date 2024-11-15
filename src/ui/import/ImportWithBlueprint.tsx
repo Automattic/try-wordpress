@@ -5,6 +5,7 @@ import { Toolbar } from '@/ui/components/Toolbar';
 import { ReactElement, useEffect } from 'react';
 import { Screens } from '@/ui/App';
 import { useSessionContext } from '@/ui/session/SessionProvider';
+import { Button } from '@wordpress/components';
 
 export function ImportWithBlueprint() {
 	const params = useParams();
@@ -38,7 +39,8 @@ export function ImportWithBlueprint() {
 			) : (
 				<>
 					<Toolbar>
-						<button
+						<Button
+							variant="secondary"
 							className="button-block"
 							onClick={ async () => {
 								navigate(
@@ -50,15 +52,16 @@ export function ImportWithBlueprint() {
 							} }
 						>
 							Edit blueprint
-						</button>
-						<button
+						</Button>
+						<Button
+							variant="primary"
 							className="button-block"
 							onClick={ async () => {
 								console.log( 'TODO' );
 							} }
 						>
 							Continue
-						</button>
+						</Button>
 					</Toolbar>
 					We&apos;ll now import{ ' ' }
 					{ humanReadableSubjectType.get( blueprint.type ) }s using

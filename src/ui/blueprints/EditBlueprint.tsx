@@ -19,6 +19,7 @@ import {
 import { Page, validatePage } from '@/model/subject/Page';
 import { PageBlueprint, validatePageBlueprint } from '@/model/blueprint/Page';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
+import { Button } from '@wordpress/components';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -137,7 +138,8 @@ export function EditBlueprint() {
 			) : (
 				<>
 					<Toolbar>
-						<button
+						<Button
+							variant="primary"
 							className="button-block"
 							disabled={ ! isValid }
 							onClick={ async () => {
@@ -154,7 +156,7 @@ export function EditBlueprint() {
 							} }
 						>
 							Continue
-						</button>
+						</Button>
 					</Toolbar>
 					{ editor }
 				</>

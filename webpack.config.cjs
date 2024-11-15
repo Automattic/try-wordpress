@@ -3,6 +3,7 @@ const CopyPlugin = require( 'copy-webpack-plugin' );
 const { TsconfigPathsPlugin } = require( 'tsconfig-paths-webpack-plugin' );
 const FileManagerPlugin = require( 'filemanager-webpack-plugin' );
 const webpack = require( 'webpack' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -38,6 +39,19 @@ function extensionModules( mode, target ) {
 			{
 				test: /\.tsx?$/,
 				use: 'ts-loader',
+			},
+			{
+				// If you enable `experiments.css` or `experiments.futureDefaults`, please uncomment line below
+				// type: "javascript/auto",
+				test: /\.(sa|sc|c)ss$/i,
+				use: [
+					mode === 'production'
+						? MiniCssExtractPlugin.loader
+						: 'style-loader',
+					'css-loader',
+					'postcss-loader',
+					'sass-loader',
+				],
 			},
 		],
 	};
@@ -105,10 +119,6 @@ function extensionModules( mode, target ) {
 							from: './src/ui/app.html',
 							to: path.join( targetPath, 'app.html' ),
 						},
-						{
-							from: './src/ui/app.css',
-							to: path.join( targetPath, 'app.css' ),
-						},
 					],
 				} ),
 				new CopyPlugin( {
@@ -140,7 +150,9 @@ function extensionModules( mode, target ) {
 					},
 				} ),
 				webExtensionPolyfillPlugin,
-			],
+			].concat(
+				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
+			),
 		},
 	];
 }
