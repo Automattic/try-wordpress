@@ -2,6 +2,7 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
 import { SubjectType } from '@/model/subject/Subject';
+import { Button } from '@wordpress/components';
 
 export function ViewSession() {
 	const { session } = useSessionContext();
@@ -14,7 +15,8 @@ export function ViewSession() {
 			</h1>
 			<ul>
 				<li>
-					<button
+					<Button
+						variant="primary"
 						className="button-block"
 						onClick={ () =>
 							navigate(
@@ -26,17 +28,18 @@ export function ViewSession() {
 						}
 					>
 						Import Posts
-					</button>
+					</Button>
 				</li>
 				<li>
-					<button
+					<Button
+						variant="primary"
 						className="button-block"
 						onClick={ () =>
 							navigate( Screens.importPagesStart( session.id ) )
 						}
 					>
 						Import Pages
-					</button>
+					</Button>
 				</li>
 			</ul>
 		</>

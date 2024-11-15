@@ -6,6 +6,7 @@ import {
 	CurrentPageInfo,
 	sendCommandToContent,
 } from '@/bus/Command';
+import { Button } from '@wordpress/components';
 
 export function NewSession() {
 	const navigate = useNavigate();
@@ -36,9 +37,13 @@ export function NewSession() {
 				Start by navigating to the main page of your site, then click
 				Continue.
 			</p>
-			<button className="button-block" onClick={ handleContinue }>
+			<Button
+				variant="primary"
+				className="button-block"
+				onClick={ handleContinue }
+			>
 				Continue
-			</button>
+			</Button>
 		</>
 	);
 }

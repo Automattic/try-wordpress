@@ -1,6 +1,7 @@
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
 import { Session } from '@/storage/session';
+import { Button } from '@wordpress/components';
 
 export function Home() {
 	const navigate = useNavigate();
@@ -13,12 +14,13 @@ export function Home() {
 			</p>
 			<p>Import using this tool, and preview the result immediately.</p>
 			<SessionPicker sessions={ sessions } />
-			<button
+			<Button
+				variant="primary"
 				className="button-block"
 				onClick={ () => navigate( Screens.newSession() ) }
 			>
 				Start importing
-			</button>
+			</Button>
 		</>
 	);
 }
@@ -38,7 +40,8 @@ function SessionPicker( props: { sessions: Session[] } ) {
 				{ sessions.map( ( session ) => {
 					return (
 						<li key={ session.id }>
-							<button
+							<Button
+								variant="primary"
 								className="button-block"
 								onClick={ () =>
 									navigate(
@@ -47,7 +50,7 @@ function SessionPicker( props: { sessions: Session[] } ) {
 								}
 							>
 								{ session.title } ({ session.url })
-							</button>
+							</Button>
 						</li>
 					);
 				} ) }
