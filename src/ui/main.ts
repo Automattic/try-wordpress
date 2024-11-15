@@ -1,6 +1,7 @@
 import { createApp } from '@/ui/App';
 import { Container, createRoot } from 'react-dom/client';
 import { initParser } from '@/parser/init';
+import './app.css';
 
 initParser();
 
