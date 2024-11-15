@@ -55,7 +55,7 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
-	const opfsEnabled = true;
+	const opfsEnabled = process.env.OPFS_ENABLED === 'true';
 
 	// TODO: We should pass the initialSyncDirection property.
 	// @ts-ignore

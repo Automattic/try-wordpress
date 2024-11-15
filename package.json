@@ -1,10 +1,15 @@
 {
 	"type": "module",
 	"scripts": {
-		"build": "echo 'Please choose a target: build:firefox or build:chrome, or build:production'",
-		"build:production": "rm -rf build/production && webpack --env mode=production",
+		"build": "echo 'Please choose a target: build:firefox or build:chrome, or build:production:firefox or build:production:chrome'",
+		"build:production": "echo 'Please choose a target: build:production:firefox or build:production:chrome'",
+		"build:production:firefox": "rm -rf build/production/firefox && webpack --env mode=production --env target=firefox",
+		"build:production:chrome": "rm -rf build/production/chrome && webpack --env mode=production --env target=chrome",
 		"build:firefox": "rm -rf build/firefox && webpack --env target=firefox",
 		"build:chrome": "rm -rf build/chrome && webpack --env target=chrome",
+		"preview:production": "echo 'Please choose a target: preview:production:firefox or preview:production:chrome'",
+		"preview:production:firefox": "npm run build:production:firefox && web-ext -s build/production/firefox run --target firefox-desktop",
+		"preview:production:chrome": "npm run build:production:chrome && web-ext -s build/production/chrome run --target chromium --arg='--disable-search-engine-choice-screen'",
 		"watch": "echo 'Please choose a target: watch:firefox or watch:chrome'",
 		"watch:firefox": "webpack --watch --env target=firefox",
 		"watch:chrome": "webpack --watch --env target=chrome",
