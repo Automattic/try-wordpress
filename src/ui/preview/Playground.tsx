@@ -68,7 +68,12 @@ async function initPlayground(
 	};
 
 	const isWPInstalled = await isWordPressInstalled( slug );
-	console.info( 'isWordPressInstalled', isWPInstalled );
+	console.info(
+		'opfsEnabled:',
+		opfsEnabled,
+		'isWordPressInstalled:',
+		isWPInstalled
+	);
 
 	const options: StartPlaygroundOptions = {
 		iframe,
