@@ -3,6 +3,8 @@ _Try WordPress_ allows you to **import your existing website to WordPress** in a
 
 It's a browser extension that comes with a local WordPress site, and makes it easy for you to import content from your existing site. At the end, you can export your site into it's permanent location, at a WordPress host of your choosing.
 
+![screenshot.png](screenshot.png)
+
 ## Installing
 > This project is in _alpha_ state, not all features are fully implemented and it is likely not very useful yet.
 
