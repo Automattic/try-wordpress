@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { Screens } from '@/ui/App';
 import { Toolbar } from '@/ui/components/Toolbar';
 import { humanReadableSubjectType, SubjectType } from '@/model/subject/Subject';

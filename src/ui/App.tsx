@@ -10,7 +10,7 @@ import {
 	useLocation,
 	useNavigate,
 	useRouteLoaderData,
-} from 'react-router-dom';
+} from 'react-router';
 import { StrictMode, useEffect, useState } from 'react';
 import { NewSession } from '@/ui/start/NewSession';
 import { ViewSession } from '@/ui/session/ViewSession';

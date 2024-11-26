@@ -1,5 +1,5 @@
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Screens } from '@/ui/App';
 import { SubjectType } from '@/model/subject/Subject';
 import { Button } from '@wordpress/components';

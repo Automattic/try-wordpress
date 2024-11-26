@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Screens } from '@/ui/App';
 import { LinkField } from '@/model/field/LinkField';
 import { parseNavigationHtml } from '@/parser/navigation';

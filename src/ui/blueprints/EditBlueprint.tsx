@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { ReactElement, useEffect } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { BlogPostBlueprintEditor } from '@/ui/blueprints/blog-post/BlogPostBlueprintEditor';

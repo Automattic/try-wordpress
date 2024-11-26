@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Screens } from '@/ui/App';
 import { createSession } from '@/storage/session';
 import {
