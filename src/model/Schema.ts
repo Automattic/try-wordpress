@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import Schema from '@schema/schema.json';
-import { SubjectType } from '@/model/subject/Subject';
+import { SubjectType } from '@/model/Subject';
 
 export function getSchema( subjectType: SubjectType ) {
 	if ( ! Schema.hasOwnProperty( subjectType ) ) {
