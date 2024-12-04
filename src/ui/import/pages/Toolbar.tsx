@@ -1,5 +1,5 @@
 import { Toolbar as BaseToolbar } from '@/ui/components/Toolbar';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@wordpress/components';
 
 export function Toolbar( props: {

@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate } from 'react-router';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
 import { Session } from '@/storage/session';
 import { Button } from '@wordpress/components';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 import { useSubject } from '@/ui/hooks/useSubject';
 import { SubjectType } from '@/model/subject/Subject';
