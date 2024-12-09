@@ -201,8 +201,14 @@ class EmitMergedJsonPlugin {
 							);
 
 							// Write to WordPress plugin directory
-							await fs.promises.mkdir(path.dirname(WP_PLUGIN_SCHEMA_PATH), { recursive: true });
-							await fs.promises.writeFile(WP_PLUGIN_SCHEMA_PATH, mergedContent);
+							await fs.promises.mkdir(
+								path.dirname( WP_PLUGIN_SCHEMA_PATH ),
+								{ recursive: true }
+							);
+							await fs.promises.writeFile(
+								WP_PLUGIN_SCHEMA_PATH,
+								mergedContent
+							);
 
 							// Also emit for webpack output
 							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
