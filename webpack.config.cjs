@@ -154,7 +154,7 @@ function extensionModules( mode, target ) {
 						},
 					],
 				} ),
-				new EmitMergedJsonPlugin(),
+				new EmitSubjectsSchemaPlugin(),
 				// Create plugin.zip.
 				new FileManagerPlugin( {
 					events: {
@@ -181,14 +181,14 @@ function extensionModules( mode, target ) {
 }
 
 // Create a custom plugin to emit the merged JSON file
-class EmitMergedJsonPlugin {
+class EmitSubjectsSchemaPlugin {
 	apply( compiler ) {
 		compiler.hooks.compilation.tap(
-			'EmitMergedJsonPlugin',
+			'EmitSubjectsSchemaPlugin',
 			( compilation ) => {
 				compilation.hooks.processAssets.tapAsync(
 					{
-						name: 'EmitMergedJsonPlugin',
+						name: 'EmitSubjectsSchemaPlugin',
 						stage: webpack.Compilation
 							.PROCESS_ASSETS_STAGE_ADDITIONAL,
 					},
