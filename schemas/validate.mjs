@@ -5,9 +5,9 @@ import * as path from 'node:path';
 import { readFileSync } from 'node:fs';
 import { Ajv } from 'ajv';
 
-const cwd = path.dirname( fileURLToPath( import.meta.url ) );
-const jsonSchemaPath = path.join( cwd, 'json-schema.json' );
-const dataPath = path.join( cwd, 'data.json' );
+const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
+const jsonSchemaPath = path.join( schemaDir, 'json-schema.json' );
+const dataPath = path.join( schemaDir, 'data.json' );
 
 const schema = JSON.parse( readFileSync( jsonSchemaPath ).toString() );
 const data = JSON.parse( readFileSync( dataPath ).toString() );
