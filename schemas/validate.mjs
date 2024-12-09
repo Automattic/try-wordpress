@@ -6,10 +6,10 @@ import { readFileSync } from 'node:fs';
 import { Ajv } from 'ajv';
 
 const cwd = path.dirname( fileURLToPath( import.meta.url ) );
-const schemaPath = path.join( cwd, 'schema.json' );
+const jsonSchemaPath = path.join( cwd, 'json-schema.json' );
 const dataPath = path.join( cwd, 'data.json' );
 
-const schema = JSON.parse( readFileSync( schemaPath ).toString() );
+const schema = JSON.parse( readFileSync( jsonSchemaPath ).toString() );
 const data = JSON.parse( readFileSync( dataPath ).toString() );
 
 const ajv = new Ajv( {
