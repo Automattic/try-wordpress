@@ -1,23 +1,39 @@
 #!/usr/bin/env node
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Ajv } from 'ajv';
 import { fileURLToPath } from 'url';
 import * as path from 'node:path';
 import { readFileSync } from 'node:fs';
-import { Ajv } from 'ajv';
+import * as fs from 'node:fs';
 
 const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
-const jsonSchemaPath = path.join( schemaDir, 'json-schema.json' );
-const dataPath = path.join( schemaDir, 'data.json' );
+const jsonSchemaName = 'json-schema.json';
+const jsonSchema = JSON.parse(
+	readFileSync( path.join( schemaDir, jsonSchemaName ) ).toString()
+);
 
-const schema = JSON.parse( readFileSync( jsonSchemaPath ).toString() );
-const data = JSON.parse( readFileSync( dataPath ).toString() );
+const schemas = fs
+	.readdirSync( schemaDir )
+	.filter( ( file ) => file.endsWith( '.json' ) && file !== jsonSchemaName )
+	.map( ( file ) =>
+		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
+	);
 
-const ajv = new Ajv( {
+const validate = new Ajv( {
 	allErrors: true,
 	verbose: true,
-} );
-const validate = ajv.compile( schema );
-if ( ! validate( data ) ) {
-	console.error( validate.errors );
+} ).compile( jsonSchema );
+
+const errors = [];
+for ( const schema of schemas ) {
+	if ( ! validate( schema ) ) {
+		errors.push( ...validate.errors );
+	}
+}
+
+if ( errors.length > 0 ) {
+	console.error( errors );
+	console.error( '\x1b[31m%s\x1b[0m', 'Schema validation failed' );
 	process.exit( 1 );
 }
