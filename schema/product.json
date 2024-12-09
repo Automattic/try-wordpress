@@ -1,0 +1,10 @@
+{
+    "product": {
+        "title": "Product",
+        "fields": {
+            "title": "ProductString",
+            "description": "String",
+            "price": "currency"
+        }
+    }
+} 
