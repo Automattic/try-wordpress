@@ -2,7 +2,7 @@
     "type": "object",
     "properties": {
         "title": { "type": "string" },
-        "slug": { "type": "string" }
+        "slug": { "type": "string", "pattern": "^[a-z]+(?:_+[a-z]+)*$" }
     },
     "required": [ "title", "slug" ],
     "additionalProperties": false
