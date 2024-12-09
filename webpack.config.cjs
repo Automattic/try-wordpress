@@ -11,72 +11,6 @@ const SCHEMA_SRC_DIR = './schema';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
 const SCHEMA_OUTPUT_PATHS = [ './dist/config', './public/config' ];
 
-// Create a custom plugin to emit the merged JSON file
-class EmitMergedJsonPlugin {
-	apply( compiler ) {
-		compiler.hooks.emit.tapAsync(
-			'EmitMergedJsonPlugin',
-			async ( compilation, callback ) => {
-				try {
-					const mergedContent = JSON.stringify(
-						await mergeJsonFiles( SCHEMA_SRC_DIR ),
-						null,
-						2
-					);
-
-					// Write to all output paths
-					await Promise.all(
-						SCHEMA_OUTPUT_PATHS.map( async ( outputPath ) => {
-							await fs.promises.mkdir( outputPath, {
-								recursive: true,
-							} );
-							await fs.promises.writeFile(
-								path.join( outputPath, SCHEMA_OUTPUT_NAME ),
-								mergedContent
-							);
-						} )
-					);
-
-					// Also emit for webpack output
-					compilation.assets[ SCHEMA_OUTPUT_NAME ] = {
-						source: () => mergedContent,
-						size: () => mergedContent.length,
-					};
-				} catch ( error ) {
-					console.error( 'Error during JSON merge:', error );
-				}
-				callback();
-			}
-		);
-	}
-}
-
-async function mergeJsonFiles( sourceDir ) {
-	const mergedData = {};
-
-	const files = ( await fs.promises.readdir( sourceDir ) ).filter( ( file ) =>
-		file.endsWith( '.json' )
-	);
-
-	await Promise.all(
-		files.map( async ( file ) => {
-			const filePath = path.join( sourceDir, file );
-			try {
-				const fileContent = await fs.promises.readFile(
-					filePath,
-					'utf8'
-				);
-				const jsonData = JSON.parse( fileContent );
-				Object.assign( mergedData, jsonData );
-			} catch ( error ) {
-				console.error( `Error parsing JSON file ${ file }:`, error );
-			}
-		} )
-	);
-
-	return mergedData;
-}
-
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
 	const mode = env.mode || 'development';
@@ -244,4 +178,70 @@ function extensionModules( mode, target ) {
 			),
 		},
 	];
+}
+
+// Create a custom plugin to emit the merged JSON file
+class EmitMergedJsonPlugin {
+	apply( compiler ) {
+		compiler.hooks.emit.tapAsync(
+			'EmitMergedJsonPlugin',
+			async ( compilation, callback ) => {
+				try {
+					const mergedContent = JSON.stringify(
+						await mergeJsonFiles( SCHEMA_SRC_DIR ),
+						null,
+						2
+					);
+
+					// Write to all output paths
+					await Promise.all(
+						SCHEMA_OUTPUT_PATHS.map( async ( outputPath ) => {
+							await fs.promises.mkdir( outputPath, {
+								recursive: true,
+							} );
+							await fs.promises.writeFile(
+								path.join( outputPath, SCHEMA_OUTPUT_NAME ),
+								mergedContent
+							);
+						} )
+					);
+
+					// Also emit for webpack output
+					compilation.assets[ SCHEMA_OUTPUT_NAME ] = {
+						source: () => mergedContent,
+						size: () => mergedContent.length,
+					};
+				} catch ( error ) {
+					console.error( 'Error during JSON merge:', error );
+				}
+				callback();
+			}
+		);
+	}
+}
+
+async function mergeJsonFiles( sourceDir ) {
+	const mergedData = {};
+
+	const files = ( await fs.promises.readdir( sourceDir ) ).filter( ( file ) =>
+		file.endsWith( '.json' )
+	);
+
+	await Promise.all(
+		files.map( async ( file ) => {
+			const filePath = path.join( sourceDir, file );
+			try {
+				const fileContent = await fs.promises.readFile(
+					filePath,
+					'utf8'
+				);
+				const jsonData = JSON.parse( fileContent );
+				Object.assign( mergedData, jsonData );
+			} catch ( error ) {
+				console.error( `Error parsing JSON file ${ file }:`, error );
+			}
+		} )
+	);
+
+	return mergedData;
 }
