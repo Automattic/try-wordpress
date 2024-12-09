@@ -23,8 +23,16 @@ const validate = new Ajv( {
 	verbose: true,
 } ).compile( metaSchema );
 
+const slugs = new Set();
 const errors = [];
 for ( const schema of schemas ) {
+	if ( slugs.has( schema.slug ) ) {
+		console.error(
+			`A schema with slug "${ schema.slug }" already exists.`
+		);
+		process.exit( 1 );
+	}
+	slugs.add( schema.slug );
 	if ( ! validate( schema ) ) {
 		errors.push( ...validate.errors );
 	}
@@ -32,6 +40,6 @@ for ( const schema of schemas ) {
 
 if ( errors.length > 0 ) {
 	console.error( errors );
-	console.error( '\x1b[31m%s\x1b[0m', 'Schema validation failed' );
+	console.error( 'Schema validation failed' );
 	process.exit( 1 );
 }
