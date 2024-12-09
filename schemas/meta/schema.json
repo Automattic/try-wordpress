@@ -31,7 +31,7 @@
             "pattern": "^[a-z]+(?:_+[a-z]+)*$"
         },
         "fields": {
-            "description": "List of fields.",
+            "description": "The subject's fields.",
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/field"
