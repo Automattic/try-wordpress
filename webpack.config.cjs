@@ -9,7 +9,7 @@ const fs = require( 'fs' );
 // @TODO: Sample paths, need to update
 const SCHEMA_SRC_DIR = './schema';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
-const SCHEMA_OUTPUT_PATHS = [ './dist/config', './public/config' ];
+const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', 'schema.json' );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -107,7 +107,6 @@ function extensionModules( mode, target ) {
 				} ),
 				webExtensionPolyfillPlugin,
 				envPlugin,
-				new EmitMergedJsonPlugin(),
 			],
 		},
 		// Extension content script.
@@ -155,6 +154,7 @@ function extensionModules( mode, target ) {
 						},
 					],
 				} ),
+				new EmitMergedJsonPlugin(),
 				// Create plugin.zip.
 				new FileManagerPlugin( {
 					events: {
@@ -200,23 +200,9 @@ class EmitMergedJsonPlugin {
 								2
 							);
 
-							// Write to all output paths
-							await Promise.all(
-								SCHEMA_OUTPUT_PATHS.map(
-									async ( outputPath ) => {
-										await fs.promises.mkdir( outputPath, {
-											recursive: true,
-										} );
-										await fs.promises.writeFile(
-											path.join(
-												outputPath,
-												SCHEMA_OUTPUT_NAME
-											),
-											mergedContent
-										);
-									}
-								)
-							);
+							// Write to WordPress plugin directory
+							await fs.promises.mkdir(path.dirname(WP_PLUGIN_SCHEMA_PATH), { recursive: true });
+							await fs.promises.writeFile(WP_PLUGIN_SCHEMA_PATH, mergedContent);
 
 							// Also emit for webpack output
 							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
