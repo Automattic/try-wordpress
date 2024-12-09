@@ -9,6 +9,7 @@
     <file>./tests/plugin/</file>
 
     <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>schemas/*</exclude-pattern>
 
     <rule ref="WordPress">
         <exclude name="Squiz.Commenting.ClassComment.Missing"/>
