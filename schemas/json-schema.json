@@ -1,8 +1,9 @@
 {
     "type": "object",
     "properties": {
-        "title": { "type": "string" }
+        "title": { "type": "string" },
+        "slug": { "type": "string" }
     },
-    "required": [ "title" ],
+    "required": [ "title", "slug" ],
     "additionalProperties": false
 }
