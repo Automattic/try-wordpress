@@ -1,9 +1,8 @@
 {
     "type": "object",
     "properties": {
-        "foo": { "type": "integer" },
-        "bar": { "type": "string" }
+        "title": { "type": "string" }
     },
-    "required": [ "foo" ],
+    "required": [ "title" ],
     "additionalProperties": false
 }
