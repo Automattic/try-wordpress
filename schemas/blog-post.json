@@ -1,4 +1,5 @@
 {
     "title": "Blog Post",
-    "slug": "blog_post"
+    "slug": "blog_post",
+    "fields": []
 }

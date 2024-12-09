@@ -2,15 +2,19 @@
     "type": "object",
     "properties": {
         "title": {
-            "description": "The subject's title",
+            "description": "The subject's title.",
             "type": "string"
         },
         "slug": {
             "description": "The subject's unique slug. Must be a sequence of lowercase letters, potentially with underscores.",
             "type": "string",
             "pattern": "^[a-z]+(?:_+[a-z]+)*$"
+        },
+        "fields": {
+            "description": "List of fields.",
+            "type": "array"
         }
     },
-    "required": [ "title", "slug" ],
+    "required": [ "title", "slug", "fields" ],
     "additionalProperties": false
 }
