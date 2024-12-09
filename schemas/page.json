@@ -1,5 +1,12 @@
 {
     "title": "Page",
     "slug": "page",
-    "fields": []
+    "fields": {
+        "title": {
+            "type": "text"
+        },
+        "content": {
+            "type": "html"
+        }
+    }
 }

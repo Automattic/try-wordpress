@@ -1,5 +1,15 @@
 {
     "title": "Blog Post",
     "slug": "blog_post",
-    "fields": []
+    "fields": {
+        "title": {
+            "type": "text"
+        },
+        "date": {
+            "type": "date"
+        },
+        "content": {
+            "type": "html"
+        }
+    }
 }

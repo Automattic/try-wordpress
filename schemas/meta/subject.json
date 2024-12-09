@@ -1,4 +1,24 @@
 {
+    "definitions": {
+        "field": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The type of field",
+                    "type": "string",
+                    "enum": [
+                        "date",
+                        "text",
+                        "html"
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ],
+            "additionalProperties": false
+        }
+    },
     "type": "object",
     "properties": {
         "title": {
@@ -12,9 +32,16 @@
         },
         "fields": {
             "description": "List of fields.",
-            "type": "array"
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/field"
+            }
         }
     },
-    "required": [ "title", "slug", "fields" ],
+    "required": [
+        "title",
+        "slug",
+        "fields"
+    ],
     "additionalProperties": false
 }
