@@ -8,14 +8,12 @@ import { readFileSync } from 'node:fs';
 import * as fs from 'node:fs';
 
 const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
-const jsonSchemaName = 'json-schema.json';
-const jsonSchema = JSON.parse(
-	readFileSync( path.join( schemaDir, jsonSchemaName ) ).toString()
-);
+const metaSchemaPath = path.join( schemaDir, 'meta', 'subject.json' );
+const metaSchema = JSON.parse( readFileSync( metaSchemaPath ).toString() );
 
 const schemas = fs
 	.readdirSync( schemaDir )
-	.filter( ( file ) => file.endsWith( '.json' ) && file !== jsonSchemaName )
+	.filter( ( file ) => file.endsWith( '.json' ) )
 	.map( ( file ) =>
 		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
 	);
@@ -23,7 +21,7 @@ const schemas = fs
 const validate = new Ajv( {
 	allErrors: true,
 	verbose: true,
-} ).compile( jsonSchema );
+} ).compile( metaSchema );
 
 const errors = [];
 for ( const schema of schemas ) {
