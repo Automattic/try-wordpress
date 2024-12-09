@@ -183,38 +183,52 @@ function extensionModules( mode, target ) {
 // Create a custom plugin to emit the merged JSON file
 class EmitMergedJsonPlugin {
 	apply( compiler ) {
-		compiler.hooks.emit.tapAsync(
+		compiler.hooks.compilation.tap(
 			'EmitMergedJsonPlugin',
-			async ( compilation, callback ) => {
-				try {
-					const mergedContent = JSON.stringify(
-						await mergeJsonFiles( SCHEMA_SRC_DIR ),
-						null,
-						2
-					);
-
-					// Write to all output paths
-					await Promise.all(
-						SCHEMA_OUTPUT_PATHS.map( async ( outputPath ) => {
-							await fs.promises.mkdir( outputPath, {
-								recursive: true,
-							} );
-							await fs.promises.writeFile(
-								path.join( outputPath, SCHEMA_OUTPUT_NAME ),
-								mergedContent
+			( compilation ) => {
+				compilation.hooks.processAssets.tapAsync(
+					{
+						name: 'EmitMergedJsonPlugin',
+						stage: webpack.Compilation
+							.PROCESS_ASSETS_STAGE_ADDITIONAL,
+					},
+					async ( assets, callback ) => {
+						try {
+							const mergedContent = JSON.stringify(
+								await mergeJsonFiles( SCHEMA_SRC_DIR ),
+								null,
+								2
 							);
-						} )
-					);
 
-					// Also emit for webpack output
-					compilation.assets[ SCHEMA_OUTPUT_NAME ] = {
-						source: () => mergedContent,
-						size: () => mergedContent.length,
-					};
-				} catch ( error ) {
-					console.error( 'Error during JSON merge:', error );
-				}
-				callback();
+							// Write to all output paths
+							await Promise.all(
+								SCHEMA_OUTPUT_PATHS.map(
+									async ( outputPath ) => {
+										await fs.promises.mkdir( outputPath, {
+											recursive: true,
+										} );
+										await fs.promises.writeFile(
+											path.join(
+												outputPath,
+												SCHEMA_OUTPUT_NAME
+											),
+											mergedContent
+										);
+									}
+								)
+							);
+
+							// Also emit for webpack output
+							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
+								source: () => mergedContent,
+								size: () => mergedContent.length,
+							} );
+						} catch ( error ) {
+							console.error( 'Error during JSON merge:', error );
+						}
+						callback();
+					}
+				);
 			}
 		);
 	}
