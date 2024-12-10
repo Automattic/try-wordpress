@@ -1,0 +1,57 @@
+{
+	"definitions": {
+		"field": {
+			"type": "object",
+			"properties": {
+				"type": {
+					"description": "The type of field",
+					"type": "string",
+					"enum": [
+						"date",
+						"text",
+						"html"
+					]
+				},
+				"description": {
+					"description": "The description of the field",
+					"type": "string"
+				},
+				"required": {
+					"description": "Whether the field is required",
+					"type": "boolean",
+					"default": false
+				}
+			},
+			"required": [
+				"type"
+			],
+			"additionalProperties": false
+		}
+	},
+	"type": "object",
+	"properties": {
+		"title": {
+			"description": "The subject's title.",
+			"type": "string"
+		},
+		"slug": {
+			"description": "The subject's unique slug. Must be a sequence of lowercase letters, potentially with dashes.",
+			"type": "string",
+			"pattern": "^[a-z]+(?:-+[a-z]+)*$",
+			"maxLength": 16
+		},
+		"fields": {
+			"description": "The subject's fields.",
+			"type": "object",
+			"additionalProperties": {
+				"$ref": "#/definitions/field"
+			}
+		}
+	},
+	"required": [
+		"title",
+		"slug",
+		"fields"
+	],
+	"additionalProperties": false
+}
