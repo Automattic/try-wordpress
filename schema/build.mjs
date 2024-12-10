@@ -18,7 +18,7 @@ const schemas = fs
 		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
 	);
 
-const validate = new Ajv( {
+const build = new Ajv( {
 	allErrors: true,
 	verbose: true,
 } ).compile( metaSchema );
@@ -33,8 +33,8 @@ for ( const schema of schemas ) {
 		process.exit( 1 );
 	}
 	slugs.add( schema.slug );
-	if ( ! validate( schema ) ) {
-		errors.push( ...validate.errors );
+	if ( ! build( schema ) ) {
+		errors.push( ...build.errors );
 	}
 }
 
