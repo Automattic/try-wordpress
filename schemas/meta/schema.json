@@ -13,7 +13,7 @@
 					]
 				},
 				"description": {
-					"description": "The descriptionm of the field",
+					"description": "The description of the field",
 					"type": "string"
 				},
 				"required": {
