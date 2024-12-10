@@ -3,13 +3,16 @@
     "slug": "blog_post",
     "fields": {
         "title": {
-            "type": "text"
+            "type": "text",
+            "required": true
         },
         "date": {
-            "type": "date"
+            "type": "date",
+            "required": true
         },
         "content": {
-            "type": "html"
+            "type": "html",
+            "required": true
         }
     }
 }

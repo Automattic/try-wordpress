@@ -11,6 +11,11 @@
                         "text",
                         "html"
                     ]
+                },
+                "required": {
+                    "description": "Whether the field is required",
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "required": [

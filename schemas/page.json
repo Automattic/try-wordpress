@@ -6,7 +6,8 @@
             "type": "text"
         },
         "content": {
-            "type": "html"
+            "type": "html",
+            "required": true
         }
     }
 }
