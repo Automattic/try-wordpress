@@ -1,6 +1,6 @@
 {
 	"title": "Blog Post",
-	"slug": "blog_post",
+	"slug": "blog-post",
 	"fields": {
 		"title": {
 			"description": "The title of the blog post",

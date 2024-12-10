@@ -35,9 +35,9 @@
 			"type": "string"
 		},
 		"slug": {
-			"description": "The subject's unique slug. Must be a sequence of lowercase letters, potentially with underscores.",
+			"description": "The subject's unique slug. Must be a sequence of lowercase letters, potentially with dashes.",
 			"type": "string",
-			"pattern": "^[a-z]+(?:_+[a-z]+)*$"
+			"pattern": "^[a-z]+(?:-+[a-z]+)*$"
 		},
 		"fields": {
 			"description": "The subject's fields.",
