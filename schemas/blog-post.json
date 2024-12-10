@@ -1,21 +1,21 @@
 {
-    "title": "Blog Post",
-    "slug": "blog_post",
-    "fields": {
-        "title": {
-            "description": "The title of the blog post",
-            "type": "text",
-            "required": true
-        },
-        "date": {
-            "description": "The date the blog post was authored",
-            "type": "date",
-            "required": true
-        },
-        "content": {
-            "description": "Body of the blog post",
-            "type": "html",
-            "required": true
-        }
-    }
+	"title": "Blog Post",
+	"slug": "blog_post",
+	"fields": {
+		"title": {
+			"description": "The title of the blog post",
+			"type": "text",
+			"required": true
+		},
+		"date": {
+			"description": "The date the blog post was authored",
+			"type": "date",
+			"required": true
+		},
+		"content": {
+			"description": "Body of the blog post",
+			"type": "html",
+			"required": true
+		}
+	}
 }
