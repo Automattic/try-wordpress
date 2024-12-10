@@ -1,4 +1,5 @@
 const path = require( 'node:path' );
+const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
 const { TsconfigPathsPlugin } = require( 'tsconfig-paths-webpack-plugin' );
 const FileManagerPlugin = require( 'filemanager-webpack-plugin' );
@@ -202,6 +203,7 @@ class EmitSubjectsSchemaPlugin {
 							.PROCESS_ASSETS_STAGE_ADDITIONAL,
 					},
 					async ( assets, callback ) => {
+						execSync( './schema/build.mjs', { stdio: 'inherit' } );
 						try {
 							const mergedContent = JSON.stringify(
 								await mergeJsonFiles( SCHEMA_SRC_DIR ),
