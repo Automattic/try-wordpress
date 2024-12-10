@@ -12,13 +12,15 @@ import { readFileSync } from 'node:fs';
 import * as fs from 'node:fs';
 
 const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
+const outputSchemaPath = path.join( schemaDir, 'schema.json' );
+
 const metaSchema = JSON.parse(
 	readFileSync( path.join( schemaDir, 'meta', 'schema.json' ) ).toString()
 );
 
 const schemas = fs
 	.readdirSync( schemaDir )
-	.filter( ( file ) => file.endsWith( '.json' ) )
+	.filter( ( file ) => file.endsWith( '.json' ) && file !== 'schema.json' )
 	.map( ( file ) =>
 		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
 	);
@@ -49,4 +51,15 @@ if ( errors.length > 0 ) {
 	process.exit( 1 );
 }
 
-console.log( 'Schema validation succeeded' );
+const outputSchema = {};
+for ( const schema of schemas ) {
+	outputSchema[ schema.slug ] = schema;
+}
+
+fs.writeFileSync(
+	outputSchemaPath,
+	JSON.stringify( outputSchema, null, '\t' )
+);
+
+console.log( 'Schema file generated successfully:' );
+console.log( outputSchemaPath );
