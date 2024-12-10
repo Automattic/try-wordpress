@@ -191,7 +191,6 @@ function extensionModules( mode, target ) {
 	];
 }
 
-// Create a custom plugin to emit the merged JSON file
 class EmitSubjectsSchemaPlugin {
 	apply( compiler ) {
 		compiler.hooks.compilation.tap(
