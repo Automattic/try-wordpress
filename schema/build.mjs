@@ -11,16 +11,17 @@ import * as path from 'node:path';
 import { readFileSync } from 'node:fs';
 import * as fs from 'node:fs';
 
-const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
-const outputSchemaPath = path.join( schemaDir, 'schema.json' );
+const cwd = path.dirname( fileURLToPath( import.meta.url ) );
+const schemaDir = path.join( cwd, 'subjects' );
+const outputSchemaPath = path.join( cwd, 'schema.json' );
 
 const metaSchema = JSON.parse(
-	readFileSync( path.join( schemaDir, 'meta', 'schema.json' ) ).toString()
+	readFileSync( path.join( cwd, 'meta', 'schema.json' ) ).toString()
 );
 
 const schemas = fs
 	.readdirSync( schemaDir )
-	.filter( ( file ) => file.endsWith( '.json' ) && file !== 'schema.json' )
+	.filter( ( file ) => file.endsWith( '.json' ) )
 	.map( ( file ) =>
 		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
 	);

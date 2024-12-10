@@ -6,8 +6,7 @@ const webpack = require( 'webpack' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const fs = require( 'fs' );
 
-// @TODO: Sample paths, need to update
-const SCHEMA_SRC_DIR = './schema';
+const SCHEMA_SRC_DIR = './schema/subjects/';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
 const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
 
