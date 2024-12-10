@@ -1,3 +1,5 @@
+const fs = require( 'fs' );
+const { readFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
@@ -5,8 +7,8 @@ const { TsconfigPathsPlugin } = require( 'tsconfig-paths-webpack-plugin' );
 const FileManagerPlugin = require( 'filemanager-webpack-plugin' );
 const webpack = require( 'webpack' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const fs = require( 'fs' );
 
+const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_SRC_DIR = './schema/subjects/';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
 const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
@@ -204,13 +206,9 @@ class EmitSubjectsSchemaPlugin {
 					},
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
-						try {
-							const mergedContent = JSON.stringify(
-								await mergeJsonFiles( SCHEMA_SRC_DIR ),
-								null,
-								2
-							);
+						const schema = readFileSync( SCHEMA_SRC );
 
+						try {
 							// Write to WordPress plugin directory
 							await fs.promises.mkdir(
 								path.dirname( WP_PLUGIN_SCHEMA_PATH ),
@@ -218,13 +216,13 @@ class EmitSubjectsSchemaPlugin {
 							);
 							await fs.promises.writeFile(
 								WP_PLUGIN_SCHEMA_PATH,
-								mergedContent
+								schema
 							);
 
 							// Also emit for webpack output
 							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
-								source: () => mergedContent,
-								size: () => mergedContent.length,
+								source: () => schema,
+								size: () => schema.length,
 							} );
 						} catch ( error ) {
 							console.error( 'Error during JSON merge:', error );
