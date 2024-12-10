@@ -42,6 +42,6 @@ if ( errors.length > 0 ) {
 	console.error( errors );
 	console.error( 'Schema validation failed' );
 	process.exit( 1 );
-} else {
-	console.log( 'Schema validation succeeded' );
 }
+
+console.log( 'Schema validation succeeded' );
