@@ -206,25 +206,22 @@ class EmitSubjectsSchemaPlugin {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
 						const schema = readFileSync( SCHEMA_SRC );
 
-						try {
-							// Write to WordPress plugin directory
-							await fs.promises.mkdir(
-								path.dirname( WP_PLUGIN_SCHEMA_PATH ),
-								{ recursive: true }
-							);
-							await fs.promises.writeFile(
-								WP_PLUGIN_SCHEMA_PATH,
-								schema
-							);
+						// Write to WordPress plugin directory
+						await fs.promises.mkdir(
+							path.dirname( WP_PLUGIN_SCHEMA_PATH ),
+							{ recursive: true }
+						);
+						await fs.promises.writeFile(
+							WP_PLUGIN_SCHEMA_PATH,
+							schema
+						);
 
-							// Also emit for webpack output
-							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
-								source: () => schema,
-								size: () => schema.length,
-							} );
-						} catch ( error ) {
-							console.error( 'Error during JSON merge:', error );
-						}
+						// Also emit for webpack output
+						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
+							source: () => schema,
+							size: () => schema.length,
+						} );
+
 						callback();
 					}
 				);
