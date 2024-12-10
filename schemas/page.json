@@ -3,9 +3,11 @@
     "slug": "page",
     "fields": {
         "title": {
+            "description": "The title of the page",
             "type": "text"
         },
         "content": {
+            "description": "The body of the page",
             "type": "html",
             "required": true
         }

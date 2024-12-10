@@ -12,6 +12,10 @@
                         "html"
                     ]
                 },
+                "description": {
+                    "description": "The descriptionm of the field",
+                    "type": "string"
+                },
                 "required": {
                     "description": "Whether the field is required",
                     "type": "boolean",
