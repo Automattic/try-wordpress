@@ -52,6 +52,8 @@ if ( errors.length > 0 ) {
 	process.exit( 1 );
 }
 
+console.log( 'Schema validation complete' );
+
 const outputSchema = {};
 for ( const schema of schemas ) {
 	outputSchema[ schema.slug ] = schema;
@@ -62,5 +64,4 @@ fs.writeFileSync(
 	JSON.stringify( outputSchema, null, '\t' )
 );
 
-console.log( 'Schema file generated successfully:' );
-console.log( outputSchemaPath );
+console.log( 'Schema file generated successfully:', outputSchemaPath );
