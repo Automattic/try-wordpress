@@ -7,6 +7,7 @@
 		"build:production:chrome": "rm -rf build/production/chrome && webpack --env mode=production --env target=chrome",
 		"build:firefox": "rm -rf build/firefox && webpack --env target=firefox",
 		"build:chrome": "rm -rf build/chrome && webpack --env target=chrome",
+		"build:schema": "./schema/build.mjs",
 		"preview:production": "echo 'Please choose a target: preview:production:firefox or preview:production:chrome'",
 		"preview:production:firefox": "npm run build:production:firefox && web-ext -s build/production/firefox run --target firefox-desktop",
 		"preview:production:chrome": "npm run build:production:chrome && web-ext -s build/production/chrome run --target chromium --arg='--disable-search-engine-choice-screen'",
