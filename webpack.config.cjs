@@ -4,6 +4,12 @@ const { TsconfigPathsPlugin } = require( 'tsconfig-paths-webpack-plugin' );
 const FileManagerPlugin = require( 'filemanager-webpack-plugin' );
 const webpack = require( 'webpack' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const fs = require( 'fs' );
+
+// @TODO: Sample paths, need to update
+const SCHEMA_SRC_DIR = './schema';
+const SCHEMA_OUTPUT_NAME = 'schema.json';
+const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -128,6 +134,7 @@ function extensionModules( mode, target ) {
 				filename: path.join( 'app.js' ),
 			},
 			plugins: [
+				new EmitSubjectsSchemaPlugin(),
 				new CopyPlugin( {
 					patterns: [
 						{
@@ -152,6 +159,16 @@ function extensionModules( mode, target ) {
 				new FileManagerPlugin( {
 					events: {
 						onEnd: {
+							copy: [
+								{
+									source: WP_PLUGIN_SCHEMA_PATH,
+									destination: path.join(
+										targetPath,
+										'plugin',
+										SCHEMA_OUTPUT_NAME
+									),
+								},
+							],
 							archive: [
 								{
 									source: path.join( targetPath, 'plugin' ),
@@ -171,4 +188,76 @@ function extensionModules( mode, target ) {
 			),
 		},
 	];
+}
+
+// Create a custom plugin to emit the merged JSON file
+class EmitSubjectsSchemaPlugin {
+	apply( compiler ) {
+		compiler.hooks.compilation.tap(
+			'EmitSubjectsSchemaPlugin',
+			( compilation ) => {
+				compilation.hooks.processAssets.tapAsync(
+					{
+						name: 'EmitSubjectsSchemaPlugin',
+						stage: webpack.Compilation
+							.PROCESS_ASSETS_STAGE_ADDITIONAL,
+					},
+					async ( assets, callback ) => {
+						try {
+							const mergedContent = JSON.stringify(
+								await mergeJsonFiles( SCHEMA_SRC_DIR ),
+								null,
+								2
+							);
+
+							// Write to WordPress plugin directory
+							await fs.promises.mkdir(
+								path.dirname( WP_PLUGIN_SCHEMA_PATH ),
+								{ recursive: true }
+							);
+							await fs.promises.writeFile(
+								WP_PLUGIN_SCHEMA_PATH,
+								mergedContent
+							);
+
+							// Also emit for webpack output
+							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
+								source: () => mergedContent,
+								size: () => mergedContent.length,
+							} );
+						} catch ( error ) {
+							console.error( 'Error during JSON merge:', error );
+						}
+						callback();
+					}
+				);
+			}
+		);
+	}
+}
+
+async function mergeJsonFiles( sourceDir ) {
+	const mergedData = {};
+
+	const files = ( await fs.promises.readdir( sourceDir ) ).filter( ( file ) =>
+		file.endsWith( '.json' )
+	);
+
+	await Promise.all(
+		files.map( async ( file ) => {
+			const filePath = path.join( sourceDir, file );
+			try {
+				const fileContent = await fs.promises.readFile(
+					filePath,
+					'utf8'
+				);
+				const jsonData = JSON.parse( fileContent );
+				Object.assign( mergedData, jsonData );
+			} catch ( error ) {
+				console.error( `Error parsing JSON file ${ file }:`, error );
+			}
+		} )
+	);
+
+	return mergedData;
 }

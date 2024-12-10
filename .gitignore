@@ -6,3 +6,4 @@ build/
 vendor/
 
 .phpunit.result.cache
+src/plugin/schema.json
