@@ -9,7 +9,6 @@ const webpack = require( 'webpack' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 const SCHEMA_SRC = './schema/schema.json';
-const SCHEMA_SRC_DIR = './schema/subjects/';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
 const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
 
@@ -233,30 +232,4 @@ class EmitSubjectsSchemaPlugin {
 			}
 		);
 	}
-}
-
-async function mergeJsonFiles( sourceDir ) {
-	const mergedData = {};
-
-	const files = ( await fs.promises.readdir( sourceDir ) ).filter( ( file ) =>
-		file.endsWith( '.json' )
-	);
-
-	await Promise.all(
-		files.map( async ( file ) => {
-			const filePath = path.join( sourceDir, file );
-			try {
-				const fileContent = await fs.promises.readFile(
-					filePath,
-					'utf8'
-				);
-				const jsonData = JSON.parse( fileContent );
-				Object.assign( mergedData, jsonData );
-			} catch ( error ) {
-				console.error( `Error parsing JSON file ${ file }:`, error );
-			}
-		} )
-	);
-
-	return mergedData;
 }
