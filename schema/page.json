@@ -1,9 +1,0 @@
-{
-    "page": {
-        "title": "Page",
-        "fields": {
-            "title": "String",
-            "content": "String"
-        }
-    }
-} 
