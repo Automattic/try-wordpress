@@ -12,8 +12,9 @@ import { readFileSync } from 'node:fs';
 import * as fs from 'node:fs';
 
 const schemaDir = path.dirname( fileURLToPath( import.meta.url ) );
-const metaSchemaPath = path.join( schemaDir, 'meta', 'schema.json' );
-const metaSchema = JSON.parse( readFileSync( metaSchemaPath ).toString() );
+const metaSchema = JSON.parse(
+	readFileSync( path.join( schemaDir, 'meta', 'schema.json' ) ).toString()
+);
 
 const schemas = fs
 	.readdirSync( schemaDir )
