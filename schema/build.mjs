@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// Validates each schema (blog-post.json, page.json, etc) against the meta schema (meta/schema.json).
+// Concatenates each schema into a single schema.json file, in the same directory as this script.
+// Exits with non-zero code when validation fails or on error.
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Ajv } from 'ajv';
 import { fileURLToPath } from 'url';
