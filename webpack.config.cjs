@@ -157,11 +157,11 @@ function extensionModules( mode, target ) {
 							to: path.join( targetPath, 'plugin' ),
 						},
 						{
-							from: './schema/schema.json',
+							from: SCHEMA_SRC,
 							to: path.join(
 								targetPath,
 								'plugin',
-								'schema.json'
+								SCHEMA_OUTPUT_NAME
 							),
 						},
 					],
