@@ -20,17 +20,20 @@ module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
 	const mode = env.mode || 'development';
 
-	// Validate environment
+	// Validate environment.
 	if ( mode === 'production' && ! env.target ) {
 		throw new Error(
 			'Production builds require a target. Use --env target=firefox or --env target=chrome'
 		);
 	}
 
-	// Set target(s)
+	// Set target(s).
 	if ( env.target ) {
 		targets = [ env.target ];
 	}
+
+	// Build schema/schema.json.
+	execSync( './schema/build.mjs', { stdio: 'inherit' } );
 
 	let modules = [];
 	for ( const target of targets ) {
