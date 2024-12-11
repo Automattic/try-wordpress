@@ -141,10 +141,6 @@ function extensionModules( mode, target ) {
 							from: './src/ui/app.html',
 							to: path.join( targetPath, 'app.html' ),
 						},
-					],
-				} ),
-				new CopyPlugin( {
-					patterns: [
 						{
 							from: '**/*',
 							context: 'src/plugin/',
