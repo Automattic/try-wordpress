@@ -10,6 +10,7 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
+const SCHEMA_SRC_PATH = path.resolve( __dirname, SCHEMA_SRC );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -70,6 +71,10 @@ function extensionModules( mode, target ) {
 		],
 	};
 
+	const watchOptions = {
+		ignored: [ SCHEMA_SRC_PATH ],
+	};
+
 	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
 		browser: 'webextension-polyfill',
 	} );
@@ -108,6 +113,7 @@ function extensionModules( mode, target ) {
 				webExtensionPolyfillPlugin,
 				envPlugin,
 			],
+			watchOptions,
 		},
 		// Extension content script.
 		{
@@ -121,6 +127,7 @@ function extensionModules( mode, target ) {
 				filename: path.join( 'content.js' ),
 			},
 			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
+			watchOptions,
 		},
 		// The app.
 		{
@@ -180,6 +187,7 @@ function extensionModules( mode, target ) {
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
 			),
+			watchOptions,
 		},
 	];
 }
