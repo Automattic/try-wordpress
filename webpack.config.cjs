@@ -10,7 +10,6 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
-const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -160,16 +159,6 @@ function extensionModules( mode, target ) {
 				new FileManagerPlugin( {
 					events: {
 						onEnd: {
-							copy: [
-								{
-									source: WP_PLUGIN_SCHEMA_PATH,
-									destination: path.join(
-										targetPath,
-										'plugin',
-										SCHEMA_OUTPUT_NAME
-									),
-								},
-							],
 							archive: [
 								{
 									source: path.join( targetPath, 'plugin' ),
@@ -205,16 +194,6 @@ class EmitSubjectsSchemaPlugin {
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
 						const schema = readFileSync( SCHEMA_SRC );
-
-						// Write to WordPress plugin directory
-						await fs.promises.mkdir(
-							path.dirname( WP_PLUGIN_SCHEMA_PATH ),
-							{ recursive: true }
-						);
-						await fs.promises.writeFile(
-							WP_PLUGIN_SCHEMA_PATH,
-							schema
-						);
 
 						// Also emit for webpack output
 						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
