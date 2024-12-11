@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+// Validates each schema (blog-post.json, page.json, etc) against the meta schema (meta/schema.json).
+// Concatenates each schema into a single schema.json file, in the same directory as this script.
+// Exits with non-zero code when validation fails or on error.
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Ajv } from 'ajv';
+import { fileURLToPath } from 'url';
+import * as path from 'node:path';
+import { readFileSync } from 'node:fs';
+import * as fs from 'node:fs';
+
+const cwd = path.dirname( fileURLToPath( import.meta.url ) );
+const schemaDir = path.join( cwd, 'subjects' );
+const outputSchemaPath = path.join( cwd, 'schema.json' );
+
+const metaSchema = JSON.parse(
+	readFileSync( path.join( cwd, 'meta', 'schema.json' ) ).toString()
+);
+
+const schemas = fs
+	.readdirSync( schemaDir )
+	.filter( ( file ) => file.endsWith( '.json' ) )
+	.map( ( file ) =>
+		JSON.parse( readFileSync( path.join( schemaDir, file ) ).toString() )
+	);
+
+const build = new Ajv( {
+	allErrors: true,
+	verbose: true,
+} ).compile( metaSchema );
+
+const slugs = new Set();
+const errors = [];
+for ( const schema of schemas ) {
+	if ( slugs.has( schema.slug ) ) {
+		console.error(
+			`A schema with slug "${ schema.slug }" already exists.`
+		);
+		process.exit( 1 );
+	}
+	slugs.add( schema.slug );
+	if ( ! build( schema ) ) {
+		errors.push( ...build.errors );
+	}
+}
+
+if ( errors.length > 0 ) {
+	console.error( errors );
+	console.error( 'Schema validation failed' );
+	process.exit( 1 );
+}
+
+console.log( 'Schema validation complete' );
+
+const outputSchema = {};
+for ( const schema of schemas ) {
+	outputSchema[ schema.slug ] = schema;
+}
+
+fs.writeFileSync(
+	outputSchemaPath,
+	JSON.stringify( outputSchema, null, '\t' )
+);
+
+console.log( 'Schema file generated successfully:', outputSchemaPath );

@@ -1,9 +1,8 @@
-chrome/
-firefox/
 node_modules/
 test-results/
 build/
 vendor/
+schema/schema.json
 
 .phpunit.result.cache
 src/plugin/schema.json

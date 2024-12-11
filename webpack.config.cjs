@@ -1,15 +1,20 @@
+const { readFileSync, copyFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
+const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
 const { TsconfigPathsPlugin } = require( 'tsconfig-paths-webpack-plugin' );
 const FileManagerPlugin = require( 'filemanager-webpack-plugin' );
 const webpack = require( 'webpack' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const fs = require( 'fs' );
 
-// @TODO: Sample paths, need to update
-const SCHEMA_SRC_DIR = './schema';
+const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
-const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
+const SCHEMA_SRC_PATH = path.resolve( __dirname, SCHEMA_SRC );
+const SCHEMA_PLUGIN_PATH = path.resolve(
+	__dirname,
+	'src/plugin/',
+	SCHEMA_OUTPUT_NAME
+);
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -70,6 +75,10 @@ function extensionModules( mode, target ) {
 		],
 	};
 
+	const watchOptions = {
+		ignored: [ SCHEMA_SRC_PATH, SCHEMA_PLUGIN_PATH ],
+	};
+
 	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
 		browser: 'webextension-polyfill',
 	} );
@@ -108,6 +117,7 @@ function extensionModules( mode, target ) {
 				webExtensionPolyfillPlugin,
 				envPlugin,
 			],
+			watchOptions,
 		},
 		// Extension content script.
 		{
@@ -121,6 +131,7 @@ function extensionModules( mode, target ) {
 				filename: path.join( 'content.js' ),
 			},
 			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
+			watchOptions,
 		},
 		// The app.
 		{
@@ -141,10 +152,6 @@ function extensionModules( mode, target ) {
 							from: './src/ui/app.html',
 							to: path.join( targetPath, 'app.html' ),
 						},
-					],
-				} ),
-				new CopyPlugin( {
-					patterns: [
 						{
 							from: '**/*',
 							context: 'src/plugin/',
@@ -153,22 +160,20 @@ function extensionModules( mode, target ) {
 							},
 							to: path.join( targetPath, 'plugin' ),
 						},
+						{
+							from: SCHEMA_SRC,
+							to: path.join(
+								targetPath,
+								'plugin',
+								SCHEMA_OUTPUT_NAME
+							),
+						},
 					],
 				} ),
 				// Create plugin.zip.
 				new FileManagerPlugin( {
 					events: {
 						onEnd: {
-							copy: [
-								{
-									source: WP_PLUGIN_SCHEMA_PATH,
-									destination: path.join(
-										targetPath,
-										'plugin',
-										SCHEMA_OUTPUT_NAME
-									),
-								},
-							],
 							archive: [
 								{
 									source: path.join( targetPath, 'plugin' ),
@@ -186,11 +191,11 @@ function extensionModules( mode, target ) {
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
 			),
+			watchOptions,
 		},
 	];
 }
 
-// Create a custom plugin to emit the merged JSON file
 class EmitSubjectsSchemaPlugin {
 	apply( compiler ) {
 		compiler.hooks.compilation.tap(
@@ -203,61 +208,21 @@ class EmitSubjectsSchemaPlugin {
 							.PROCESS_ASSETS_STAGE_ADDITIONAL,
 					},
 					async ( assets, callback ) => {
-						try {
-							const mergedContent = JSON.stringify(
-								await mergeJsonFiles( SCHEMA_SRC_DIR ),
-								null,
-								2
-							);
+						execSync( './schema/build.mjs', { stdio: 'inherit' } );
+						const schema = readFileSync( SCHEMA_SRC );
 
-							// Write to WordPress plugin directory
-							await fs.promises.mkdir(
-								path.dirname( WP_PLUGIN_SCHEMA_PATH ),
-								{ recursive: true }
-							);
-							await fs.promises.writeFile(
-								WP_PLUGIN_SCHEMA_PATH,
-								mergedContent
-							);
+						copyFileSync( SCHEMA_SRC, SCHEMA_PLUGIN_PATH );
 
-							// Also emit for webpack output
-							compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
-								source: () => mergedContent,
-								size: () => mergedContent.length,
-							} );
-						} catch ( error ) {
-							console.error( 'Error during JSON merge:', error );
-						}
+						// Also emit for webpack output
+						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
+							source: () => schema,
+							size: () => schema.length,
+						} );
+
 						callback();
 					}
 				);
 			}
 		);
 	}
-}
-
-async function mergeJsonFiles( sourceDir ) {
-	const mergedData = {};
-
-	const files = ( await fs.promises.readdir( sourceDir ) ).filter( ( file ) =>
-		file.endsWith( '.json' )
-	);
-
-	await Promise.all(
-		files.map( async ( file ) => {
-			const filePath = path.join( sourceDir, file );
-			try {
-				const fileContent = await fs.promises.readFile(
-					filePath,
-					'utf8'
-				);
-				const jsonData = JSON.parse( fileContent );
-				Object.assign( mergedData, jsonData );
-			} catch ( error ) {
-				console.error( `Error parsing JSON file ${ file }:`, error );
-			}
-		} )
-	);
-
-	return mergedData;
 }
