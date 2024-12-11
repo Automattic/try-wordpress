@@ -149,6 +149,14 @@ function extensionModules( mode, target ) {
 							},
 							to: path.join( targetPath, 'plugin' ),
 						},
+						{
+							from: './schema/schema.json',
+							to: path.join(
+								targetPath,
+								'plugin',
+								'schema.json'
+							),
+						},
 					],
 				} ),
 				// Create plugin.zip.
