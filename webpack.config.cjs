@@ -53,13 +53,16 @@ function extensionModules( mode, target ) {
 	const devtool = mode === 'production' ? false : 'cheap-module-source-map';
 	const resolve = {
 		extensions: [ '.ts', '.tsx', '.js' ],
-		plugins: [ new TsconfigPathsPlugin() ],
+		plugins: [
+			new TsconfigPathsPlugin( { configFile: 'tsconfig.webpack.json' } ),
+		],
 	};
 	const module = {
 		rules: [
 			{
 				test: /\.tsx?$/,
-				use: 'ts-loader',
+				loader: 'ts-loader',
+				options: { configFile: 'tsconfig.webpack.json' },
 			},
 			{
 				// If you enable `experiments.css` or `experiments.futureDefaults`, please uncomment line below
