@@ -1,4 +1,4 @@
-const { readFileSync, copyFileSync } = require( 'node:fs' );
+const { copyFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
@@ -209,16 +209,7 @@ class EmitSubjectsSchemaPlugin {
 					},
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
-						const schema = readFileSync( SCHEMA_SRC );
-
 						copyFileSync( SCHEMA_SRC, SCHEMA_PLUGIN_PATH );
-
-						// Also emit for webpack output
-						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
-							source: () => schema,
-							size: () => schema.length,
-						} );
-
 						callback();
 					}
 				);
