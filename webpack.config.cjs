@@ -1,4 +1,3 @@
-const fs = require( 'fs' );
 const { readFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
@@ -10,7 +9,7 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
-const WP_PLUGIN_SCHEMA_PATH = path.join( 'src/plugin', SCHEMA_OUTPUT_NAME );
+const SCHEMA_SRC_PATH = path.resolve( __dirname, SCHEMA_SRC );
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -71,6 +70,10 @@ function extensionModules( mode, target ) {
 		],
 	};
 
+	const watchOptions = {
+		ignored: [ SCHEMA_SRC_PATH ],
+	};
+
 	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
 		browser: 'webextension-polyfill',
 	} );
@@ -109,6 +112,7 @@ function extensionModules( mode, target ) {
 				webExtensionPolyfillPlugin,
 				envPlugin,
 			],
+			watchOptions,
 		},
 		// Extension content script.
 		{
@@ -122,6 +126,7 @@ function extensionModules( mode, target ) {
 				filename: path.join( 'content.js' ),
 			},
 			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
+			watchOptions,
 		},
 		// The app.
 		{
@@ -142,10 +147,6 @@ function extensionModules( mode, target ) {
 							from: './src/ui/app.html',
 							to: path.join( targetPath, 'app.html' ),
 						},
-					],
-				} ),
-				new CopyPlugin( {
-					patterns: [
 						{
 							from: '**/*',
 							context: 'src/plugin/',
@@ -154,22 +155,20 @@ function extensionModules( mode, target ) {
 							},
 							to: path.join( targetPath, 'plugin' ),
 						},
+						{
+							from: SCHEMA_SRC,
+							to: path.join(
+								targetPath,
+								'plugin',
+								SCHEMA_OUTPUT_NAME
+							),
+						},
 					],
 				} ),
 				// Create plugin.zip.
 				new FileManagerPlugin( {
 					events: {
 						onEnd: {
-							copy: [
-								{
-									source: WP_PLUGIN_SCHEMA_PATH,
-									destination: path.join(
-										targetPath,
-										'plugin',
-										SCHEMA_OUTPUT_NAME
-									),
-								},
-							],
 							archive: [
 								{
 									source: path.join( targetPath, 'plugin' ),
@@ -187,6 +186,7 @@ function extensionModules( mode, target ) {
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
 			),
+			watchOptions,
 		},
 	];
 }
@@ -205,16 +205,6 @@ class EmitSubjectsSchemaPlugin {
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
 						const schema = readFileSync( SCHEMA_SRC );
-
-						// Write to WordPress plugin directory
-						await fs.promises.mkdir(
-							path.dirname( WP_PLUGIN_SCHEMA_PATH ),
-							{ recursive: true }
-						);
-						await fs.promises.writeFile(
-							WP_PLUGIN_SCHEMA_PATH,
-							schema
-						);
 
 						// Also emit for webpack output
 						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
