@@ -1,4 +1,3 @@
-const fs = require( 'fs' );
 const { readFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
