@@ -1,4 +1,4 @@
-const { readFileSync } = require( 'node:fs' );
+const { readFileSync, copyFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
@@ -10,6 +10,11 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const SCHEMA_SRC = './schema/schema.json';
 const SCHEMA_OUTPUT_NAME = 'schema.json';
 const SCHEMA_SRC_PATH = path.resolve( __dirname, SCHEMA_SRC );
+const SCHEMA_PLUGIN_PATH = path.resolve(
+	__dirname,
+	'src/plugin/',
+	SCHEMA_OUTPUT_NAME
+);
 
 module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
@@ -71,7 +76,7 @@ function extensionModules( mode, target ) {
 	};
 
 	const watchOptions = {
-		ignored: [ SCHEMA_SRC_PATH ],
+		ignored: [ SCHEMA_SRC_PATH, SCHEMA_PLUGIN_PATH ],
 	};
 
 	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
@@ -205,6 +210,8 @@ class EmitSubjectsSchemaPlugin {
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
 						const schema = readFileSync( SCHEMA_SRC );
+
+						copyFileSync( SCHEMA_SRC, SCHEMA_PLUGIN_PATH );
 
 						// Also emit for webpack output
 						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
