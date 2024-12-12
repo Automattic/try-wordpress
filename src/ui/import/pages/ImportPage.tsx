@@ -11,6 +11,7 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
 import { parseField } from '@/parser/field';
+import { getSchema } from '@/model/subject/Schema';
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
@@ -60,24 +61,21 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const fields: { name: string; field: Field }[] = [
-		{ name: 'title', field: page.fields.title },
-		{ name: 'content', field: page.fields.content },
-	];
-
+	const schema = getSchema( SubjectType.Page );
+	const schemaFields = schema.fields;
+	const fields: { name: string; field: Field }[] = [];
 	const selectors: {
 		name: string;
 		selector?: string;
-	}[] = [
-		{
-			name: 'title',
-			selector: '',
-		},
-		{
-			name: 'content',
-			selector: '',
-		},
-	];
+	}[] = [];
+
+	Object.keys( schemaFields ).forEach( ( name ) => {
+		fields.push( {
+			name,
+			field: page.fields[ name ],
+		} );
+		selectors.push( { name, selector: '' } );
+	} );
 
 	const backUrl =
 		pageIndex === 0
@@ -102,8 +100,7 @@ export function ImportPage() {
 				fields={ fields }
 				selectors={ selectors }
 				onFieldChanged={ async ( name: string, field: Field ) => {
-					// @ts-ignore
-					page[ name ] = parseField( field );
+					page.fields[ name ] = parseField( field );
 					const p = await apiClient!.pages.update( page!.id, page );
 					setPage( p );
 				} }
