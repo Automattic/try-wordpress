@@ -4,11 +4,7 @@ import { ApiPost } from '@/api/ApiTypes';
 import { newDateField } from '@/model/field/DateField';
 import { newTextField } from '@/model/field/TextField';
 import { newHtmlField } from '@/model/field/HtmlField';
-
-const endpoints = new Map< string, string >( [
-	[ SubjectType.BlogPost, '/blog-posts' ],
-	[ SubjectType.Page, '/pages' ],
-] );
+import { getSchema } from '@/model/Schema';
 
 export class SubjectsApi {
 	constructor( private readonly client: ApiClient ) {}
@@ -47,11 +43,8 @@ export class SubjectsApi {
 }
 
 function getEndpoint( type: SubjectType ): string {
-	const endpoint = endpoints.get( type );
-	if ( ! endpoint ) {
-		throw Error( `unknown endpoint: ${ type }` );
-	}
-	return endpoint;
+	const schema = getSchema( type );
+	return `/${ schema.slug }s`;
 }
 
 function fromApiResponse( response: ApiPost ): Subject {
