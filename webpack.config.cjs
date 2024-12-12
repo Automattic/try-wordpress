@@ -1,4 +1,4 @@
-const { readFileSync, copyFileSync } = require( 'node:fs' );
+const { copyFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
@@ -20,17 +20,20 @@ module.exports = function ( env ) {
 	let targets = [ 'firefox', 'chrome' ];
 	const mode = env.mode || 'development';
 
-	// Validate environment
+	// Validate environment.
 	if ( mode === 'production' && ! env.target ) {
 		throw new Error(
 			'Production builds require a target. Use --env target=firefox or --env target=chrome'
 		);
 	}
 
-	// Set target(s)
+	// Set target(s).
 	if ( env.target ) {
 		targets = [ env.target ];
 	}
+
+	// Build schema/schema.json.
+	execSync( './schema/build.mjs', { stdio: 'inherit' } );
 
 	let modules = [];
 	for ( const target of targets ) {
@@ -209,16 +212,7 @@ class EmitSubjectsSchemaPlugin {
 					},
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
-						const schema = readFileSync( SCHEMA_SRC );
-
 						copyFileSync( SCHEMA_SRC, SCHEMA_PLUGIN_PATH );
-
-						// Also emit for webpack output
-						compilation.emitAsset( SCHEMA_OUTPUT_NAME, {
-							source: () => schema,
-							size: () => schema.length,
-						} );
-
 						callback();
 					}
 				);
