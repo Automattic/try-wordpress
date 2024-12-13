@@ -9,9 +9,7 @@ class Engine {
 	public function __construct() {
 		require 'class-post-type-ui.php';
 		require 'class-transformer.php';
-		require 'class-liberate-controller.php';
-		require 'class-blogpost-controller.php';
-		require 'class-page-controller.php';
+		require 'class-subjects-controller.php';
 		require 'class-storage.php';
 
 		( function () {
@@ -20,8 +18,7 @@ class Engine {
 			new Post_Type_UI( $this->storage_post_type, $transformer );
 
 			// REST API
-			new Blogpost_Controller( $this->storage_post_type );
-			new Page_Controller( $this->storage_post_type );
+			new Subjects_Controller( $this->storage_post_type );
 
 			new Storage( $this->storage_post_type );
 		} )();

@@ -1,14 +1,14 @@
 <?php
 
-use DotOrg\TryWordPress\Liberate_Controller;
+use DotOrg\TryWordPress\Subjects_Controller;
 use DotOrg\TryWordPress\Transformer;
 use PHPUnit\Framework\TestCase;
 
 class Liberate_Controller_Test extends TestCase {
-	private Liberate_Controller $liberate_controller;
+	private Subjects_Controller $liberate_controller;
 
 	private string $storage_post_type = 'lib_2';
-	private string $endpoint          = '/try-wp/v1/blog-posts';
+	private string $endpoint          = '/try-wp/v1/subjects/blog-post';
 	private string $source_html;
 
 	private string $raw_title       = '<h1>This is the test title</h1>';
@@ -25,7 +25,7 @@ class Liberate_Controller_Test extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->liberate_controller = new Liberate_Controller( $this->storage_post_type );
+		$this->liberate_controller = new Subjects_Controller( $this->storage_post_type );
 
 		$this->source_html = '<html><head><title></title></head><body>' . $this->raw_content . '</body></html>';
 

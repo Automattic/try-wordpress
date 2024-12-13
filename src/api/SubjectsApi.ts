@@ -44,7 +44,7 @@ export class SubjectsApi {
 
 function getEndpoint( type: SubjectType ): string {
 	const schema = getSchema( type );
-	return `/${ schema.slug }s`;
+	return `/subjects/${ schema.slug }`;
 }
 
 function fromApiResponse( response: ApiPost ): Subject {
