@@ -1,25 +1,17 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { ReactElement, useEffect } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { BlogPostBlueprintEditor } from '@/ui/blueprints/blog-post/BlogPostBlueprintEditor';
-import { PageBlueprintEditor } from '@/ui/blueprints/blog-post/PageBlueprintEditor';
+import { BlueprintEditor } from '@/ui/blueprints/BlueprintEditor';
 import { Toolbar } from '@/ui/components/Toolbar';
-import { parseBlogPostField } from '@/parser/blog-post';
-import { parsePageField } from '@/parser/page';
-import { SubjectType } from '@/model/subject/Subject';
+import { validateFields } from '@/model/Subject';
 import { Screens } from '@/ui/App';
 import { useBlueprint } from '@/ui/hooks/useBlueprint';
 import { useSubject } from '@/ui/hooks/useSubject';
 import { Field } from '@/model/field/Field';
-import { BlogPost, validateBlogPost } from '@/model/subject/BlogPost';
-import {
-	BlogPostBlueprint,
-	validateBlogpostBlueprint,
-} from '@/model/blueprint/BlogPost';
-import { Page, validatePage } from '@/model/subject/Page';
-import { PageBlueprint, validatePageBlueprint } from '@/model/blueprint/Page';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { Button } from '@wordpress/components';
+import { validateBlueprint } from '@/model/Blueprint';
+import { parseField } from '@/parser/field';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -59,72 +51,29 @@ export function EditBlueprint() {
 			return;
 		}
 
-		blueprint.fields[ name ].selector = selector;
-
-		const subjectFieldsToUpdate: Record< string, Field > = {};
-		switch ( subject.type ) {
-			case SubjectType.BlogPost:
-				blueprint.valid = validateBlogpostBlueprint(
-					blueprint as BlogPostBlueprint
-				);
-				subjectFieldsToUpdate[ name ] = parseBlogPostField(
-					name,
-					field
-				);
-				break;
-			case SubjectType.Page:
-				blueprint.valid = validatePageBlueprint(
-					blueprint as PageBlueprint
-				);
-				subjectFieldsToUpdate[ name ] = parsePageField( name, field );
-				break;
-			default:
-				throw Error( `unknown subject type ${ subject.type }` );
-		}
+		blueprint.selectors[ name ] = selector;
+		blueprint.valid = validateBlueprint( blueprint );
+		subject.fields[ name ] = parseField( field );
 
 		const bp = await apiClient!.blueprints.update( blueprint );
 		setBlueprint( bp );
 
-		const updatedSubject = {
-			...subject,
-			...subjectFieldsToUpdate,
-		} as BlogPost;
-		const p = await apiClient!.blogPosts.update(
-			subject.id,
-			updatedSubject
-		);
+		const p = await apiClient!.subjects.update( subject );
 		setSubject( p );
-		void playgroundClient!.goTo( '/?p=' + subject.transformedId );
 	}
 
 	let isValid = false;
 	let editor: ReactElement | undefined;
 
 	if ( blueprint && subject ) {
-		switch ( subject.type ) {
-			case SubjectType.BlogPost:
-				isValid = validateBlogPost( subject as BlogPost );
-				editor = (
-					<BlogPostBlueprintEditor
-						blueprint={ blueprint as BlogPostBlueprint }
-						subject={ subject as BlogPost }
-						onFieldChanged={ onFieldChanged }
-					/>
-				);
-				break;
-			case SubjectType.Page:
-				isValid = validatePage( subject as Page );
-				editor = (
-					<PageBlueprintEditor
-						blueprint={ blueprint as PageBlueprint }
-						subject={ subject as Page }
-						onFieldChanged={ onFieldChanged }
-					/>
-				);
-				break;
-			default:
-				throw Error( `unknown subject type ${ subject.type }` );
-		}
+		editor = (
+			<BlueprintEditor
+				blueprint={ blueprint }
+				subject={ subject }
+				onFieldChanged={ onFieldChanged }
+			/>
+		);
+		isValid = validateFields( subject );
 	}
 
 	if ( isValid ) {

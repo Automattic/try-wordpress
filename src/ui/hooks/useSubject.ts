@@ -1,8 +1,6 @@
-import { Subject, SubjectType } from '@/model/subject/Subject';
+import { Subject, SubjectType } from '@/model/Subject';
 import { useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { newBlogPost } from '@/model/subject/BlogPost';
-import { newPage } from '@/model/subject/Page';
 
 // Create or load a Subject by its source URL.
 // If a Subject already exists for the source URL, we use that Subject,
@@ -19,33 +17,12 @@ export function useSubject(
 			if ( ! type || ! sourceUrl || ! apiClient ) {
 				return;
 			}
-			let subj: Subject | null;
-			switch ( type ) {
-				case SubjectType.BlogPost:
-					subj =
-						await apiClient!.blogPosts.findBySourceUrl( sourceUrl );
-					break;
-				case SubjectType.Page:
-					subj = await apiClient!.pages.findBySourceUrl( sourceUrl );
-					break;
-				default:
-					throw Error( `unknown blueprint type ${ type }` );
-			}
+			let subj = await apiClient!.subjects.findBySourceUrl(
+				type,
+				sourceUrl
+			);
 			if ( ! subj ) {
-				switch ( type ) {
-					case SubjectType.BlogPost:
-						subj = await apiClient!.blogPosts.create(
-							newBlogPost( sourceUrl )
-						);
-						break;
-					case SubjectType.Page:
-						subj = await apiClient!.pages.create(
-							newPage( sourceUrl )
-						);
-						break;
-					default:
-						throw Error( `unknown blueprint type ${ type }` );
-				}
+				subj = await apiClient!.subjects.create( type, sourceUrl );
 			}
 			setSubject( subj );
 		}

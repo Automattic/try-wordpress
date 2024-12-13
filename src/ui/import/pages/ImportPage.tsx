@@ -3,14 +3,14 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 import { useSubject } from '@/ui/hooks/useSubject';
-import { SubjectType } from '@/model/subject/Subject';
+import { SubjectType } from '@/model/Subject';
 import { Field } from '@/model/field/Field';
-import { Page } from '@/model/subject/Page';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
-import { parsePageField } from '@/parser/page';
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
+import { parseField } from '@/parser/field';
+import { getSchema } from '@/model/Schema';
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
@@ -22,7 +22,6 @@ export function ImportPage() {
 	const [ selectedPages ] = useSelectedPages();
 	const [ sourceUrl, setSourceUrl ] = useState< string >();
 	const [ subject, setPage ] = useSubject( SubjectType.Page, sourceUrl );
-	const page: Page | undefined = subject ? ( subject as Page ) : undefined;
 
 	// Find the url of the page to import.
 	useEffect( () => {
@@ -51,33 +50,30 @@ export function ImportPage() {
 
 	// Make playground navigate to the transformed post of the page.
 	useEffect( () => {
-		if ( page && !! playgroundClient ) {
-			void playgroundClient.goTo( page.previewUrl );
+		if ( subject && !! playgroundClient ) {
+			void playgroundClient.goTo( subject.previewUrl );
 		}
-	}, [ page, playgroundClient ] );
+	}, [ subject, playgroundClient ] );
 
-	if ( ! page ) {
+	if ( ! subject ) {
 		return 'Loading...';
 	}
 
-	const fields: { name: string; field: Field }[] = [
-		{ name: 'title', field: page.title },
-		{ name: 'content', field: page.content },
-	];
-
+	const schema = getSchema( SubjectType.Page );
+	const schemaFields = schema.fields;
+	const fields: { name: string; field: Field }[] = [];
 	const selectors: {
 		name: string;
 		selector?: string;
-	}[] = [
-		{
-			name: 'title',
-			selector: '',
-		},
-		{
-			name: 'content',
-			selector: '',
-		},
-	];
+	}[] = [];
+
+	Object.keys( schemaFields ).forEach( ( name ) => {
+		fields.push( {
+			name,
+			field: subject.fields[ name ],
+		} );
+		selectors.push( { name, selector: '' } );
+	} );
 
 	const backUrl =
 		pageIndex === 0
@@ -102,10 +98,9 @@ export function ImportPage() {
 				fields={ fields }
 				selectors={ selectors }
 				onFieldChanged={ async ( name: string, field: Field ) => {
-					// @ts-ignore
-					page[ name ] = parsePageField( name, field );
-					const p = await apiClient!.pages.update( page!.id, page );
-					setPage( p );
+					subject.fields[ name ] = parseField( field );
+					const s = await apiClient!.subjects.update( subject );
+					setPage( s );
 				} }
 			/>
 		</>

@@ -12,9 +12,9 @@ import {
 	useRouteLoaderData,
 } from 'react-router-dom';
 import { StrictMode, useEffect, useState } from 'react';
-import { NewSession } from '@/ui/start/NewSession';
+import { NewSession } from '@/ui/session/NewSession';
 import { ViewSession } from '@/ui/session/ViewSession';
-import { Home } from '@/ui/start/Home';
+import { Home } from '@/ui/Home';
 import { getConfig, setConfig } from '@/storage/config';
 import { getSession, listSessions, Session } from '@/storage/session';
 import { PlaceholderPreview } from '@/ui/preview/PlaceholderPreview';
@@ -24,7 +24,7 @@ import { PlaygroundClient } from '@wp-playground/client';
 import { Breadcrumbs } from '@/ui/components/Breadcrumbs';
 import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
-import { SubjectType } from '@/model/subject/Subject';
+import { SubjectType } from '@/model/Subject';
 import { ImportWithBlueprint } from '@/ui/import/ImportWithBlueprint';
 import { StartPageImport } from '@/ui/import/pages/StartPageImport';
 import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';

@@ -3,16 +3,15 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Screens } from '@/ui/App';
 import { Toolbar } from '@/ui/components/Toolbar';
-import { humanReadableSubjectType, SubjectType } from '@/model/subject/Subject';
-import { newBlogPostBlueprint } from '@/model/blueprint/BlogPost';
-import { newPageBlueprint } from '@/model/blueprint/Page';
-import { Blueprint } from '@/model/blueprint/Blueprint';
+import { SubjectType } from '@/model/Subject';
+import { newBlueprint } from '@/model/Blueprint';
 import {
 	CommandTypes,
 	CurrentPageInfo,
 	sendCommandToContent,
 } from '@/bus/Command';
 import { Button } from '@wordpress/components';
+import { getSchema } from '@/model/Schema';
 
 export function NewBlueprint() {
 	const params = useParams();
@@ -22,7 +21,7 @@ export function NewBlueprint() {
 	const { session, apiClient } = useSessionContext();
 
 	// Check if there is already a blueprint for the subjectType and if so,
-	// redirect to that blueprint's edit screen is the blueprint is not valid yet,
+	// redirect to that blueprint's edit screen if the blueprint is not valid yet,
 	// or redirect to the import screen if the blueprint is already valid.
 	useEffect( () => {
 		if ( ! apiClient ) {
@@ -48,12 +47,8 @@ export function NewBlueprint() {
 		maybeRedirect().catch( console.error );
 	}, [ session.id, apiClient, subjectType, navigate ] );
 
-	const navigateMessage = (
-		<>
-			Navigate to the page of a{ ' ' }
-			{ humanReadableSubjectType.get( subjectType ) }.
-		</>
-	);
+	const schema = getSchema( subjectType );
+	const navigateMessage = <>Navigate to the page of a { schema.title }.</>;
 
 	const element = (
 		<>
@@ -66,23 +61,9 @@ export function NewBlueprint() {
 							type: CommandTypes.GetCurrentPageInfo,
 							payload: {},
 						} ) ) as CurrentPageInfo;
-						let blueprint: Blueprint | null;
-						switch ( subjectType ) {
-							case SubjectType.BlogPost:
-								blueprint = await apiClient!.blueprints.create(
-									newBlogPostBlueprint( currentPage.url )
-								);
-								break;
-							case SubjectType.Page:
-								blueprint = await apiClient!.blueprints.create(
-									newPageBlueprint( currentPage.url )
-								);
-								break;
-							default:
-								throw Error(
-									`unknown post type ${ subjectType }`
-								);
-						}
+						const blueprint = await apiClient!.blueprints.create(
+							newBlueprint( subjectType, currentPage.url )
+						);
 						navigate(
 							Screens.blueprints.edit( session.id, blueprint.id )
 						);
