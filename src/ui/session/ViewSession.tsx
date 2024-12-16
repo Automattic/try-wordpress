@@ -11,22 +11,21 @@ export function ViewSession() {
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
 
-	const importButtons: { text: string; url: string }[] = [];
-	Object.keys( schemas ).forEach( ( subjectType ) => {
+	const importButtons: { text: string; url: string }[] = Object.keys(
+		schemas
+	).map( ( subjectType ) => {
 		// Pages get a specific button.
 		if ( subjectType === SubjectType.Page ) {
-			importButtons.push( {
+			return {
 				text: `Import Pages`,
 				url: Screens.importPagesStart( session.id ),
-			} );
-			return;
+			};
 		}
-
 		const schema = schemas[ subjectType ];
-		importButtons.push( {
+		return {
 			text: `Import ${ schema.title }s`,
 			url: Screens.blueprints.new( session.id, schema.slug ),
-		} );
+		};
 	} );
 
 	return (
