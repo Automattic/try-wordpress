@@ -14,6 +14,10 @@ interface Schema {
 
 const schemas: Schemas = SchemasJson as Schemas;
 
+export function getSchemas(): Schemas {
+	return schemas;
+}
+
 export function getSchema( subjectType: SubjectType ): Schema {
 	if ( ! schemas.hasOwnProperty( subjectType ) ) {
 		throw new Error( `Unknown subjectType: ${ subjectType }` );
