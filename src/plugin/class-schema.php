@@ -16,7 +16,7 @@ class Schema {
 		}
 	}
 
-	public static function get( $subject_type ): ?array {
+	public static function get( $subject_type = null ): ?array {
 		self::load_schema();
 		if ( $subject_type ) {
 			return self::$schema[ $subject_type ] ?? null;
