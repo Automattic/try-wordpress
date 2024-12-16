@@ -1,7 +1,7 @@
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
-import { SubjectType } from '@/model/Subject';
+import { ManualSubjectTypes } from '@/model/Subject';
 import { Button } from '@wordpress/components';
 import { getSchemas } from '@/model/Schema';
 
@@ -15,7 +15,7 @@ export function ViewSession() {
 		schemas
 	).map( ( subjectType ) => {
 		// Pages get a specific button.
-		if ( subjectType === SubjectType.Page ) {
+		if ( subjectType === ManualSubjectTypes.Page ) {
 			return {
 				text: `Import Pages`,
 				url: Screens.importPagesStart( session.id ),

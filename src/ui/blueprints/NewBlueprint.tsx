@@ -48,7 +48,7 @@ export function NewBlueprint() {
 	}, [ session.id, apiClient, subjectType, navigate ] );
 
 	const schema = getSchema( subjectType );
-	const navigateMessage = <>Navigate to the page of a { schema.title }.</>;
+	const navigateMessage = <>Navigate to a { schema.title }</>;
 
 	const element = (
 		<>

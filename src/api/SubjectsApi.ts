@@ -14,22 +14,23 @@ export class SubjectsApi {
 		const response = ( await this.client.post( path, {
 			sourceUrl,
 		} ) ) as ApiPost;
-		return fromApiResponse( response );
+		return fromApiResponse( type, response );
 	}
 
 	async update( subject: Subject ): Promise< Subject > {
-		const path = `${ getEndpoint( subject.type ) }/${ subject.id }`;
+		const { id, type } = subject;
+		const path = `${ getEndpoint( type ) }/${ id }`;
 		const response = ( await this.client.post(
 			path,
 			toApiUpdateRequest( subject )
 		) ) as ApiPost;
-		return fromApiResponse( response );
+		return fromApiResponse( type, response );
 	}
 
 	async findById( type: SubjectType, id: number ): Promise< Subject | null > {
 		const path = `${ getEndpoint( type ) }/${ id }`;
 		const post = ( await this.client.get( path ) ) as ApiPost;
-		return post ? fromApiResponse( post ) : null;
+		return post ? fromApiResponse( type, post ) : null;
 	}
 
 	async findBySourceUrl(
@@ -38,7 +39,7 @@ export class SubjectsApi {
 	): Promise< Subject | null > {
 		const path = `${ getEndpoint( type ) }?sourceurl=${ sourceUrl }`;
 		const post = ( await this.client.get( path ) ) as ApiPost;
-		return post ? fromApiResponse( post ) : null;
+		return post ? fromApiResponse( type, post ) : null;
 	}
 }
 
@@ -47,7 +48,7 @@ function getEndpoint( type: SubjectType ): string {
 	return `/subjects/${ schema.slug }`;
 }
 
-function fromApiResponse( response: ApiPost ): Subject {
+function fromApiResponse( type: SubjectType, response: ApiPost ): Subject {
 	const date = newDateField( response.rawDate, response.parsedDate );
 	const title = newTextField( response.rawTitle, response.parsedTitle ?? '' );
 	const content = newHtmlField(
@@ -57,7 +58,7 @@ function fromApiResponse( response: ApiPost ): Subject {
 
 	return {
 		id: response.id,
-		type: SubjectType.BlogPost,
+		type,
 		sourceUrl: response.sourceUrl,
 		transformedId: response.transformedId,
 		previewUrl: response.previewUrl,

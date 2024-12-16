@@ -3,7 +3,7 @@ import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelectedPages } from '@/ui/import/pages/useSelectedPages';
 import { useSubject } from '@/ui/hooks/useSubject';
-import { SubjectType } from '@/model/Subject';
+import { ManualSubjectTypes, SubjectType } from '@/model/Subject';
 import { Field } from '@/model/field/Field';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
@@ -11,6 +11,9 @@ import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
 import { parseField } from '@/parser/field';
 import { getSchema } from '@/model/Schema';
+
+const subjectType = ManualSubjectTypes.Page as unknown as SubjectType;
+const schema = getSchema( subjectType );
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
@@ -21,7 +24,7 @@ export function ImportPage() {
 	const navigate = useNavigate();
 	const [ selectedPages ] = useSelectedPages();
 	const [ sourceUrl, setSourceUrl ] = useState< string >();
-	const [ subject, setPage ] = useSubject( SubjectType.Page, sourceUrl );
+	const [ subject, setPage ] = useSubject( subjectType, sourceUrl );
 
 	// Find the url of the page to import.
 	useEffect( () => {
@@ -59,15 +62,13 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const schema = getSchema( SubjectType.Page );
-	const schemaFields = schema.fields;
 	const fields: { name: string; field: Field }[] = [];
 	const selectors: {
 		name: string;
 		selector?: string;
 	}[] = [];
 
-	Object.keys( schemaFields ).forEach( ( name ) => {
+	Object.keys( schema.fields ).forEach( ( name ) => {
 		fields.push( {
 			name,
 			field: subject.fields[ name ],

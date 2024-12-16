@@ -1,9 +1,12 @@
 import { Field } from '@/model/field/Field';
 
-export enum SubjectType {
-	BlogPost = 'blog-post',
+// Some subject types have a custom import UI, where the user manually imports each subject of that type.
+// These types are listed here so that we can centralize their slugs, and navigate to places in the code where they are referenced.
+export enum ManualSubjectTypes {
 	Page = 'page',
 }
+
+export type SubjectType = string;
 
 export interface Subject {
 	type: SubjectType;
