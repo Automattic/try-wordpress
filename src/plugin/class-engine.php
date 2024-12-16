@@ -12,6 +12,7 @@ class Engine {
 		require 'class-subjects-controller.php';
 		require 'class-storage.php';
 		require 'class-schema.php';
+		require 'utils.php';
 
 		( function () {
 			$transformer = new Transformer( $this->storage_post_type );

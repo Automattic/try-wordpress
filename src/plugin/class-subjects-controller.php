@@ -75,7 +75,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			foreach ( $definition['fields'] as $field => $field_definition ) {
 				$this->schema[ $subject_type ]['properties'][ 'raw' . ucfirst( $field ) ]    = array(
 					'description' => '[raw]' . $field_definition['description'] ?? '',
-					'type'        => $this->convert_schema_type_to_rest_api_type( $field_definition['type'] ),
+					'type'        => convert_schema_type_to_rest_api_type( $field_definition['type'] ),
 					'required'    => false,
 					'arg_options' => array(
 						'sanitize_callback' => 'sanitize_text_field',
@@ -83,7 +83,7 @@ class Subjects_Controller extends WP_REST_Controller {
 				);
 				$this->schema[ $subject_type ]['properties'][ 'parsed' . ucfirst( $field ) ] = array(
 					'description' => '[parsed]' . $field_definition['description'] ?? '',
-					'type'        => $this->convert_schema_type_to_rest_api_type( $field_definition['type'] ),
+					'type'        => convert_schema_type_to_rest_api_type( $field_definition['type'] ),
 					'required'    => false,
 					'arg_options' => array(
 						'sanitize_callback' => 'sanitize_text_field',
@@ -458,23 +458,5 @@ class Subjects_Controller extends WP_REST_Controller {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Function to convert type values specified by schema to one that's compatible with REST API
-	 *
-	 * REST API only accepts the following as type:
-	 * 'array', 'object', 'string', 'number', 'integer', 'boolean', null
-	 *
-	 * And in our schema, we have types like 'html', 'text'
-	 *
-	 * @param string $type Type from our schema.
-	 * @return string Type that REST API accepts
-	 */
-	private function convert_schema_type_to_rest_api_type( string $type ): string {
-		return match ( $type ) {
-			'html', 'text', 'date' => 'string',
-			default => $type,
-		};
 	}
 }
