@@ -23,132 +23,31 @@ class Subjects_Controller extends WP_REST_Controller {
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 
 		$this->attach_filters();
-		$this->get_item_schema();
 	}
 
 	public function init_schema(): void {
-		$this->schema = array(
-			'blog-post' => array(
+		$this->schema = array();
+		$new_schema   = Schema::get();
+
+		foreach ( $new_schema as $subject_type => $definition ) {
+			$this->schema[ $subject_type ] = array(
 				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'blogpost',
-				'type'       => 'object',
-				'properties' => array(
-					'id'            => array(
-						'description' => __( 'Unique identifier for liberated blogpost', 'try_wordpress' ),
-						'type'        => 'integer',
-						'context'     => array( 'view', 'edit' ),
-						'readonly'    => true,
-					),
-					'authorId'      => array(
-						'description' => __( 'Author ID of the blogpost', 'try_wordpress' ),
-						'type'        => 'integer',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-					),
-					'sourceUrl'     => array(
-						'description' => __( 'Source URL from where the blogpost was liberated', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => true,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'sourceHtml'    => array(
-						'description' => __( 'Source HTML from where the blogpost was liberated', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawTitle'      => array(
-						'description' => __( 'Raw title of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedTitle'   => array(
-						'description' => __( 'Parsed title of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawDate'       => array(
-						'description' => __( 'Raw date of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedDate'    => array(
-						'description' => __( 'Parsed date of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawContent'    => array(
-						'description' => __( 'Raw content of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedContent' => array(
-						'description' => __( 'Parsed content of the blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'transformedId' => array(
-						'description' => __( 'Post ID of transformed result of this liberated blogpost', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-				),
-			),
-			'page'      => array(
-				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'page',
+				'title'      => $definition['title'],
 				'type'       => 'object',
 				'properties' => array(
 					'id'            => array(
 						'description' => __( 'Unique identifier for liberated page', 'try_wordpress' ),
 						'type'        => 'integer',
-						'context'     => array( 'view', 'edit' ),
 						'readonly'    => true,
 					),
 					'authorId'      => array(
 						'description' => __( 'Author ID of the page', 'try_wordpress' ),
 						'type'        => 'integer',
-						'context'     => array( 'view', 'edit' ),
 						'required'    => false,
 					),
 					'sourceUrl'     => array(
 						'description' => __( 'Source URL from where the page was liberated', 'try_wordpress' ),
 						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
 						'required'    => true,
 						'arg_options' => array(
 							'sanitize_callback' => 'sanitize_text_field',
@@ -157,61 +56,6 @@ class Subjects_Controller extends WP_REST_Controller {
 					'sourceHtml'    => array(
 						'description' => __( 'Source HTML from where the page was liberated', 'try_wordpress' ),
 						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawTitle'      => array(
-						'description' => __( 'Raw title of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedTitle'   => array(
-						'description' => __( 'Parsed title of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawDate'       => array(
-						'description' => __( 'Raw date of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedDate'    => array(
-						'description' => __( 'Parsed date of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'rawContent'    => array(
-						'description' => __( 'Raw content of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
-						'required'    => false,
-						'arg_options' => array(
-							'sanitize_callback' => 'sanitize_text_field',
-						),
-					),
-					'parsedContent' => array(
-						'description' => __( 'Parsed content of the page', 'try_wordpress' ),
-						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
 						'required'    => false,
 						'arg_options' => array(
 							'sanitize_callback' => 'sanitize_text_field',
@@ -220,15 +64,33 @@ class Subjects_Controller extends WP_REST_Controller {
 					'transformedId' => array(
 						'description' => __( 'Post ID of transformed result of this liberated page', 'try_wordpress' ),
 						'type'        => 'string',
-						'context'     => array( 'view', 'edit' ),
 						'required'    => false,
 						'arg_options' => array(
 							'sanitize_callback' => 'sanitize_text_field',
 						),
 					),
 				),
-			),
-		);
+			);
+
+			foreach ( $definition['fields'] as $field => $field_definition ) {
+				$this->schema[ $subject_type ]['properties'][ 'raw' . ucfirst( $field ) ]    = array(
+					'description' => '[raw]' . $field_definition['description'] ?? '',
+					'type'        => convert_schema_type_to_rest_api_type( $field_definition['type'] ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				);
+				$this->schema[ $subject_type ]['properties'][ 'parsed' . ucfirst( $field ) ] = array(
+					'description' => '[parsed]' . $field_definition['description'] ?? '',
+					'type'        => convert_schema_type_to_rest_api_type( $field_definition['type'] ),
+					'required'    => false,
+					'arg_options' => array(
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				);
+			}
+		}
 	}
 
 	public function register_routes(): void {
