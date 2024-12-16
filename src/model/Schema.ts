@@ -3,12 +3,12 @@ import SchemasJson from '@schema/schema.json';
 import { SubjectType } from '@/model/Subject';
 
 interface Schemas {
-	[ key: string ]: Schema;
+	[ subjectType: string ]: Schema;
 }
 
 interface Schema {
 	title: string;
-	slug: string;
+	slug: SubjectType;
 	fields: Record< string, any >;
 }
 
