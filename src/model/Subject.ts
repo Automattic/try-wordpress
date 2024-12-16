@@ -6,10 +6,7 @@ export enum ManualSubjectTypes {
 	Page = 'page',
 }
 
-export enum SubjectType {
-	BlogPost = 'blog-post',
-	Page = 'page',
-}
+export type SubjectType = string;
 
 export interface Subject {
 	type: SubjectType;
