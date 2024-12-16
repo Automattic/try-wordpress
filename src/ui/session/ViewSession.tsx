@@ -3,10 +3,30 @@ import { useNavigate } from 'react-router-dom';
 import { Screens } from '@/ui/App';
 import { SubjectType } from '@/model/Subject';
 import { Button } from '@wordpress/components';
+import { getSchemas } from '@/model/Schema';
+
+const schemas = getSchemas();
 
 export function ViewSession() {
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
+
+	const importButtons: { text: string; url: string }[] = Object.keys(
+		schemas
+	).map( ( subjectType ) => {
+		// Pages get a specific button.
+		if ( subjectType === SubjectType.Page ) {
+			return {
+				text: `Import Pages`,
+				url: Screens.importPagesStart( session.id ),
+			};
+		}
+		const schema = schemas[ subjectType ];
+		return {
+			text: `Import ${ schema.title }s`,
+			url: Screens.blueprints.new( session.id, schema.slug ),
+		};
+	} );
 
 	return (
 		<>
@@ -14,33 +34,17 @@ export function ViewSession() {
 				{ session.title } ({ session.url })
 			</h1>
 			<ul>
-				<li>
-					<Button
-						variant="primary"
-						className="button-block"
-						onClick={ () =>
-							navigate(
-								Screens.blueprints.new(
-									session.id,
-									SubjectType.BlogPost
-								)
-							)
-						}
-					>
-						Import Posts
-					</Button>
-				</li>
-				<li>
-					<Button
-						variant="primary"
-						className="button-block"
-						onClick={ () =>
-							navigate( Screens.importPagesStart( session.id ) )
-						}
-					>
-						Import Pages
-					</Button>
-				</li>
+				{ importButtons.map( ( { text, url } ) => (
+					<li key={ url }>
+						<Button
+							variant="primary"
+							className="button-block"
+							onClick={ () => navigate( url ) }
+						>
+							{ text }
+						</Button>
+					</li>
+				) ) }
 			</ul>
 		</>
 	);
