@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBlueprint } from '@/ui/hooks/useBlueprint';
-import { SubjectType } from '@/model/Subject';
 import { Toolbar } from '@/ui/components/Toolbar';
 import { ReactElement, useEffect } from 'react';
 import { Screens } from '@/ui/App';
@@ -35,7 +34,7 @@ export function ImportWithBlueprint() {
 		}
 	}
 
-	const schema = getSchema( SubjectType.Page );
+	const schema = blueprint ? getSchema( blueprint.type ) : undefined;
 	return (
 		<>
 			{ ! blueprint ? (
@@ -67,7 +66,7 @@ export function ImportWithBlueprint() {
 							Continue
 						</Button>
 					</Toolbar>
-					We&apos;ll now import { schema.title }s using the following
+					We&apos;ll now import { schema!.title }s using the following
 					selectors:
 					<br />
 					<br />
