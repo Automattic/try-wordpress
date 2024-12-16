@@ -13,16 +13,12 @@ interface Props {
 export function BlueprintEditor( props: Props ) {
 	const { blueprint, subject, onFieldChanged } = props;
 	const schema = getSchema( subject.type );
-	const schemaFields = schema.fields;
 
-	const subjectFields: { name: string; field: Field }[] = [];
-	const selectors: {
-		name: string;
-		selector?: string;
-	}[] = [];
+	const fields: { name: string; field: Field }[] = [];
+	const selectors: { name: string; selector?: string }[] = [];
 
-	Object.keys( schemaFields ).forEach( ( name ) => {
-		subjectFields.push( {
+	Object.keys( schema.fields ).forEach( ( name ) => {
+		fields.push( {
 			name,
 			field: subject.fields[ name ],
 		} );
@@ -34,7 +30,7 @@ export function BlueprintEditor( props: Props ) {
 
 	return (
 		<FieldsEditor
-			fields={ subjectFields }
+			fields={ fields }
 			selectors={ selectors }
 			onFieldChanged={ onFieldChanged }
 		/>
