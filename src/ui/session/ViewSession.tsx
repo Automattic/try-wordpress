@@ -8,39 +8,34 @@ export function ViewSession() {
 	const { session } = useSessionContext();
 	const navigate = useNavigate();
 
+	const importButtons = [
+		{
+			text: 'Import Posts',
+			url: Screens.blueprints.new( session.id, SubjectType.BlogPost ),
+		},
+		{
+			text: 'Import Pages',
+			url: Screens.importPagesStart( session.id ),
+		},
+	];
+
 	return (
 		<>
 			<h1>
 				{ session.title } ({ session.url })
 			</h1>
 			<ul>
-				<li>
-					<Button
-						variant="primary"
-						className="button-block"
-						onClick={ () =>
-							navigate(
-								Screens.blueprints.new(
-									session.id,
-									SubjectType.BlogPost
-								)
-							)
-						}
-					>
-						Import Posts
-					</Button>
-				</li>
-				<li>
-					<Button
-						variant="primary"
-						className="button-block"
-						onClick={ () =>
-							navigate( Screens.importPagesStart( session.id ) )
-						}
-					>
-						Import Pages
-					</Button>
-				</li>
+				{ importButtons.map( ( { text, url } ) => (
+					<li key={ url }>
+						<Button
+							variant="primary"
+							className="button-block"
+							onClick={ () => navigate( url ) }
+						>
+							{ text }
+						</Button>
+					</li>
+				) ) }
 			</ul>
 		</>
 	);
