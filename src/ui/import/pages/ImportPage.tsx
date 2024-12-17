@@ -10,10 +10,8 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
 import { parseField } from '@/parser/field';
-import { getSchema } from '@/model/Schema';
 
 const subjectType = ManualSubjectTypes.Page as unknown as SubjectType;
-const schema = getSchema( subjectType );
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
