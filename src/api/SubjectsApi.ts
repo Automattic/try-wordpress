@@ -77,29 +77,22 @@ function toApiUpdateRequest( subject: Subject ): UpdateBody {
 		id: subject.id,
 	};
 
-	if ( subject.fields.date ) {
-		request = {
-			...request,
-			rawDate: subject.fields.date.rawValue,
-			parsedDate: subject.fields.date.parsedValue.toISOString(),
-		};
-	}
+	Object.entries( subject.fields ).forEach( ( [ fieldName, field ] ) => {
+		const capitalizedFieldName =
+			fieldName.charAt( 0 ).toUpperCase() + fieldName.slice( 1 );
 
-	if ( subject.fields.title ) {
-		request = {
-			...request,
-			rawTitle: subject.fields.title.rawValue,
-			parsedTitle: subject.fields.title.parsedValue,
-		};
-	}
+		let parsedValue = field.parsedValue;
+		// Handle special cases
+		if ( fieldName === 'date' && field.parsedValue instanceof Date ) {
+			parsedValue = field.parsedValue.toISOString();
+		}
 
-	if ( subject.fields.content ) {
 		request = {
 			...request,
-			rawContent: subject.fields.content.rawValue,
-			parsedContent: subject.fields.content.parsedValue,
+			[ `raw${ capitalizedFieldName }` ]: field.rawValue,
+			[ `parsed${ capitalizedFieldName }` ]: parsedValue,
 		};
-	}
+	} );
 
 	return request;
 }
