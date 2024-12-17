@@ -13,7 +13,7 @@
 			"required": true
 		},
 		"content": {
-			"description": "Body of the blog post",
+			"description": "The body of the blog post",
 			"type": "html",
 			"required": true
 		}
