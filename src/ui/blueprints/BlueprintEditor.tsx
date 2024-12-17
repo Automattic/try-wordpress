@@ -1,6 +1,5 @@
 import { Field } from '@/model/field/Field';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
-import { getSchema } from '@/model/Schema';
 import { Subject } from '@/model/Subject';
 import { Blueprint } from '@/model/Blueprint';
 
@@ -12,17 +11,10 @@ interface Props {
 
 export function BlueprintEditor( props: Props ) {
 	const { blueprint, subject, onFieldChanged } = props;
-	const schema = getSchema( subject.type );
-
-	const selectors: Record< string, string > = {};
-	Object.keys( schema.fields ).forEach( ( name ) => {
-		selectors[ name ] = blueprint.selectors[ name ] ?? '';
-	} );
-
 	return (
 		<FieldsEditor
 			subject={ subject }
-			selectors={ selectors }
+			selectors={ blueprint.selectors }
 			onFieldChanged={ onFieldChanged }
 		/>
 	);
