@@ -112,7 +112,11 @@ function toApiUpdateRequest( subject: Subject ): UpdateBody {
 
 		let parsedValue = field.parsedValue;
 		// Handle special cases
-		if ( fieldName === 'date' && field.parsedValue instanceof Date ) {
+
+		if (
+			field.type === FieldType.Date &&
+			field.parsedValue instanceof Date
+		) {
 			parsedValue = field.parsedValue.toISOString();
 		}
 
