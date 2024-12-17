@@ -1,5 +1,5 @@
 import { Field } from '@/model/field/Field';
-import { ReactElement, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEditor';
 import { EventTypes } from '@/bus/Event';
@@ -9,27 +9,13 @@ import { ContentEventHandler } from '@/ui/components/ContentEventHandler';
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
 	fields: Record< string, Field >;
-	selectors: {
-		name: string;
-		selector?: string;
-	}[];
+	selectors: Record< string, string >;
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
 } ) {
-	const { fields, onFieldChanged } = props;
+	const { fields, selectors, onFieldChanged } = props;
 	const [ fieldWaitingForSelection, setFieldWaitingForSelection ] = useState<
 		false | { field: Field; name: string }
 	>( false );
-
-	// Transform the blueprint fields into a map queryable by field name.
-	const blueprintFields = useMemo<
-		Map< string, string | undefined >
-	>( () => {
-		const map = new Map< string, string >();
-		props.selectors.forEach( ( f ) => {
-			map.set( f.name, f.selector ?? '' );
-		} );
-		return map;
-	}, [ props.selectors ] );
 
 	// Enable or disable highlighting according to whether a field is waiting for selection.
 	useEffect( () => {
@@ -48,7 +34,7 @@ export function FieldsEditor( props: {
 			!! fieldWaitingForSelection &&
 			fieldWaitingForSelection.name === name;
 
-		const selector = blueprintFields.get( name );
+		const selector = selectors[ name ];
 		if ( selector === undefined ) {
 			throw new Error( `selector for field ${ name } not found` );
 		}

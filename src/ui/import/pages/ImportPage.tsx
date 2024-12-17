@@ -63,14 +63,11 @@ export function ImportPage() {
 	}
 
 	const fields: Record< string, Field > = {};
-	const selectors: {
-		name: string;
-		selector?: string;
-	}[] = [];
+	const selectors: Record< string, string > = {};
 
 	Object.keys( schema.fields ).forEach( ( name ) => {
 		fields[ name ] = subject.fields[ name ];
-		selectors.push( { name, selector: '' } );
+		selectors[ name ] = '';
 	} );
 
 	const backUrl =
