@@ -78,12 +78,6 @@ function fromApiResponse( type: SubjectType, response: ApiPost ): Subject {
 			case FieldType.Html:
 				acc[ fieldName ] = newHtmlField( rawValue, parsedValue );
 				break;
-			// case FieldType.Link:
-			// 	acc[ fieldName ] = newLinkField(
-			// 		rawValue,
-			// 		...( parsedValue.split( '||' ) as [ string, string ] )
-			// 	);
-			// 	break;
 		}
 
 		return acc;
