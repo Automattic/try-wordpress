@@ -24,6 +24,7 @@ export function BlueprintEditor( props: Props ) {
 
 	return (
 		<FieldsEditor
+			subject={ subject }
 			fields={ fields }
 			selectors={ selectors }
 			onFieldChanged={ onFieldChanged }

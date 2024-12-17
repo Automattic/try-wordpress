@@ -4,10 +4,12 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEditor';
 import { EventTypes } from '@/bus/Event';
 import { ContentEventHandler } from '@/ui/components/ContentEventHandler';
+import { Subject } from '@/model/Subject';
 
 // Displays a list of fields that can be "edited" by selecting the content of each field,
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
+	subject: Subject;
 	fields: Record< string, Field >;
 	selectors: Record< string, string >;
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;

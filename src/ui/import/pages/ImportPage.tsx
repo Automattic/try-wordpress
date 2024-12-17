@@ -90,6 +90,7 @@ export function ImportPage() {
 				Importing page { pageIndex + 1 } of { selectedPages!.length }
 			</p>
 			<FieldsEditor
+				subject={ subject }
 				fields={ fields }
 				selectors={ selectors }
 				onFieldChanged={ async ( name: string, field: Field ) => {
