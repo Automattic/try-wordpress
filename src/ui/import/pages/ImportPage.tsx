@@ -62,11 +62,8 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const fields: Record< string, Field > = {};
 	const selectors: Record< string, string > = {};
-
 	Object.keys( schema.fields ).forEach( ( name ) => {
-		fields[ name ] = subject.fields[ name ];
 		selectors[ name ] = '';
 	} );
 
@@ -91,7 +88,6 @@ export function ImportPage() {
 			</p>
 			<FieldsEditor
 				subject={ subject }
-				fields={ fields }
 				selectors={ selectors }
 				onFieldChanged={ async ( name: string, field: Field ) => {
 					subject.fields[ name ] = parseField( field );

@@ -14,18 +14,14 @@ export function BlueprintEditor( props: Props ) {
 	const { blueprint, subject, onFieldChanged } = props;
 	const schema = getSchema( subject.type );
 
-	const fields: Record< string, Field > = {};
 	const selectors: Record< string, string > = {};
-
 	Object.keys( schema.fields ).forEach( ( name ) => {
-		fields[ name ] = subject.fields[ name ];
 		selectors[ name ] = blueprint.selectors[ name ] ?? '';
 	} );
 
 	return (
 		<FieldsEditor
 			subject={ subject }
-			fields={ fields }
 			selectors={ selectors }
 			onFieldChanged={ onFieldChanged }
 		/>

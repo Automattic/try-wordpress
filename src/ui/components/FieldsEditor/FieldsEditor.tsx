@@ -10,14 +10,15 @@ import { Subject } from '@/model/Subject';
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
 	subject: Subject;
-	fields: Record< string, Field >;
 	selectors: Record< string, string >;
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
 } ) {
-	const { fields, selectors, onFieldChanged } = props;
+	const { subject, selectors, onFieldChanged } = props;
 	const [ fieldWaitingForSelection, setFieldWaitingForSelection ] = useState<
 		false | { field: Field; name: string }
 	>( false );
+
+	const fields = subject.fields;
 
 	// Enable or disable highlighting according to whether a field is waiting for selection.
 	useEffect( () => {
