@@ -1,15 +1,22 @@
 // eslint-disable-next-line import/no-unresolved
 import SchemasJson from '@schema/schema.json';
 import { SubjectType } from '@/model/Subject';
+import { FieldType } from '@/model/field/Field';
 
 interface Schemas {
 	[ key: SubjectType ]: Schema;
 }
 
+interface SchemaField {
+	description: string;
+	type: FieldType;
+	required?: boolean;
+}
+
 interface Schema {
 	title: string;
 	slug: SubjectType;
-	fields: Record< string, any >;
+	fields: Record< string, SchemaField >;
 }
 
 const schemas: Schemas = SchemasJson as Schemas;

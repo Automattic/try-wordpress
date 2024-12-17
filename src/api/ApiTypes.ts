@@ -6,15 +6,8 @@ export type ApiPost = {
 	transformedId: number;
 	previewUrl: string;
 	sourceUrl: string;
-	rawDate?: string;
-	parsedDate?: string;
-	rawTitle?: string;
-	parsedTitle?: string;
-	rawContent?: string;
-	parsedContent?: string;
+	[ key: string ]: any; // For the raw/parsed fields
 };
-
-export type ApiPage = ApiPost;
 
 export type ApiUser = WP_REST_API_User;
 

@@ -1,10 +1,12 @@
 import { ApiClient } from '@/api/ApiClient';
 import { Subject, SubjectType } from '@/model/Subject';
 import { ApiPost } from '@/api/ApiTypes';
+import { getSchema } from '@/model/Schema';
+import { Field, FieldType } from '@/model/field/Field';
 import { newDateField } from '@/model/field/DateField';
 import { newTextField } from '@/model/field/TextField';
 import { newHtmlField } from '@/model/field/HtmlField';
-import { getSchema } from '@/model/Schema';
+import { newLinkField } from '@/model/field/LinkField';
 
 export class SubjectsApi {
 	constructor( private readonly client: ApiClient ) {}
@@ -49,12 +51,44 @@ function getEndpoint( type: SubjectType ): string {
 }
 
 function fromApiResponse( type: SubjectType, response: ApiPost ): Subject {
-	const date = newDateField( response.rawDate, response.parsedDate );
-	const title = newTextField( response.rawTitle, response.parsedTitle ?? '' );
-	const content = newHtmlField(
-		response.rawContent,
-		response.parsedContent ?? ''
-	);
+	const schema = getSchema( type );
+
+	const fields = Object.entries( schema.fields ).reduce<
+		Record< string, Field >
+	>( ( acc, [ fieldName, schemaField ] ) => {
+		// Create the raw/parsed key names from the field name
+		const rawKey = `raw${ fieldName
+			.charAt( 0 )
+			.toUpperCase() }${ fieldName.slice( 1 ) }`;
+		const parsedKey = `parsed${ fieldName
+			.charAt( 0 )
+			.toUpperCase() }${ fieldName.slice( 1 ) }`;
+
+		// Get values from response
+		const rawValue = response[ rawKey ];
+		const parsedValue = response[ parsedKey ];
+
+		// Create field based on schema-defined type
+		switch ( schemaField.type ) {
+			case FieldType.Date:
+				acc[ fieldName ] = newDateField( rawValue, parsedValue );
+				break;
+			case FieldType.Text:
+				acc[ fieldName ] = newTextField( rawValue, parsedValue );
+				break;
+			case FieldType.Html:
+				acc[ fieldName ] = newHtmlField( rawValue, parsedValue );
+				break;
+			case FieldType.Link:
+				acc[ fieldName ] = newLinkField(
+					rawValue,
+					...( parsedValue.split( '||' ) as [ string, string ] )
+				);
+				break;
+		}
+
+		return acc;
+	}, {} );
 
 	return {
 		id: response.id,
@@ -62,11 +96,7 @@ function fromApiResponse( type: SubjectType, response: ApiPost ): Subject {
 		sourceUrl: response.sourceUrl,
 		transformedId: response.transformedId,
 		previewUrl: response.previewUrl,
-		fields: {
-			title,
-			date,
-			content,
-		},
+		fields,
 	};
 }
 
