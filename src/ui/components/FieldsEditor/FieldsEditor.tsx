@@ -43,6 +43,8 @@ export function FieldsEditor( props: {
 	const elements: ReactElement[] = [];
 	for ( const name in fields ) {
 		const field = fields[ name ];
+		const schemaField = schema.fields[ name ];
+
 		const isWaitingForSelection =
 			!! fieldWaitingForSelection &&
 			fieldWaitingForSelection.name === name;
@@ -52,6 +54,7 @@ export function FieldsEditor( props: {
 				key={ name }
 				field={ field }
 				label={ name }
+				description={ schemaField.description }
 				selector={ selectors ? selectors[ name ] : '' }
 				waitingForSelection={ isWaitingForSelection }
 				onWaitingForSelection={ async ( f: Field | false ) => {

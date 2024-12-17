@@ -4,6 +4,7 @@ import { Button, ButtonGroup } from '@wordpress/components';
 export function SingleFieldEditor( props: {
 	field: Field;
 	label: string;
+	description: string;
 	selector: string;
 	waitingForSelection: boolean;
 	onWaitingForSelection: ( field: Field | false ) => void;
