@@ -13,6 +13,7 @@ export function SingleFieldEditor( props: {
 	const {
 		field,
 		label,
+		description,
 		selector,
 		waitingForSelection,
 		onWaitingForSelection,
@@ -22,6 +23,7 @@ export function SingleFieldEditor( props: {
 	return (
 		<fieldset>
 			<legend>{ label } </legend>
+			<div className="field-description">{ description }</div>
 			<div>
 				<ButtonGroup>
 					<Button
