@@ -6,7 +6,6 @@ import { Field, FieldType } from '@/model/field/Field';
 import { newDateField } from '@/model/field/DateField';
 import { newTextField } from '@/model/field/TextField';
 import { newHtmlField } from '@/model/field/HtmlField';
-import { newLinkField } from '@/model/field/LinkField';
 
 export class SubjectsApi {
 	constructor( private readonly client: ApiClient ) {}
@@ -79,12 +78,12 @@ function fromApiResponse( type: SubjectType, response: ApiPost ): Subject {
 			case FieldType.Html:
 				acc[ fieldName ] = newHtmlField( rawValue, parsedValue );
 				break;
-			case FieldType.Link:
-				acc[ fieldName ] = newLinkField(
-					rawValue,
-					...( parsedValue.split( '||' ) as [ string, string ] )
-				);
-				break;
+			// case FieldType.Link:
+			// 	acc[ fieldName ] = newLinkField(
+			// 		rawValue,
+			// 		...( parsedValue.split( '||' ) as [ string, string ] )
+			// 	);
+			// 	break;
 		}
 
 		return acc;
