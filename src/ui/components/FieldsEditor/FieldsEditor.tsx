@@ -10,7 +10,7 @@ import { Subject } from '@/model/Subject';
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
 	subject: Subject;
-	selectors: Record< string, string >;
+	selectors?: Record< string, string >;
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
 } ) {
 	const { subject, selectors, onFieldChanged } = props;
@@ -37,17 +37,12 @@ export function FieldsEditor( props: {
 			!! fieldWaitingForSelection &&
 			fieldWaitingForSelection.name === name;
 
-		const selector = selectors[ name ];
-		if ( selector === undefined ) {
-			throw new Error( `selector for field ${ name } not found` );
-		}
-
 		elements.push(
 			<SingleFieldEditor
 				key={ name }
 				field={ field }
 				label={ name }
-				selector={ selector }
+				selector={ selectors ? selectors[ name ] : '' }
 				waitingForSelection={ isWaitingForSelection }
 				onWaitingForSelection={ async ( f: Field | false ) => {
 					if ( f === false ) {

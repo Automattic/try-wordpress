@@ -62,11 +62,6 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const selectors: Record< string, string > = {};
-	Object.keys( schema.fields ).forEach( ( name ) => {
-		selectors[ name ] = '';
-	} );
-
 	const backUrl =
 		pageIndex === 0
 			? Screens.importPagesSelectPages( session.id )
@@ -88,7 +83,6 @@ export function ImportPage() {
 			</p>
 			<FieldsEditor
 				subject={ subject }
-				selectors={ selectors }
 				onFieldChanged={ async ( name: string, field: Field ) => {
 					subject.fields[ name ] = parseField( field );
 					const s = await apiClient!.subjects.update( subject );
