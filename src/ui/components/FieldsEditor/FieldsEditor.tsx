@@ -5,6 +5,7 @@ import { SingleFieldEditor } from '@/ui/components/FieldsEditor/SingleFieldEdito
 import { EventTypes } from '@/bus/Event';
 import { ContentEventHandler } from '@/ui/components/ContentEventHandler';
 import { Subject } from '@/model/Subject';
+import { getSchema } from '@/model/Schema';
 
 // Displays a list of fields that can be "edited" by selecting the content of each field,
 // which is done by clicking on elements in the source site.
@@ -14,11 +15,20 @@ export function FieldsEditor( props: {
 	onFieldChanged: ( name: string, field: Field, selector: string ) => void;
 } ) {
 	const { subject, selectors, onFieldChanged } = props;
+	const schema = getSchema( subject.type );
 	const [ fieldWaitingForSelection, setFieldWaitingForSelection ] = useState<
 		false | { field: Field; name: string }
 	>( false );
 
 	const fields = subject.fields;
+
+	// Filter out fields that are not in the schema.
+	// TODO: Move this to SubjectsApi so that a Subject is guaranteed to not have unknown fields.
+	Object.keys( subject.fields ).forEach( ( name ) => {
+		if ( ! schema.fields[ name ] ) {
+			delete fields[ name ];
+		}
+	} );
 
 	// Enable or disable highlighting according to whether a field is waiting for selection.
 	useEffect( () => {
