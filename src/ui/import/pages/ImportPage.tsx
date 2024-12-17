@@ -62,17 +62,14 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const fields: { name: string; field: Field }[] = [];
+	const fields: Record< string, Field > = {};
 	const selectors: {
 		name: string;
 		selector?: string;
 	}[] = [];
 
 	Object.keys( schema.fields ).forEach( ( name ) => {
-		fields.push( {
-			name,
-			field: subject.fields[ name ],
-		} );
+		fields[ name ] = subject.fields[ name ];
 		selectors.push( { name, selector: '' } );
 	} );
 

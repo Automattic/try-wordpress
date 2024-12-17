@@ -8,7 +8,7 @@ import { ContentEventHandler } from '@/ui/components/ContentEventHandler';
 // Displays a list of fields that can be "edited" by selecting the content of each field,
 // which is done by clicking on elements in the source site.
 export function FieldsEditor( props: {
-	fields: { name: string; field: Field }[];
+	fields: Record< string, Field >;
 	selectors: {
 		name: string;
 		selector?: string;
@@ -42,7 +42,8 @@ export function FieldsEditor( props: {
 
 	// Render each field.
 	const elements: ReactElement[] = [];
-	for ( const { name, field } of fields ) {
+	for ( const name in fields ) {
+		const field = fields[ name ];
 		const isWaitingForSelection =
 			!! fieldWaitingForSelection &&
 			fieldWaitingForSelection.name === name;

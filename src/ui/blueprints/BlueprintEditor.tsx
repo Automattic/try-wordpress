@@ -14,14 +14,11 @@ export function BlueprintEditor( props: Props ) {
 	const { blueprint, subject, onFieldChanged } = props;
 	const schema = getSchema( subject.type );
 
-	const fields: { name: string; field: Field }[] = [];
+	const fields: Record< string, Field > = {};
 	const selectors: { name: string; selector?: string }[] = [];
 
 	Object.keys( schema.fields ).forEach( ( name ) => {
-		fields.push( {
-			name,
-			field: subject.fields[ name ],
-		} );
+		fields[ name ] = subject.fields[ name ];
 		selectors.push( {
 			name,
 			selector: blueprint.selectors[ name ],
