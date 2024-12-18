@@ -288,9 +288,11 @@ class Subjects_Controller extends WP_REST_Controller {
 		foreach ( $item_meta as $key => $value ) {
 			update_post_meta( $item['ID'], $key, $value );
 		}
-		update_post_meta( $item['ID'], 'subject_type', 'page' );
 
-		return $this->prepare_item_for_response( $item, $request );
+		$subject_type = $this->get_subject_type( $request );
+		update_post_meta( $item['ID'], 'subject_type', $subject_type );
+
+		return $this->prepare_item_for_response( $item, $request, $subject_type );
 	}
 
 	public function update_item( $request ): WP_REST_Response|WP_Error {
@@ -369,60 +371,44 @@ class Subjects_Controller extends WP_REST_Controller {
 			);
 		}
 
+		$subject_type = $this->get_subject_type( $request );
+
 		$response = array(
 			'id'            => $item['ID'],
 			'authorId'      => $item['post_author'] ?? '',
 			'sourceUrl'     => $item['guid'] ?? '',
 			'sourceHtml'    => $item['post_content_filtered'] ?? '',
-			'rawTitle'      => get_post_meta( $item['ID'], 'raw_title', true ),
-			'parsedTitle'   => $item['post_title'] ?? '',
-			'rawDate'       => get_post_meta( $item['ID'], 'raw_date', true ),
-			'parsedDate'    => $item['post_date'] ?? '',
-			'rawContent'    => get_post_meta( $item['ID'], 'raw_content', true ),
-			'parsedContent' => $item['post_content'] ?? '',
 			'transformedId' => absint( get_post_meta( $item['ID'], '_dl_transformed', true ) ),
 		);
+
+		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {
+			$response[ 'raw' . ucfirst( $field_name ) ]    = get_post_meta( $item['ID'], 'raw_' . $field_name, true );
+			$response[ 'parsed' . ucfirst( $field_name ) ] = get_post_meta( $item['ID'], 'parsed_' . $field_name, true );
+		}
 
 		$response['previewUrl'] = get_permalink( $response['transformedId'] );
 
 		return new WP_REST_Response( $response );
 	}
 
-	public function prepare_item_for_database( $request ): WP_Error|array {
+	public function prepare_item_for_database( $request ): array {
 		$prepared_post = array();
 		$request_data  = json_decode( $request->get_body(), true );
 
-		if ( isset( $request_data['parsedDate'] ) ) {
-			try {
-				$datetime      = new DateTime( $request_data['parsedDate'], new DateTimeZone( 'UTC' ) );
-				$post_date     = $datetime->format( 'Y-m-d H:i:s' );
-				$post_date_gmt = get_gmt_from_date( $post_date );
-			} catch ( \Exception $e ) {
-				return new WP_Error(
-					'invalid_date_format',
-					// translators: %s: Error message describing the invalid date format.
-					sprintf( __( 'Invalid date format: %s', 'try_wordpress' ), $e->getMessage() ),
-					array( 'status' => 400 )
-				);
-			}
-		}
+		$subject_type = $this->get_subject_type( $request );
 
 		// Prepare $postarr that can be passed to wp_insert_post()
 		$prepared_post['ID']                    = $request['id'];
 		$prepared_post['post_type']             = $this->storage_post_type;
-		$prepared_post['post_title']            = $request_data['parsedTitle'] ?? '';
-		$prepared_post['post_date']             = $post_date ?? '';
-		$prepared_post['post_date_gmt']         = $post_date_gmt ?? '';
-		$prepared_post['post_content']          = $request_data['parsedContent'] ?? '';
 		$prepared_post['post_content_filtered'] = $request_data['sourceHtml'] ?? '';
 		$prepared_post['guid']                  = $request_data['sourceUrl'] ?? '';
 		$prepared_post['post_author']           = $request_data['authorId'] ?? '';
 
-		$prepared_post['meta'] = array(
-			'raw_title'   => $request_data['rawTitle'] ?? '',
-			'raw_date'    => $request_data['rawDate'] ?? '',
-			'raw_content' => $request_data['rawContent'] ?? '',
-		);
+		$prepared_post['meta'] = array();
+		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {
+			$prepared_post['meta'][ 'raw_' . $field_name ]    = $request_data[ 'raw' . ucfirst( $field_name ) ] ?? '';
+			$prepared_post['meta'][ 'parsed_' . $field_name ] = $request_data[ 'parsed' . ucfirst( $field_name ) ] ?? '';
+		}
 
 		return $prepared_post;
 	}
@@ -460,5 +446,10 @@ class Subjects_Controller extends WP_REST_Controller {
 		}
 
 		return null;
+	}
+
+	private function get_subject_type( $request ): string {
+		preg_match( '/\/subjects\/([^\/]+)/', $request->get_route(), $matches );
+		return $matches[1];
 	}
 }

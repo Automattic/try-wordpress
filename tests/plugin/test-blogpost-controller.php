@@ -12,13 +12,12 @@ class Blogpost_Controller_Test extends TestCase {
 	private string $storage_post_type = 'lib_1';
 	private string $source_html;
 
-	private string $raw_title       = '<h1>This is the test title</h1>';
-	private string $parsed_title    = 'This is the test title';
-	private string $raw_date        = '<time>25 Oct 2024 18:39:20</time>';
-	private string $parsed_date     = '2024-10-25 18:39:20';
-	private string $date_iso_string = '2024-10-25T18:39:20.000Z';
-	private string $raw_content     = '<div><p>This is the test content.</p></div>';
-	private string $parsed_content  = '<p>This is the test content.</p>';
+	private string $raw_title      = '<h1>This is the test title</h1>';
+	private string $parsed_title   = 'This is the test title';
+	private string $raw_date       = '<time>25 Oct 2024 18:39:20</time>';
+	private string $parsed_date    = '2024-10-25T18:39:20.000Z';
+	private string $raw_content    = '<div><p>This is the test content.</p></div>';
+	private string $parsed_content = '<p>This is the test content.</p>';
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -113,7 +112,7 @@ class Blogpost_Controller_Test extends TestCase {
 					'rawContent'    => $this->raw_content,
 					'parsedContent' => $this->parsed_content,
 					'rawDate'       => $this->raw_date,
-					'parsedDate'    => $this->date_iso_string,
+					'parsedDate'    => $this->parsed_date,
 					'authorId'      => $author_id,
 				)
 			)
@@ -139,10 +138,10 @@ class Blogpost_Controller_Test extends TestCase {
 		// read from db
 		$post = get_post( $response_data['id'] );
 		$this->assertEquals( $source_url, $post->guid );
-		$this->assertEquals( $this->parsed_title, $post->post_title );
-		$this->assertEquals( $this->parsed_content, $post->post_content );
+		$this->assertEquals( $this->parsed_title, get_post_meta( $response_data['id'], 'parsed_title', true ) );
+		$this->assertEquals( $this->parsed_content, get_post_meta( $response_data['id'], 'parsed_content', true ) );
 		$this->assertEquals( $author_id, $post->post_author );
-		$this->assertEquals( $this->parsed_date, $post->post_date );
+		$this->assertEquals( $this->parsed_date, get_post_meta( $response_data['id'], 'parsed_date', true ) );
 
 		// assert types
 		$this->assertIsInt( $response_data['id'] );
@@ -163,7 +162,7 @@ class Blogpost_Controller_Test extends TestCase {
 					'rawContent'    => $this->raw_content,
 					'parsedContent' => $this->parsed_content,
 					'rawDate'       => $this->raw_date,
-					'parsedDate'    => $this->date_iso_string,
+					'parsedDate'    => $this->parsed_date,
 					'authorId'      => $author_id,
 				)
 			)
@@ -219,8 +218,8 @@ class Blogpost_Controller_Test extends TestCase {
 
 		// Verify database update
 		$post = get_post( $post_id );
-		$this->assertEquals( $new_title, $post->post_title );
-		$this->assertEquals( $new_content, $post->post_content );
+		$this->assertEquals( $new_title, get_post_meta( $post_id, 'parsed_title', true ) );
+		$this->assertEquals( $new_content, get_post_meta( $post_id, 'parsed_content', true ) );
 		$this->assertEquals( $source_url, $post->guid );
 	}
 
