@@ -15,11 +15,6 @@
 				"description": {
 					"description": "The description of the field",
 					"type": "string"
-				},
-				"required": {
-					"description": "Whether the field is required",
-					"type": "boolean",
-					"default": false
 				}
 			},
 			"required": [
