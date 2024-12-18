@@ -4,18 +4,15 @@
 	"fields": {
 		"title": {
 			"description": "The title of the blog post",
-			"type": "text",
-			"required": true
+			"type": "text"
 		},
 		"date": {
 			"description": "The date the blog post was authored",
-			"type": "date",
-			"required": true
+			"type": "date"
 		},
 		"content": {
 			"description": "The body of the blog post",
-			"type": "html",
-			"required": true
+			"type": "html"
 		}
 	}
 }

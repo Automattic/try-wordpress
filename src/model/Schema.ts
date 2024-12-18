@@ -10,7 +10,6 @@ interface Schemas {
 interface SchemaField {
 	description: string;
 	type: FieldType;
-	required?: boolean;
 }
 
 interface Schema {

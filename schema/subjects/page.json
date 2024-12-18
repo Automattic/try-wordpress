@@ -8,8 +8,7 @@
 		},
 		"content": {
 			"description": "The body of the page",
-			"type": "html",
-			"required": true
+			"type": "html"
 		}
 	}
 }
