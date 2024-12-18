@@ -20,16 +20,6 @@ export function FieldsEditor( props: {
 		false | { field: Field; name: string }
 	>( false );
 
-	const fields = subject.fields;
-
-	// Filter out fields that are not in the schema.
-	// TODO: Move this to SubjectsApi so that a Subject is guaranteed to not have unknown fields.
-	Object.keys( subject.fields ).forEach( ( name ) => {
-		if ( ! schema.fields[ name ] ) {
-			delete fields[ name ];
-		}
-	} );
-
 	// Enable or disable highlighting according to whether a field is waiting for selection.
 	useEffect( () => {
 		const type =
@@ -41,8 +31,8 @@ export function FieldsEditor( props: {
 
 	// Render each field.
 	const elements: ReactElement[] = [];
-	for ( const name in fields ) {
-		const field = fields[ name ];
+	for ( const name in subject.fields ) {
+		const field = subject.fields[ name ];
 		const schemaField = schema.fields[ name ];
 
 		const isWaitingForSelection =
