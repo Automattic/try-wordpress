@@ -11,16 +11,15 @@ class Liberate_Controller_Test extends TestCase {
 	private string $endpoint          = '/try-wp/v1/subjects/blog-post';
 	private string $source_html;
 
-	private string $raw_title       = '<h1>This is the test title</h1>';
-	private string $parsed_title    = 'This is the test title';
-	private string $raw_date        = '<time>25 Oct 2024 18:39:20</time>';
-	private string $parsed_date     = '2024-10-25 18:39:20';
-	private string $date_iso_string = '2024-10-25T18:39:20.000Z';
-	private string $raw_content     = '<div><p>This is the test content.</p></div>';
-	private string $parsed_content  = '<p>This is the test content.</p>';
+	private string $raw_title      = '<h1>This is the test title</h1>';
+	private string $parsed_title   = 'This is the test title';
+	private string $raw_date       = '<time>25 Oct 2024 18:39:20</time>';
+	private string $parsed_date    = '2024-10-25T18:39:20.000Z';
+	private string $raw_content    = '<div><p>This is the test content.</p></div>';
+	private string $parsed_content = '<p>This is the test content.</p>';
 
 	private string $inserted_post_id;
-	private string $transformed_post_id;
+	private int $transformed_post_id;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -60,8 +59,11 @@ class Liberate_Controller_Test extends TestCase {
 		update_post_meta( $this->inserted_post_id, 'raw_date', $this->raw_date );
 		update_post_meta( $this->inserted_post_id, 'raw_title', $this->raw_title );
 		update_post_meta( $this->inserted_post_id, 'raw_content', $this->raw_content );
+		update_post_meta( $this->inserted_post_id, 'parsed_date', $this->parsed_date );
+		update_post_meta( $this->inserted_post_id, 'parsed_title', $this->parsed_title );
+		update_post_meta( $this->inserted_post_id, 'parsed_content', $this->parsed_content );
 
-		$this->transformed_post_id = get_post_meta( $this->inserted_post_id, '_dl_transformed', true );
+		$this->transformed_post_id = absint( get_post_meta( $this->inserted_post_id, '_dl_transformed', true ) );
 	}
 
 	protected function tearDown(): void {
@@ -189,7 +191,7 @@ class Liberate_Controller_Test extends TestCase {
 
 		$response = $this->liberate_controller->prepare_item_for_response(
 			$post_array,
-			new WP_REST_Request()
+			new WP_REST_Request( 'GET', $this->endpoint )
 		);
 
 		$this->assertEquals(
@@ -226,7 +228,7 @@ class Liberate_Controller_Test extends TestCase {
 					'rawTitle'      => $this->raw_title,
 					'parsedTitle'   => $this->parsed_title,
 					'rawDate'       => $this->raw_date,
-					'parsedDate'    => $this->date_iso_string,
+					'parsedDate'    => $this->parsed_date,
 					'rawContent'    => $this->raw_content,
 					'parsedContent' => $this->parsed_content,
 				)
@@ -246,7 +248,7 @@ class Liberate_Controller_Test extends TestCase {
 		);
 		$this->assertEquals(
 			$this->parsed_title,
-			$prepared_post['post_title']
+			$prepared_post['meta']['parsed_title']
 		);
 		$this->assertEquals(
 			$this->raw_title,
@@ -254,13 +256,13 @@ class Liberate_Controller_Test extends TestCase {
 		);
 		$this->assertEquals(
 			$this->parsed_content,
-			$prepared_post['post_content']
+			$prepared_post['meta']['parsed_content']
 		);
 		$this->assertEquals(
 			$this->source_html,
 			$prepared_post['post_content_filtered']
 		);
-		$this->assertEquals( $this->parsed_date, $prepared_post['post_date'] );
+		$this->assertEquals( $this->parsed_date, $prepared_post['meta']['parsed_date'] );
 		$this->assertEquals( $this->raw_date, $prepared_post['meta']['raw_date'] );
 		$this->assertEquals( $this->raw_content, $prepared_post['meta']['raw_content'] );
 	}
