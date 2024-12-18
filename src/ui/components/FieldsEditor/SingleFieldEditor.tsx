@@ -4,7 +4,8 @@ import { Button, ButtonGroup } from '@wordpress/components';
 export function SingleFieldEditor( props: {
 	field: Field;
 	label: string;
-	selector?: string;
+	description: string;
+	selector: string;
 	waitingForSelection: boolean;
 	onWaitingForSelection: ( field: Field | false ) => void;
 	onClear: () => void;
@@ -12,6 +13,7 @@ export function SingleFieldEditor( props: {
 	const {
 		field,
 		label,
+		description,
 		selector,
 		waitingForSelection,
 		onWaitingForSelection,
@@ -21,6 +23,7 @@ export function SingleFieldEditor( props: {
 	return (
 		<fieldset>
 			<legend>{ label } </legend>
+			<div className="field-description">{ description }</div>
 			<div>
 				<ButtonGroup>
 					<Button

@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { ReactElement, useEffect } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { BlueprintEditor } from '@/ui/blueprints/BlueprintEditor';
 import { Toolbar } from '@/ui/components/Toolbar';
 import { validateFields } from '@/model/Subject';
 import { Screens } from '@/ui/App';
@@ -12,6 +11,7 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { Button } from '@wordpress/components';
 import { validateBlueprint } from '@/model/Blueprint';
 import { parseField } from '@/parser/field';
+import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -67,9 +67,9 @@ export function EditBlueprint() {
 
 	if ( blueprint && subject ) {
 		editor = (
-			<BlueprintEditor
-				blueprint={ blueprint }
+			<FieldsEditor
 				subject={ subject }
+				selectors={ blueprint.selectors }
 				onFieldChanged={ onFieldChanged }
 			/>
 		);

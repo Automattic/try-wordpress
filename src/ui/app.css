@@ -277,6 +277,10 @@ fieldset {
 	margin-bottom: var(--spacing-lg);
 }
 
+fieldset .field-description {
+	margin-bottom: var(--spacing-md);
+}
+
 legend {
 	text-transform: capitalize;
 }

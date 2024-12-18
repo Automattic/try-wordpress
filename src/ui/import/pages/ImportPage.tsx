@@ -10,10 +10,8 @@ import { CommandTypes, sendCommandToContent } from '@/bus/Command';
 import { Toolbar } from '@/ui/import/pages/Toolbar';
 import { Screens } from '@/ui/App';
 import { parseField } from '@/parser/field';
-import { getSchema } from '@/model/Schema';
 
 const subjectType = ManualSubjectTypes.Page as unknown as SubjectType;
-const schema = getSchema( subjectType );
 
 // Import a specific page.
 // The urls of pages to import come from local storage.
@@ -62,20 +60,6 @@ export function ImportPage() {
 		return 'Loading...';
 	}
 
-	const fields: { name: string; field: Field }[] = [];
-	const selectors: {
-		name: string;
-		selector?: string;
-	}[] = [];
-
-	Object.keys( schema.fields ).forEach( ( name ) => {
-		fields.push( {
-			name,
-			field: subject.fields[ name ],
-		} );
-		selectors.push( { name, selector: '' } );
-	} );
-
 	const backUrl =
 		pageIndex === 0
 			? Screens.importPagesSelectPages( session.id )
@@ -96,8 +80,7 @@ export function ImportPage() {
 				Importing page { pageIndex + 1 } of { selectedPages!.length }
 			</p>
 			<FieldsEditor
-				fields={ fields }
-				selectors={ selectors }
+				subject={ subject }
 				onFieldChanged={ async ( name: string, field: Field ) => {
 					subject.fields[ name ] = parseField( field );
 					const s = await apiClient!.subjects.update( subject );
