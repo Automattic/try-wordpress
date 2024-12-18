@@ -38,7 +38,7 @@ export class SubjectsApi {
 		type: SubjectType,
 		sourceUrl: string
 	): Promise< Subject | null > {
-		const path = `${ getEndpoint( type ) }?sourceurl=${ sourceUrl }`;
+		const path = `${ getEndpoint( type ) }&sourceurl=${ sourceUrl }`;
 		const post = ( await this.client.get( path ) ) as ApiPost;
 		return post ? fromApiResponse( type, post ) : null;
 	}
