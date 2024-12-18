@@ -63,8 +63,9 @@ class Subjects_Controller extends WP_REST_Controller {
 					),
 					'transformedId' => array(
 						'description' => __( 'Post ID of transformed result of this liberated page', 'try_wordpress' ),
-						'type'        => 'string',
+						'type'        => 'integer',
 						'required'    => false,
+						'readonly'    => true,
 						'arg_options' => array(
 							'sanitize_callback' => 'sanitize_text_field',
 						),
@@ -378,7 +379,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			'parsedDate'    => $item['post_date'] ?? '',
 			'rawContent'    => get_post_meta( $item['ID'], 'raw_content', true ),
 			'parsedContent' => $item['post_content'] ?? '',
-			'transformedId' => get_post_meta( $item['ID'], '_dl_transformed', true ),
+			'transformedId' => absint( get_post_meta( $item['ID'], '_dl_transformed', true ) ),
 		);
 
 		$response['previewUrl'] = get_permalink( $response['transformedId'] );

@@ -143,6 +143,11 @@ class Blogpost_Controller_Test extends TestCase {
 		$this->assertEquals( $this->parsed_content, $post->post_content );
 		$this->assertEquals( $author_id, $post->post_author );
 		$this->assertEquals( $this->parsed_date, $post->post_date );
+
+		// assert types
+		$this->assertIsInt( $response_data['id'] );
+		$this->assertIsInt( $response_data['authorId'] );
+		$this->assertIsInt( $response_data['transformedId'] );
 	}
 
 	public function testCreateItemMissingSourceUrl() {
