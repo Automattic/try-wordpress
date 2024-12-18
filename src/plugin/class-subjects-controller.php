@@ -336,6 +336,7 @@ class Subjects_Controller extends WP_REST_Controller {
 
 	public function search_item( $request ): WP_Error|WP_REST_Response {
 		$guid = $request['sourceurl'] ?? '';
+		$guid = urldecode( $guid );
 
 		if ( empty( $guid ) ) {
 			return new WP_Error(
