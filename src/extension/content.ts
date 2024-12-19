@@ -139,6 +139,7 @@ function removeStyle() {
 	highlightedElement.style.outline = '';
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getElementXPath( element: Element ): string {
 	if ( element === document.body ) {
 		return '/html/body';
