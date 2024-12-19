@@ -12,7 +12,7 @@ export class PlaygroundHttpProxy {
 
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
 			logFailedRequest( { request, response } );
-		} else if ( process.env.OPFS_ENABLED === 'true' ) {
+		} else if ( process.env.LOG_REQUESTS === 'true' ) {
 			logRequest( { request, response } );
 		}
 
@@ -23,13 +23,10 @@ export class PlaygroundHttpProxy {
 function logRequest( args: { request: PHPRequest; response: PHPResponse } ) {
 	const { request, response } = args;
 	const url = request.url;
-	const params = request.body;
-	const message = `[Request] ${ url } [${ response.httpStatusCode }]`;
-	if ( params ) {
-		console.log( message, params, response.json, response );
-	} else {
-		console.log( message, response.json, response );
-	}
+	const message = `[Request] ${ url }
+[Request body] ${ request.body }
+[Response] (${ response.httpStatusCode })`;
+	console.log( message, response.json );
 }
 
 function logFailedRequest( args: {
