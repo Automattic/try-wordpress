@@ -292,6 +292,8 @@ class Subjects_Controller extends WP_REST_Controller {
 		$subject_type = $this->get_subject_type( $request );
 		update_post_meta( $item['ID'], 'subject_type', $subject_type );
 
+		do_action( 'dl_data_saved', $item['ID'], 'create' );
+
 		return $this->prepare_item_for_response( $item, $request, $subject_type );
 	}
 
@@ -313,6 +315,8 @@ class Subjects_Controller extends WP_REST_Controller {
 		foreach ( $item_meta as $key => $value ) {
 			update_post_meta( $item['ID'], $key, $value );
 		}
+
+		do_action( 'dl_data_saved', $item['ID'], 'update' );
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
