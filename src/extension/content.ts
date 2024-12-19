@@ -138,3 +138,36 @@ function removeStyle() {
 	}
 	highlightedElement.style.outline = '';
 }
+
+function getElementXPath( element: Element ): string {
+	if ( element === document.body ) {
+		return '/html/body';
+	}
+
+	let xpath = '';
+	let currentElement: Element | null = element;
+
+	while ( currentElement !== null ) {
+		let sibling = currentElement.previousSibling;
+		let count = 1;
+
+		while ( sibling !== null ) {
+			if (
+				sibling.nodeType === Node.ELEMENT_NODE &&
+				sibling.nodeName === currentElement.nodeName
+			) {
+				count++;
+			}
+			sibling = sibling.previousSibling;
+		}
+
+		const tagName = currentElement.nodeName.toLowerCase();
+		const index = count > 1 ? `[${ count }]` : '';
+
+		xpath = `/${ tagName }${ index }${ xpath }`;
+
+		currentElement = currentElement.parentElement;
+	}
+
+	return xpath;
+}
