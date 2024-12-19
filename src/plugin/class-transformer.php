@@ -7,15 +7,8 @@ use WP_Post;
 class Transformer {
 	private string $meta_key_for_transformed_post = '_dl_transformed';
 
-	public function __construct( $post_type ) {
-		add_action(
-			'save_post_' . $post_type,
-			function ( $post_id, $post ) {
-				$this->transform( $post );
-			},
-			10,
-			2
-		);
+	public function __construct() {
+		add_action( 'dl_data_saved', array( $this, 'transform' ), 10, 2 );
 	}
 
 	private function get_post_type_for_transformed_post( int|WP_Post $liberated_post ): string {
@@ -51,14 +44,12 @@ class Transformer {
 		return absint( $value );
 	}
 
-	public function transform( int|WP_Post $liberated_post ): bool {
+	public function transform( int $liberated_post_id, string $verb ): bool {
 		if ( apply_filters( 'skip_native_transformation', false ) ) {
 			return true;
 		}
 
-		if ( is_int( $liberated_post ) ) {
-			$liberated_post = get_post( $liberated_post );
-		}
+		$liberated_post = get_post( $liberated_post_id );
 
 		$transformed_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, true );
 

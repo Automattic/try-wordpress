@@ -15,7 +15,7 @@ class Engine {
 		require 'utils.php';
 
 		( function () {
-			$transformer = new Transformer( $this->storage_post_type );
+			$transformer = new Transformer();
 
 			new Post_Type_UI( $this->storage_post_type, $transformer );
 
