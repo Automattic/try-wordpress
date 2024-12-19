@@ -1,4 +1,4 @@
-import { PHPResponse, PlaygroundClient } from '@wp-playground/client';
+import { PlaygroundClient } from '@wp-playground/client';
 import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
 import { BlueprintsApi } from '@/api/Blueprints';
@@ -59,7 +59,6 @@ export class ApiClient {
 			return null;
 		}
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			logFailedRequest( { url, params, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
@@ -77,23 +76,8 @@ export class ApiClient {
 		} );
 
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			logFailedRequest( { url, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
-	}
-}
-
-function logFailedRequest( args: {
-	url: string;
-	params?: Record< string, string >;
-	response: PHPResponse;
-} ) {
-	const { url, params, response } = args;
-	const message = `Request to ${ url } failed [${ response.httpStatusCode }]`;
-	if ( params ) {
-		console.error( message, params, response.json, response );
-	} else {
-		console.error( message, response.json, response );
 	}
 }
