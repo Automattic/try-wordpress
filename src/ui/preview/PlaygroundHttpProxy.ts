@@ -23,10 +23,23 @@ export class PlaygroundHttpProxy {
 function logRequest( args: { request: PHPRequest; response: PHPResponse } ) {
 	const { request, response } = args;
 	const url = request.url;
-	const message = `[Request] ${ url }
-[Request body] ${ request.body }
-[Response] (${ response.httpStatusCode })`;
-	console.log( message, response.json );
+	console.log( {
+		type: 'API Request/Response',
+		request: {
+			url,
+			body:
+				typeof request.body === 'string'
+					? ( () => {
+							try {
+								return JSON.parse( request.body );
+							} catch {
+								return request.body;
+							}
+					  } )()
+					: request.body,
+		},
+		response: { status: response.httpStatusCode, body: response.json },
+	} );
 }
 
 function logFailedRequest( args: {
