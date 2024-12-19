@@ -1,11 +1,12 @@
-import { PHPResponse, PlaygroundClient } from '@wp-playground/client';
+import { PlaygroundClient } from '@wp-playground/client';
 import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
 import { BlueprintsApi } from '@/api/Blueprints';
 import { SubjectsApi } from '@/api/SubjectsApi';
+import { PlaygroundHttpProxy } from '@/ui/preview/PlaygroundHttpProxy';
 
 export class ApiClient {
-	private readonly playgroundClient: PlaygroundClient;
+	private readonly _client: PlaygroundHttpProxy;
 	private readonly _siteUrl: string;
 	private readonly _subjects: SubjectsApi;
 	private readonly _settings: SettingsApi;
@@ -13,7 +14,7 @@ export class ApiClient {
 	private readonly _blueprints: BlueprintsApi;
 
 	constructor( playgroundClient: PlaygroundClient, siteUrl: string ) {
-		this.playgroundClient = playgroundClient;
+		this._client = new PlaygroundHttpProxy( playgroundClient );
 		this._siteUrl = siteUrl;
 		this._blueprints = new BlueprintsApi( this );
 		this._subjects = new SubjectsApi( this );
@@ -50,7 +51,7 @@ export class ApiClient {
 			const encoded = encodeURIComponent( params[ name ] );
 			url += `&${ name }=${ encoded }`;
 		}
-		const response = await this.playgroundClient.request( {
+		const response = await this._client.request( {
 			url,
 			method: 'GET',
 		} );
@@ -58,7 +59,6 @@ export class ApiClient {
 			return null;
 		}
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			logFailedRequest( { url, params, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
@@ -66,7 +66,7 @@ export class ApiClient {
 
 	async post( route: string, body: object ): Promise< object > {
 		const url = `/index.php?rest_route=/try-wp/v1${ route }`;
-		const response = await this.playgroundClient.request( {
+		const response = await this._client.request( {
 			url,
 			method: 'POST',
 			headers: {
@@ -76,23 +76,8 @@ export class ApiClient {
 		} );
 
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			logFailedRequest( { url, response } );
 			throw Error( response.json.message );
 		}
 		return response.json;
-	}
-}
-
-function logFailedRequest( args: {
-	url: string;
-	params?: Record< string, string >;
-	response: PHPResponse;
-} ) {
-	const { url, params, response } = args;
-	const message = `Request to ${ url } failed [${ response.httpStatusCode }]`;
-	if ( params ) {
-		console.error( message, params, response.json, response );
-	} else {
-		console.error( message, response.json, response );
 	}
 }

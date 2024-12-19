@@ -90,6 +90,9 @@ function extensionModules( mode, target ) {
 		'process.env.OPFS_ENABLED': JSON.stringify(
 			mode === 'production' ? 'true' : 'false'
 		),
+		'process.env.LOG_REQUESTS': JSON.stringify(
+			mode === 'development' ? 'true' : 'false'
+		),
 	} );
 
 	return [
