@@ -62,30 +62,22 @@ class Transformer {
 
 		$transformed_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, true );
 
-		$title = $liberated_post->post_title;
+		$title = get_post_meta( $liberated_post->ID, 'parsed_title', true );
 		if ( empty( $title ) ) {
 			$title = '[Title]';
 		}
-		$body = $liberated_post->post_content;
+		$body = get_post_meta( $liberated_post->ID, 'parsed_content', true );
 		if ( empty( $body ) ) {
 			$body = '[Body]';
 		}
 
 		$args = array(
-			'post_author'       => $liberated_post->post_author,
-			'post_date'         => $liberated_post->post_date,
-			'post_date_gmt'     => $liberated_post->post_date_gmt,
-			'post_modified'     => $liberated_post->post_modified,
-			'post_modified_gmt' => $liberated_post->post_modified_gmt,
-			'post_content'      => $body,
-			'post_title'        => $title,
-			'post_excerpt'      => $liberated_post->post_excerpt,
-			'post_status'       => 'publish',
-			'comment_status'    => $liberated_post->comment_status,
-			'ping_status'       => $liberated_post->ping_status,
-			'post_password'     => $liberated_post->post_password,
-			'post_name'         => $liberated_post->post_name,
-			'post_type'         => $this->get_post_type_for_transformed_post( $liberated_post->ID ),
+			'post_author'  => $liberated_post->post_author,
+			'post_date'    => get_post_meta( $liberated_post->ID, 'parsed_date', true ),
+			'post_content' => $body,
+			'post_title'   => $title,
+			'post_status'  => 'publish',
+			'post_type'    => $this->get_post_type_for_transformed_post( $liberated_post->ID ),
 		);
 		if ( ! empty( $transformed_post_id ) ) {
 			$args['ID'] = $transformed_post_id;
