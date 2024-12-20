@@ -48,7 +48,7 @@ jobs:
                     composer-options: "--no-progress --no-ansi --no-interaction"
 
             -   name: Build schema.json
-                run: npm install && npm run build:schema && cp schema/schema.json src/plugin/
+                run: npm install && npm run build:schema
 
             -   name: Install WordPress test setup
                 run: bash tests/bin/install-wp-tests.sh wordpress_test root password 127.0.0.1:${{ job.services.mysql.ports[3306] }} latest

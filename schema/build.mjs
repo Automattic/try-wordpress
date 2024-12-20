@@ -8,7 +8,7 @@
 import { Ajv } from 'ajv';
 import { fileURLToPath } from 'url';
 import * as path from 'node:path';
-import { readFileSync } from 'node:fs';
+import { copyFileSync, readFileSync } from 'node:fs';
 import * as fs from 'node:fs';
 
 const cwd = path.dirname( fileURLToPath( import.meta.url ) );
@@ -62,6 +62,11 @@ for ( const schema of schemas ) {
 fs.writeFileSync(
 	outputSchemaPath,
 	JSON.stringify( outputSchema, null, '\t' )
+);
+
+copyFileSync(
+	outputSchemaPath,
+	path.join( cwd, '..', 'src', 'plugin', 'schema.json' )
 );
 
 console.log( 'Schema file generated successfully:', outputSchemaPath );
