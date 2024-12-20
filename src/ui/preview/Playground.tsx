@@ -77,7 +77,7 @@ async function initPlayground(
 
 	const options: StartPlaygroundOptions = {
 		iframe,
-		remoteUrl: `https://playground.wordpress.net/remote.html`,
+		remoteUrl: `https://pg.ashfame.com/remote.html`,
 		mounts: opfsEnabled ? [ mountDescriptor ] : undefined,
 		shouldInstallWordPress: opfsEnabled ? ! isWPInstalled : undefined,
 		blueprint: {
