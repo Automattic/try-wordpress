@@ -215,7 +215,6 @@ class EmitSubjectsSchemaPlugin {
 					},
 					async ( assets, callback ) => {
 						execSync( './schema/build.mjs', { stdio: 'inherit' } );
-						copyFileSync( SCHEMA_SRC, SCHEMA_PLUGIN_PATH );
 						callback();
 					}
 				);
