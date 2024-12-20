@@ -1,4 +1,3 @@
-const { copyFileSync } = require( 'node:fs' );
 const path = require( 'node:path' );
 const { execSync } = require( 'child_process' );
 const CopyPlugin = require( 'copy-webpack-plugin' );
