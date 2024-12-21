@@ -9,13 +9,13 @@
 	],
 	"host_permissions": [ "*://*/*" ],
 	"icons": {
-		"32": "icons/icon-32.png",
-		"128": "icons/icon-128.png"
+		"32": "icon/32.png",
+		"128": "icon/128.png"
 	},
 	"action": {
 		"default_icon": {
-			"32": "icons/icon-32.png",
-			"128": "icons/icon-128.png"
+			"32": "icon/32.png",
+			"128": "icon/128.png"
 		},
 		"default_title": "Try WordPress"
 	},
@@ -31,8 +31,8 @@
 	"sidebar_action": {
 		"default_title": "Try WordPress",
 		"default_icon": {
-			"32": "icons/icon-32.png",
-			"128": "icons/icon-128"
+			"32": "icon/32.png",
+			"128": "icon/128.png"
 		},
 		"default_panel": "app.html",
 		"open_at_install": true

@@ -114,8 +114,8 @@ function extensionModules( mode, target ) {
 							to: path.join( targetPath, 'manifest.json' ),
 						},
 						{
-							from: './src/extension/icons',
-							to: path.join( targetPath, 'icons' ),
+							from: './public/icon',
+							to: path.join( targetPath, 'icon' ),
 						},
 					],
 				} ),
