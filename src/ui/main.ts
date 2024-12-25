@@ -6,5 +6,8 @@ import './app.css';
 
 initParser();
 
-const root = createRoot( document.getElementById( 'app' ) as Container );
-root.render( await createApp() );
+async function boot() {
+	const root = createRoot( document.getElementById( 'app' ) as Container );
+	root.render( await createApp() );
+}
+boot().catch( console.error );
