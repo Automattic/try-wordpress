@@ -4,7 +4,7 @@ namespace DotOrg\TryWordPress;
 
 class Engine {
 
-	private string $storage_post_type = 'liberated_data';
+	public const string STORAGE_POST_TYPE = 'liberated_data';
 
 	public function __construct() {
 		require 'class-post-type-ui.php';
@@ -17,12 +17,12 @@ class Engine {
 		( function () {
 			$transformer = new Transformer();
 
-			new Post_Type_UI( $this->storage_post_type, $transformer );
+			new Post_Type_UI( self::STORAGE_POST_TYPE, $transformer );
 
 			// REST API
-			new Subjects_Controller( $this->storage_post_type );
+			new Subjects_Controller( self::STORAGE_POST_TYPE );
 
-			new Storage( $this->storage_post_type );
+			new Storage( self::STORAGE_POST_TYPE );
 		} )();
 	}
 }
