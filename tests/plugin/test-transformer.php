@@ -1,6 +1,7 @@
 <?php
 
 use DotOrg\TryWordPress\Transformer;
+use DotOrg\TryWordPress\Subject;
 use PHPUnit\Framework\TestCase;
 
 class Transformer_Test extends TestCase {
@@ -60,7 +61,7 @@ class Transformer_Test extends TestCase {
 	}
 
 	public function testTransform(): void {
-		$result = $this->transformer->transform( $this->post_id_in_db, 'whatever' ); // verb isn't currently used
+		$result = $this->transformer->transform( Subject::from_post( $this->post_id_in_db ), 'whatever' ); // verb isn't currently used
 
 		$transformed_post_id = absint( get_post_meta( $this->post_id_in_db, '_dl_transformed', true ) );
 

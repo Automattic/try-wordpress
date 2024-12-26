@@ -44,12 +44,13 @@ class Transformer {
 		return absint( $value );
 	}
 
-	public function transform( int $liberated_post_id, string $verb ): bool {
+	public function transform( Subject $subject, string $verb ): bool {
 		if ( apply_filters( 'skip_native_transformation', false ) ) {
 			return true;
 		}
 
-		$liberated_post = get_post( $liberated_post_id );
+		$liberated_post_id = $subject->id();
+		$liberated_post    = get_post( $liberated_post_id );
 
 		$transformed_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, true );
 
