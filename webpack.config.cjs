@@ -82,6 +82,7 @@ function extensionModules( mode, target ) {
 	};
 
 	const envPlugin = new webpack.DefinePlugin( {
+		'process.env.IS_WEBPACK': JSON.stringify( 'true' ),
 		'process.env.OPFS_ENABLED': JSON.stringify(
 			mode === 'production' ? 'true' : 'false'
 		),

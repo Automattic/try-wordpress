@@ -7,6 +7,7 @@ import {
 	StepDefinition,
 } from '@wp-playground/client';
 import { localStorageGet, localStorageSet } from '@/browser';
+import { isOpfsEnabled } from '@/config';
 
 const playgroundIframeId = 'playground';
 
@@ -56,7 +57,7 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
-	const opfsEnabled = process.env.OPFS_ENABLED === 'true';
+	const opfsEnabled = isOpfsEnabled();
 
 	// TODO: We should pass the initialSyncDirection property.
 	// @ts-ignore

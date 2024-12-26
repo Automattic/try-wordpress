@@ -3,6 +3,7 @@ import {
 	PHPResponse,
 	PlaygroundClient,
 } from '@wp-playground/client';
+import { shouldLogApiRequests } from '@/config';
 
 export class PlaygroundHttpProxy {
 	constructor( private readonly client: PlaygroundClient ) {}
@@ -12,7 +13,7 @@ export class PlaygroundHttpProxy {
 
 		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
 			logFailedRequest( { request, response } );
-		} else if ( process.env.LOG_REQUESTS === 'true' ) {
+		} else if ( shouldLogApiRequests() ) {
 			logRequest( { request, response } );
 		}
 
