@@ -62,4 +62,8 @@ class Subject {
 	public function author_id(): int {
 		return $this->author_id;
 	}
+
+	public function transformed_post_id(): int {
+		return absint( get_post_meta( $this->id, Transformer::META_KEY_LIBERATED_OUTPUT, true ) );
+	}
 }
