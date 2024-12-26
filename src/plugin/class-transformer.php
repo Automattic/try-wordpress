@@ -36,15 +36,6 @@ class Transformer {
 		return apply_filters( 'post_type_for_transformed_post', $post_type, $liberated_post );
 	}
 
-	public function get_transformed_post_id( $liberated_post_id ): int|null {
-		$value = get_post_meta( $liberated_post_id, self::META_KEY_LIBERATED_OUTPUT, true );
-		if ( '' === $value ) {
-			return null;
-		}
-
-		return absint( $value );
-	}
-
 	public function transform( Subject $subject, string $verb ): bool {
 		if ( apply_filters( 'skip_native_transformation', false ) ) {
 			return true;
