@@ -382,7 +382,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			'authorId'      => $item['post_author'] ?? '',
 			'sourceUrl'     => $item['guid'] ?? '',
 			'sourceHtml'    => $item['post_content_filtered'] ?? '',
-			'transformedId' => absint( get_post_meta( $item['ID'], '_dl_transformed', true ) ),
+			'transformedId' => absint( get_post_meta( $item['ID'], Transformer::META_KEY_LIBERATED_OUTPUT, true ) ),
 		);
 
 		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {
