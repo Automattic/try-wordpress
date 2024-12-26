@@ -4,11 +4,9 @@ namespace DotOrg\TryWordPress;
 
 class Post_Type_UI {
 	private string $post_type;
-	private Transformer $transformer;
 
-	public function __construct( $custom_post_type, Transformer $transformer ) {
-		$this->post_type   = $custom_post_type;
-		$this->transformer = $transformer;
+	public function __construct( $custom_post_type ) {
+		$this->post_type = $custom_post_type;
 
 		$this->remove_add_new_option( $this->post_type );
 
