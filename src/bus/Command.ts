@@ -1,4 +1,5 @@
 import { Namespace } from '@/bus/Bus';
+import { getCurrentTabId, sendMessageToTab } from '@/browser';
 
 export enum CommandTypes {
 	GetCurrentPageInfo = 'GetCurrentPageInfo',
@@ -25,20 +26,9 @@ export async function sendCommandToContent( command: Command ): Promise< any > {
 	if ( ! currentTabId ) {
 		throw Error( 'current tab not found' );
 	}
-	return browser.tabs.sendMessage( currentTabId, {
+	return sendMessageToTab( currentTabId, {
 		namespace: Namespace,
 		type: command.type,
 		payload: command.payload,
 	} );
-}
-
-async function getCurrentTabId(): Promise< number | undefined > {
-	const tabs = await browser.tabs.query( {
-		currentWindow: true,
-		active: true,
-	} );
-	if ( tabs.length !== 1 ) {
-		return;
-	}
-	return tabs[ 0 ]?.id;
 }

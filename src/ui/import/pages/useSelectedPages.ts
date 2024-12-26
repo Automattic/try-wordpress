@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
+import { localStorageGet, localStorageSet } from '@/browser';
 
 // Store and get selected pages from local storage.
 export function useSelectedPages(): [
@@ -34,11 +35,11 @@ async function saveSelectedPages(
 ): Promise< void > {
 	const values: Record< string, string[] > = {};
 	values[ key( sessionId ) ] = urls;
-	return browser.storage.local.set( values );
+	return localStorageSet( values );
 }
 
 async function getSelectedPages( sessionId: string ): Promise< string[] > {
-	const values = await browser.storage.local.get( key( sessionId ) );
+	const values = await localStorageGet( key( sessionId ) );
 	if ( ! values || ! values[ key( sessionId ) ] ) {
 		return [];
 	}

@@ -6,6 +6,7 @@ import {
 	startPlaygroundWeb,
 	StepDefinition,
 } from '@wp-playground/client';
+import { localStorageGet, localStorageSet } from '@/browser';
 
 const playgroundIframeId = 'playground';
 
@@ -104,7 +105,7 @@ async function isWordPressInstalled( slug: string ) {
 	let isInstalled = false;
 
 	try {
-		const result = await browser.storage.local.get( localStorageKey );
+		const result = await localStorageGet( localStorageKey );
 		if ( result[ localStorageKey ] === 'true' ) {
 			isInstalled = true;
 		}
@@ -117,7 +118,7 @@ async function isWordPressInstalled( slug: string ) {
 
 async function setWordPressAsInstalled( slug: string ) {
 	const localStorageKey = `${ slug }-isWordPressInstalled`;
-	await browser.storage.local.set( { [ localStorageKey ]: 'true' } );
+	await localStorageSet( { [ localStorageKey ]: 'true' } );
 }
 
 function steps(): StepDefinition[] {

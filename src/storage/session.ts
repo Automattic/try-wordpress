@@ -1,3 +1,5 @@
+import { localStorageGet, localStorageSet } from '@/browser';
+
 export interface Session {
 	id: string;
 	url: string;
@@ -16,24 +18,24 @@ export async function createSession( data: {
 	};
 	const values: Record< string, Session > = {};
 	values[ key( session.id ) ] = session;
-	await browser.storage.local.set( values );
+	await localStorageSet( values );
 
 	// We also maintain an array of sessionIds to serve as "index" for when we need to list sessions.
 	let sessionIds: string[];
-	const sessionIdsValues = await browser.storage.local.get( 'sessions' );
+	const sessionIdsValues = await localStorageGet( 'sessions' );
 	if ( ! sessionIdsValues || ! sessionIdsValues.sessions ) {
 		sessionIds = [];
 	} else {
 		sessionIds = sessionIdsValues.sessions;
 	}
 	sessionIds.push( session.id );
-	await browser.storage.local.set( { sessions: sessionIds } );
+	await localStorageSet( { sessions: sessionIds } );
 
 	return session;
 }
 
 export async function getSession( id: string ): Promise< Session | null > {
-	const values = await browser.storage.local.get( key( id ) );
+	const values = await localStorageGet( key( id ) );
 	if ( ! values || ! values[ key( id ) ] ) {
 		return null;
 	}
@@ -42,7 +44,7 @@ export async function getSession( id: string ): Promise< Session | null > {
 
 export async function listSessions(): Promise< Session[] > {
 	let sessionIds = [];
-	const values = await browser.storage.local.get( 'sessions' );
+	const values = await localStorageGet( 'sessions' );
 	if ( values && values.sessions ) {
 		sessionIds = values.sessions;
 	}

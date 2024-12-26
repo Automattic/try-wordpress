@@ -81,10 +81,6 @@ function extensionModules( mode, target ) {
 		ignored: [ SCHEMA_SRC_PATH, SCHEMA_PLUGIN_PATH ],
 	};
 
-	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
-		browser: 'webextension-polyfill',
-	} );
-
 	const envPlugin = new webpack.DefinePlugin( {
 		'process.env.OPFS_ENABLED': JSON.stringify(
 			mode === 'production' ? 'true' : 'false'
@@ -101,7 +97,7 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/extension/background.ts' ],
+			entry: [ './src/extension/background.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'background.js' ),
@@ -119,7 +115,6 @@ function extensionModules( mode, target ) {
 						},
 					],
 				} ),
-				webExtensionPolyfillPlugin,
 				envPlugin,
 			],
 			watchOptions,
@@ -130,12 +125,12 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/extension/content.ts' ],
+			entry: [ './src/extension/content.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'content.js' ),
 			},
-			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
+			plugins: [ envPlugin ],
 			watchOptions,
 		},
 		// The app.
@@ -144,7 +139,7 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/ui/main.ts' ],
+			entry: [ './src/ui/main.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'app.js' ),
@@ -191,7 +186,6 @@ function extensionModules( mode, target ) {
 						},
 					},
 				} ),
-				webExtensionPolyfillPlugin,
 				envPlugin,
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []
