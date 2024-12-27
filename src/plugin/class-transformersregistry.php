@@ -33,7 +33,7 @@ class TransformersRegistry {
 
 		self::$handlers[ $type->value ][ $identifier['slug'] ] = array(
 			'slug'        => $identifier['slug'],
-			'description' => $identifier['desc'],
+			'description' => $identifier['description'],
 			'handler'     => $handler,
 		);
 	}
@@ -85,8 +85,8 @@ class TransformersRegistry {
 		$transformed_post_id = $chosen['handler']( $subject );
 
 		if ( $transformed_post_id ) {
-			update_post_meta( $subject->id(), Transformer::META_KEY_LIBERATED_OUTPUT, $transformed_post_id );
 			update_post_meta( $transformed_post_id, Transformer::META_KEY_LIBERATED_SOURCE, $subject->id() );
+			update_post_meta( $subject->id(), Transformer::META_KEY_LIBERATED_OUTPUT, $transformed_post_id );
 		}
 	}
 

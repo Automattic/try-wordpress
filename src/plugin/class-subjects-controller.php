@@ -2,8 +2,7 @@
 
 namespace DotOrg\TryWordPress;
 
-use DateTime;
-use DateTimeZone;
+use Exception;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
@@ -290,11 +289,15 @@ class Subjects_Controller extends WP_REST_Controller {
 		}
 
 		$subject_type = $this->get_subject_type( $request );
-		update_post_meta( $item['ID'], 'subject_type', $subject_type );
+		update_post_meta( $item['ID'], 'subject_type', $subject_type->value );
 
-		do_action( 'dl_data_saved', Subject::from_post( $item['ID'] ), 'create' );
+		try {
+			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+		} catch ( Exception $e ) {
+			return new WP_Error( $e->getCode(), $e->getMessage() );
+		}
 
-		return $this->prepare_item_for_response( $item, $request, $subject_type );
+		return $this->prepare_item_for_response( $item, $request );
 	}
 
 	public function update_item( $request ): WP_REST_Response|WP_Error {
@@ -316,7 +319,13 @@ class Subjects_Controller extends WP_REST_Controller {
 			update_post_meta( $item['ID'], $key, $value );
 		}
 
-		do_action( 'dl_data_saved', Subject::from_post( $item['ID'] ), 'update' );
+		$subject_type = $this->get_subject_type( $request );
+
+		try {
+			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+		} catch ( Exception $e ) {
+			return new WP_Error( $e->getCode(), $e->getMessage() );
+		}
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
@@ -385,7 +394,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			'transformedId' => absint( get_post_meta( $item['ID'], Transformer::META_KEY_LIBERATED_OUTPUT, true ) ),
 		);
 
-		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {
+		foreach ( array_keys( Schema::get()[ $subject_type->value ]['fields'] ) as $field_name ) {
 			$response[ 'raw' . ucfirst( $field_name ) ]    = get_post_meta( $item['ID'], 'raw_' . $field_name, true );
 			$response[ 'parsed' . ucfirst( $field_name ) ] = get_post_meta( $item['ID'], 'parsed_' . $field_name, true );
 		}
@@ -409,7 +418,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		$prepared_post['post_author']           = $request_data['authorId'] ?? '';
 
 		$prepared_post['meta'] = array();
-		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {
+		foreach ( array_keys( Schema::get()[ $subject_type->value ]['fields'] ) as $field_name ) {
 			$prepared_post['meta'][ 'raw_' . $field_name ]    = $request_data[ 'raw' . ucfirst( $field_name ) ] ?? '';
 			$prepared_post['meta'][ 'parsed_' . $field_name ] = $request_data[ 'parsed' . ucfirst( $field_name ) ] ?? '';
 		}
@@ -452,8 +461,8 @@ class Subjects_Controller extends WP_REST_Controller {
 		return null;
 	}
 
-	private function get_subject_type( $request ): string {
+	private function get_subject_type( $request ): SubjectType {
 		preg_match( '/\/subjects\/([^\/]+)/', $request->get_route(), $matches );
-		return $matches[1];
+		return SubjectType::tryFrom( $matches[1] );
 	}
 }
