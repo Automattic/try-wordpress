@@ -17,6 +17,7 @@ class Engine {
 		require 'class-schema.php';
 		require 'utils.php';
 		require 'class-subject.php';
+		require 'class-ops.php';
 
 		( function () {
 			new Transformer();
@@ -26,6 +27,8 @@ class Engine {
 			new Subjects_Controller( self::STORAGE_POST_TYPE );
 
 			new Storage( self::STORAGE_POST_TYPE );
+
+			Ops::init( self::STORAGE_POST_TYPE );
 		} )();
 	}
 }
