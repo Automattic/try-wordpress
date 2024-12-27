@@ -91,18 +91,6 @@ class Handlers_Registry {
 	}
 
 	/**
-	 * Remove all handlers for a type
-	 *
-	 * @param SubjectType $type The type to clear handlers for.
-	 * @return void
-	 */
-	public static function clear( SubjectType $type ): void {
-		if ( isset( self::$handlers[ $type->value ] ) ) {
-			unset( self::$handlers[ $type->value ] );
-		}
-	}
-
-	/**
 	 * Set user choice for what transformer to run for a subject type when multiples are registered
 	 *
 	 * @param SubjectType $type The subject type for which choice is to be saved.

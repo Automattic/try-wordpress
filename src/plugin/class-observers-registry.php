@@ -62,16 +62,4 @@ class Observers_Registry {
 			$registered_observer['observer']( $subject );
 		}
 	}
-
-	/**
-	 * Remove all observers for a type
-	 *
-	 * @param SubjectType $type The type to clear observers for.
-	 * @return void
-	 */
-	public static function clear( SubjectType $type ): void {
-		if ( isset( self::$observers[ $type->value ] ) ) {
-			unset( self::$observers[ $type->value ] );
-		}
-	}
 }
