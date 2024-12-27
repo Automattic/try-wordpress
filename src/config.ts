@@ -3,9 +3,15 @@ export function isWebpack(): boolean {
 }
 
 export function isOpfsEnabled(): boolean {
-	return process.env.OPFS_ENABLED === 'true';
+	return isWebpack()
+		? process.env.OPFS_ENABLED === 'true'
+		: // @ts-ignore
+		  import.meta.env.MODE !== 'development';
 }
 
 export function shouldLogApiRequests(): boolean {
-	return process.env.LOG_REQUESTS === 'true';
+	return isWebpack()
+		? process.env.LOG_REQUESTS === 'true'
+		: // @ts-ignore
+		  import.meta.env.MODE === 'development';
 }

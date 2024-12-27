@@ -1,4 +1,5 @@
 import browser, { Runtime } from 'webextension-polyfill';
+import { isWebpack } from '@/config.ts';
 type MessageSender = Runtime.MessageSender;
 
 export { type MessageSender };
@@ -11,9 +12,16 @@ export function openSidePanelOnExtensionClick() {
 			.catch( ( error ) => console.error( error ) );
 	} else if ( typeof browser.sidebarAction !== 'undefined' ) {
 		// Firefox.
-		browser.action.onClicked.addListener( () => {
-			browser.sidebarAction.toggle();
-		} );
+		if ( isWebpack() ) {
+			browser.action.onClicked.addListener( () => {
+				browser.sidebarAction.toggle();
+			} );
+		} else {
+			// wxt targets MV2 for Firefox.
+			browser.browserAction.onClicked.addListener( () => {
+				browser.sidebarAction.toggle();
+			} );
+		}
 	} else {
 		console.error( 'unsupported browser' );
 	}
