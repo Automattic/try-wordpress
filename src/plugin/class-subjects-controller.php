@@ -292,7 +292,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		update_post_meta( $item['ID'], 'subject_type', $subject_type->value );
 
 		try {
-			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+			Transformers_Registry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
@@ -322,7 +322,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		$subject_type = $this->get_subject_type( $request );
 
 		try {
-			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+			Transformers_Registry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}

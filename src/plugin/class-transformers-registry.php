@@ -5,7 +5,7 @@ namespace DotOrg\TryWordPress;
 use Exception;
 use InvalidArgumentException;
 
-class TransformersRegistry {
+class Transformers_Registry {
 	private static string $user_choice_meta_key_prefix = '_data_liberation_chosen_handler_';
 	private static array $handlers                     = array();
 

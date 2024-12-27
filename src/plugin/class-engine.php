@@ -9,7 +9,7 @@ class Engine {
 	public function __construct() {
 		require 'enum-subject-type.php';
 
-		require 'class-transformersregistry.php';
+		require 'class-transformers-registry.php';
 		require 'class-post-type-ui.php';
 		require 'class-transformer.php';
 		require 'class-subjects-controller.php';
