@@ -292,7 +292,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		$subject_type = $this->get_subject_type( $request );
 		update_post_meta( $item['ID'], 'subject_type', $subject_type );
 
-		do_action( 'dl_data_saved', $item['ID'], 'create' );
+		do_action( 'dl_data_saved', Subject::from_post( $item['ID'] ), 'create' );
 
 		return $this->prepare_item_for_response( $item, $request, $subject_type );
 	}
@@ -316,7 +316,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			update_post_meta( $item['ID'], $key, $value );
 		}
 
-		do_action( 'dl_data_saved', $item['ID'], 'update' );
+		do_action( 'dl_data_saved', Subject::from_post( $item['ID'] ), 'update' );
 
 		return $this->prepare_item_for_response( $item, $request );
 	}
@@ -382,7 +382,7 @@ class Subjects_Controller extends WP_REST_Controller {
 			'authorId'      => $item['post_author'] ?? '',
 			'sourceUrl'     => $item['guid'] ?? '',
 			'sourceHtml'    => $item['post_content_filtered'] ?? '',
-			'transformedId' => absint( get_post_meta( $item['ID'], '_dl_transformed', true ) ),
+			'transformedId' => absint( get_post_meta( $item['ID'], Transformer::META_KEY_LIBERATED_OUTPUT, true ) ),
 		);
 
 		foreach ( array_keys( Schema::get()[ $subject_type ]['fields'] ) as $field_name ) {

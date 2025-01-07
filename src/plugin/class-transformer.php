@@ -5,7 +5,8 @@ namespace DotOrg\TryWordPress;
 use WP_Post;
 
 class Transformer {
-	private string $meta_key_for_transformed_post = '_dl_transformed';
+	public const string META_KEY_LIBERATED_SOURCE = '_data_liberation_source';
+	public const string META_KEY_LIBERATED_OUTPUT = '_data_liberation_output';
 
 	public function __construct() {
 		add_action( 'dl_data_saved', array( $this, 'transform' ), 10, 2 );
@@ -35,23 +36,15 @@ class Transformer {
 		return apply_filters( 'post_type_for_transformed_post', $post_type, $liberated_post );
 	}
 
-	public function get_transformed_post_id( $liberated_post_id ): int|null {
-		$value = get_post_meta( $liberated_post_id, $this->meta_key_for_transformed_post, true );
-		if ( '' === $value ) {
-			return null;
-		}
-
-		return absint( $value );
-	}
-
-	public function transform( int $liberated_post_id, string $verb ): bool {
+	public function transform( Subject $subject, string $verb ): bool {
 		if ( apply_filters( 'skip_native_transformation', false ) ) {
 			return true;
 		}
 
-		$liberated_post = get_post( $liberated_post_id );
+		$liberated_post_id = $subject->id();
+		$liberated_post    = get_post( $liberated_post_id );
 
-		$transformed_post_id = get_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, true );
+		$transformed_post_id = get_post_meta( $liberated_post->ID, self::META_KEY_LIBERATED_OUTPUT, true );
 
 		$title = get_post_meta( $liberated_post->ID, 'parsed_title', true );
 		if ( empty( $title ) ) {
@@ -86,7 +79,8 @@ class Transformer {
 			return false;
 		}
 
-		add_post_meta( $liberated_post->ID, $this->meta_key_for_transformed_post, $inserted_post_id );
+		update_post_meta( $inserted_post_id, self::META_KEY_LIBERATED_SOURCE, $liberated_post->ID );
+		update_post_meta( $liberated_post->ID, self::META_KEY_LIBERATED_OUTPUT, $inserted_post_id );
 		return true;
 	}
 }

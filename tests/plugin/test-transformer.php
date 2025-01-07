@@ -1,6 +1,8 @@
 <?php
 
+use DotOrg\TryWordPress\Engine;
 use DotOrg\TryWordPress\Transformer;
+use DotOrg\TryWordPress\Subject;
 use PHPUnit\Framework\TestCase;
 
 class Transformer_Test extends TestCase {
@@ -21,7 +23,7 @@ class Transformer_Test extends TestCase {
 				'post_status'           => 'draft',
 				'post_content_filtered' => '<div><p>Content 1</p><p>Content 2</p></div>',
 				'guid'                  => 'https://example.com/x',
-				'post_type'             => 'liberated_data',
+				'post_type'             => Engine::STORAGE_POST_TYPE,
 			)
 		);
 		update_post_meta( $this->post_id_in_db, 'subject_type', 'blog-post' );
@@ -32,11 +34,11 @@ class Transformer_Test extends TestCase {
 	protected function tearDown(): void {
 		parent::tearDown();
 
-		$transformed_post_id = $this->transformer->get_transformed_post_id( $this->post_id_in_db );
+		$transformed_post_id = get_post_meta( $this->post_id_in_db, Transformer::META_KEY_LIBERATED_OUTPUT, true );
 		wp_delete_post( $transformed_post_id, true );
 		wp_delete_post( $this->post_id_in_db, true );
 
-		delete_post_meta( 99, '_dl_transformed' );
+		delete_post_meta( 99, Transformer::META_KEY_LIBERATED_OUTPUT );
 	}
 
 	public function testGetPostTypeForTransformedPost() {
@@ -52,17 +54,10 @@ class Transformer_Test extends TestCase {
 		$this->assertEquals( 'product', $result );
 	}
 
-	public function testGetTransformedPost() {
-		add_post_meta( 99, '_dl_transformed', 999 );
-
-		$this->assertEquals( 999, $this->transformer->get_transformed_post_id( 99 ) );
-		$this->assertEquals( null, $this->transformer->get_transformed_post_id( 88 ) );
-	}
-
 	public function testTransform(): void {
-		$result = $this->transformer->transform( $this->post_id_in_db, 'whatever' ); // verb isn't currently used
+		$result = $this->transformer->transform( Subject::from_post( $this->post_id_in_db ), 'whatever' ); // verb isn't currently used
 
-		$transformed_post_id = absint( get_post_meta( $this->post_id_in_db, '_dl_transformed', true ) );
+		$transformed_post_id = absint( get_post_meta( $this->post_id_in_db, Transformer::META_KEY_LIBERATED_OUTPUT, true ) );
 
 		$this->assertEquals( $this->post_id_in_db + 1, $transformed_post_id );
 		$this->assertTrue( $result );
