@@ -30,7 +30,16 @@ output:
 
 For example, to transform "product" (subject type) data into your custom product post type, you would do this:
 
-`\DotOrg\TryWordPress\Ops::handle( SubjectType::PRODUCT->value', 'myplugin_unique_slug_product_handler' );`
+```php
+\DotOrg\TryWordPress\Ops::handle(
+	SubjectType::PRODUCT->value,
+	array(
+		'slug'        => 'myplugin_unique_slug',
+		'description' => 'myplugin handling products',
+	),
+	'myplugin_unique_slug_product_handler'
+);
+```
 
 OR
 
