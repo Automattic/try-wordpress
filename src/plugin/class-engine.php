@@ -34,6 +34,37 @@ class Engine {
 			new Storage( self::STORAGE_POST_TYPE );
 
 			Ops::init( self::STORAGE_POST_TYPE );
+
+			/**
+			 * Handle mimicry of WordPress-y API for developers
+			 *
+			 * There are no `do_action( 'data_liberated_' . %subjectype% )` calls anywhere
+			 * We loop over any registered callbacks and invoke Ops::handle on their behalf
+			 */
+			add_action(
+				'init',
+				function () {
+					global $wp_filter;
+					foreach ( SubjectType::cases() as $type ) {
+						$hook_name = 'data_liberated_' . $type->value;
+						if ( isset( $wp_filter[ $hook_name ] ) ) {
+							foreach ( $wp_filter[ $hook_name ]->callbacks as $callbacks ) {
+								foreach ( $callbacks as $callback ) {
+									Ops::handle(
+										$type,
+										array(
+											'slug'        => 'wp_action_' . wp_generate_uuid4(),
+											'description' => 'Handler registered via WordPress action',
+										),
+										$callback['function']
+									);
+								}
+							}
+						}
+					}
+				},
+				PHP_INT_MAX
+			);
 		} )();
 	}
 }
