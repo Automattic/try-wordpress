@@ -12,23 +12,6 @@ usable form is referred to as `transformation` throughout the documentation and 
 While liberating data, we always store the raw data that we are handling in hopes of running a better transformation in
 the future or any third-party plugin to transform the data upon installation of their plugin.
 
-## Storage Architecture
-
-Try WordPress stores all liberated data in a custom post type called `liberated_data`, exposed via a constant:
-`\DotOrg\TryWordPress\Engine::STORAGE_POST_TYPE`.
-
-We maintain references between the source data and transformed output using two post meta keys:
-
-- `_data_liberation_source`: Points to the source content (exposed via
-  `\DotOrg\TryWordPress\Transformer::META_KEY_LIBERATED_SOURCE`)
-- `_data_liberation_output`: Points to the transformed output (exposed via
-  `\DotOrg\TryWordPress\Transformer::META_KEY_LIBERATED_OUTPUT`)
-
-This two-way reference allows both Try WordPress and your plugin to track relationships between original content and
-transformed posts.
-
-However, we recommend integrating using our hook below:
-
 ## Integration
 
 If your plugin is available during data liberation, it can register handlers for the desired subject types and run its
@@ -82,6 +65,21 @@ function myplugin_unique_slug_product_handler( $subject ) {
 ## Best Practices
 
 1. Always use the Subject class's public API to access liberated data. Don't rely on internal implementation details.
+
+## Storage Architecture
+
+Try WordPress stores all liberated data in a custom post type called `liberated_data`, exposed via a constant:
+`\DotOrg\TryWordPress\Engine::STORAGE_POST_TYPE`.
+
+We maintain references between the source data and transformed output using two post meta keys:
+
+- `_data_liberation_source`: Points to the source content (exposed via
+  `\DotOrg\TryWordPress\Transformer::META_KEY_LIBERATED_SOURCE`)
+- `_data_liberation_output`: Points to the transformed output (exposed via
+  `\DotOrg\TryWordPress\Transformer::META_KEY_LIBERATED_OUTPUT`)
+
+This two-way reference allows both Try WordPress and your plugin to track relationships between original content and
+transformed posts.
 
 ## Need Help?
 
