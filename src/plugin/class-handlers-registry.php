@@ -5,7 +5,7 @@ namespace DotOrg\TryWordPress;
 use Exception;
 use InvalidArgumentException;
 
-class TransformersRegistry {
+class Handlers_Registry {
 	private static string $user_choice_meta_key_prefix = '_data_liberation_chosen_handler_';
 	private static array $handlers                     = array();
 
@@ -87,18 +87,6 @@ class TransformersRegistry {
 		if ( $transformed_post_id ) {
 			update_post_meta( $transformed_post_id, Transformer::META_KEY_LIBERATED_SOURCE, $subject->id() );
 			update_post_meta( $subject->id(), Transformer::META_KEY_LIBERATED_OUTPUT, $transformed_post_id );
-		}
-	}
-
-	/**
-	 * Remove all handlers for a type
-	 *
-	 * @param SubjectType $type The type to clear handlers for.
-	 * @return void
-	 */
-	public static function clear( SubjectType $type ): void {
-		if ( isset( self::$handlers[ $type->value ] ) ) {
-			unset( self::$handlers[ $type->value ] );
 		}
 	}
 

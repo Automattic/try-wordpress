@@ -8,15 +8,21 @@ class Engine {
 
 	public function __construct() {
 		require 'enum-subject-type.php';
+		require 'class-subject.php';
+		require 'class-schema.php';
 
-		require 'class-transformersregistry.php';
+		require 'class-handlers-registry.php';
+		require 'class-observers-registry.php';
+
+		require 'class-subjects-controller.php';
+
+		require 'class-storage.php';
+
 		require 'class-post-type-ui.php';
 		require 'class-transformer.php';
-		require 'class-subjects-controller.php';
-		require 'class-storage.php';
-		require 'class-schema.php';
+		require 'class-ops.php';
+
 		require 'utils.php';
-		require 'class-subject.php';
 
 		( function () {
 			new Transformer();
@@ -26,6 +32,8 @@ class Engine {
 			new Subjects_Controller( self::STORAGE_POST_TYPE );
 
 			new Storage( self::STORAGE_POST_TYPE );
+
+			Ops::init( self::STORAGE_POST_TYPE );
 		} )();
 	}
 }

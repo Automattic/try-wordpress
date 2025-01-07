@@ -7,7 +7,7 @@ class Transformer {
 	public const string META_KEY_LIBERATED_OUTPUT = '_data_liberation_output';
 
 	public function __construct() {
-		TransformersRegistry::add(
+		Ops::handle(
 			SubjectType::BLOGPOST,
 			array(
 				'slug'        => 'try_wordpress',
@@ -19,7 +19,7 @@ class Transformer {
 			)
 		);
 
-		TransformersRegistry::add(
+		Ops::handle(
 			SubjectType::PAGE,
 			array(
 				'slug'        => 'try_wordpress',

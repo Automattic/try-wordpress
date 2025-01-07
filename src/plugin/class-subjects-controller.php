@@ -292,7 +292,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		update_post_meta( $item['ID'], 'subject_type', $subject_type->value );
 
 		try {
-			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+			$this->announce_subject( $subject_type, Subject::from_post( $item['ID'] ) );
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
@@ -322,7 +322,7 @@ class Subjects_Controller extends WP_REST_Controller {
 		$subject_type = $this->get_subject_type( $request );
 
 		try {
-			TransformersRegistry::handle( $subject_type, Subject::from_post( $item['ID'] ) );
+			$this->announce_subject( $subject_type, Subject::from_post( $item['ID'] ) );
 		} catch ( Exception $e ) {
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
@@ -464,5 +464,17 @@ class Subjects_Controller extends WP_REST_Controller {
 	private function get_subject_type( $request ): SubjectType {
 		preg_match( '/\/subjects\/([^\/]+)/', $request->get_route(), $matches );
 		return SubjectType::tryFrom( $matches[1] );
+	}
+
+	/**
+	 * Announce subject to Observers_Registry & Handlers_Registry
+	 *
+	 * @param SubjectType $subject_type Type of subject to announce.
+	 * @param Subject     $subject Subject instance to announce.
+	 * @throws Exception Handlers_Registry::handle can throw an exception.
+	 */
+	private function announce_subject( SubjectType $subject_type, Subject $subject ): void {
+		Observers_Registry::observe( $subject_type, $subject );
+		Handlers_Registry::handle( $subject_type, $subject );
 	}
 }
