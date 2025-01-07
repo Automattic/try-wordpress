@@ -17,37 +17,19 @@ the future or any third-party plugin to transform the data upon installation of 
 If your plugin is available during data liberation, it can register handlers for the desired subject types and run its
 own transformations.
 
-You can either use `Ops::handle()` to register a handler for your desired subject type or use our WordPress hook
-`data_liberated_{$subject_type}` action hook which would invoke `Ops::handle()` on your behalf. You must return the post
-ID of your transformed post from your handler for the preview to show up correctly.
-
+You can use `data_liberated_{$subject_type}` action hook to run your transformation.
 In your handler, you get access to the raw data through an instance of the Subject class.
 
 The [Subject class](src/plugin/class-subject.php) provides a clean API to access raw data and existing transformed
 output:
 
-### Code examples:
+### Code example:
 
 For example, to transform "product" (subject type) data into your custom product post type, you would do this:
 
 ```php
-\DotOrg\TryWordPress\Ops::handle(
-	SubjectType::PRODUCT->value,
-	array(
-		'slug'        => 'myplugin_unique_slug',
-		'description' => 'myplugin handling products',
-	),
-	'myplugin_unique_slug_product_handler'
-);
-```
+add_action( 'data_liberated_product', 'myplugin_unique_slug_product_handler' );
 
-OR
-
-`add_action( 'data_liberated_product', 'myplugin_unique_slug_product_handler' );`
-
-where your handler function would look something like this:
-
-```php
 function myplugin_unique_slug_product_handler( $subject ) {
     // process raw data
     $title   = $subject->title;
