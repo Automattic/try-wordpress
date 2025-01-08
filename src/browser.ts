@@ -1,5 +1,5 @@
 import browser, { Runtime } from 'webextension-polyfill';
-import { isWebpack } from '@/config.ts';
+import { isWebpack } from '@/config';
 type MessageSender = Runtime.MessageSender;
 
 export { type MessageSender };

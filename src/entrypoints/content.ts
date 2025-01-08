@@ -1,5 +1,5 @@
 import { defineContentScript } from 'wxt/sandbox';
-import { contentScript } from '@/extension/content.ts';
+import { contentScript } from '@/extension/content';
 
 export default defineContentScript( {
 	matches: [ '*://*/*' ],

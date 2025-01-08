@@ -3,7 +3,7 @@ import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
 import { BlueprintsApi } from '@/api/Blueprints';
 import { SubjectsApi } from '@/api/SubjectsApi';
-import { HttpProxy } from '@/remote/playground/HttpProxy.ts';
+import { HttpProxy } from '@/remote/playground/HttpProxy';
 
 export class ApiClient {
 	private readonly _client: HttpProxy;
