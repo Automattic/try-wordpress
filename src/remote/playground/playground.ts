@@ -8,7 +8,27 @@ import { isOpfsEnabled } from '@/config';
 import { localStorageGet, localStorageSet } from '@/browser';
 import { blueprint } from '@/remote/playground/blueprint';
 
-export async function initPlayground(
+export async function mountPlayground(
+	playgroundIframeId: string,
+	slug: string,
+	blogName: string
+): Promise< PlaygroundClient > {
+	const iframe = document.getElementById( playgroundIframeId );
+	if ( ! ( iframe instanceof HTMLIFrameElement ) ) {
+		throw Error( 'Playground container element must be an iframe' );
+	}
+	if ( iframe.src !== '' ) {
+		throw Error( 'Attempting to mount Playground into a non-empty iframe' );
+	}
+
+	const client = await initPlayground( iframe, slug, blogName );
+	const url = await client.absoluteUrl;
+	console.log( 'Playground communication established', url );
+
+	return client;
+}
+
+async function initPlayground(
 	iframe: HTMLIFrameElement,
 	slug: string,
 	blogName: string
