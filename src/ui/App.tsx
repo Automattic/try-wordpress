@@ -30,7 +30,7 @@ import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { Done } from '@/ui/import/pages/Done';
-import { Playground } from '@/ui/preview/Playground';
+import { Playground } from '@/ui/components/Playground';
 
 export const Screens = {
 	home: () => '/start/home',
