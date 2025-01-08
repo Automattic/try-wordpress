@@ -17,7 +17,6 @@ import { ViewSession } from '@/ui/session/ViewSession';
 import { Home } from '@/ui/Home';
 import { getConfig, setConfig } from '@/storage/config';
 import { getSession, listSessions, Session } from '@/storage/session';
-import { PlaceholderPreview } from '@/ui/preview/PlaceholderPreview';
 import { SessionContext, SessionProvider } from '@/ui/session/SessionProvider';
 import { ApiClient } from '@/api/ApiClient';
 import { PlaygroundClient } from '@wp-playground/client';
@@ -187,10 +186,9 @@ function App() {
 			/>
 		);
 
-	const preview = ! session ? (
-		<PlaceholderPreview />
-	) : (
+	const preview = (
 		<Preview
+			showPlaceholder={ ! session }
 			front={ previewFront }
 			admin={ previewAdmin }
 			showTabBar={ ! isPlaygroundLoading }

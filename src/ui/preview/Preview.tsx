@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { PreviewTabBar } from '@/ui/preview/PreviewTabBar';
+import { PlaceholderPreview } from '@/ui/preview/PlaceholderPreview';
 
 const tabFront = 0;
 const tabAdmin = 1;
@@ -8,9 +9,10 @@ const defaultTab = tabFront;
 export function Preview( props: {
 	front: ReactNode;
 	admin: ReactNode;
+	showPlaceholder: boolean;
 	showTabBar: boolean;
 } ) {
-	const { front, admin, showTabBar } = props;
+	const { front, admin, showPlaceholder, showTabBar } = props;
 	const [ currentTab, setCurrentTab ] = useState< number >( defaultTab );
 
 	const tabBar = (
@@ -26,7 +28,9 @@ export function Preview( props: {
 	const showPreviewFront = currentTab === tabFront;
 	const showPreviewAdmin = currentTab === tabAdmin;
 
-	return (
+	return showPlaceholder ? (
+		<PlaceholderPreview />
+	) : (
 		<>
 			<div className={ showTabBar ? '' : 'hidden' }>{ tabBar }</div>
 			<div
