@@ -11,7 +11,7 @@ import {
 	useNavigate,
 	useRouteLoaderData,
 } from 'react-router-dom';
-import { StrictMode, useEffect, useState } from 'react';
+import { ReactNode, StrictMode, useEffect, useMemo, useState } from 'react';
 import { NewSession } from '@/ui/session/NewSession';
 import { ViewSession } from '@/ui/session/ViewSession';
 import { Home } from '@/ui/Home';
@@ -132,11 +132,12 @@ function App() {
 		setConfig( { currentPath: location.pathname } ).catch( console.error );
 	}, [ location ] );
 
-	const session = useRouteLoaderData( 'session' ) as Session;
+	const session = useRouteLoaderData( 'session' ) as Session | undefined;
 	const [ playgroundClient, setPlaygroundClient ] =
 		useState< PlaygroundClient >();
 	const [ apiClient, setApiClient ] = useState< ApiClient >();
 	const sectionContext: SessionContext = {
+		// @ts-ignore
 		session,
 		apiClient,
 		playgroundClient,
@@ -155,30 +156,36 @@ function App() {
 		}
 	}, [ apiClient, playgroundClient, navigate ] );
 
-	const previewFront = ! session ? undefined : (
-		<Playground
-			slug={ session.id }
-			blogName={ session.title }
-			onReady={ async ( client: PlaygroundClient ) => {
-				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
-				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
-				setPlaygroundClient( () => client );
-				setApiClient(
-					new ApiClient( client, await client.absoluteUrl )
-				);
-			} }
-		/>
-	);
+	const previewFront = useMemo< ReactNode >( () => {
+		if ( ! session || session.id === '' ) {
+			return undefined;
+		}
+		return (
+			<Playground
+				slug={ session.id }
+				blogName={ session.title }
+				onReady={ async ( client: PlaygroundClient ) => {
+					// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
+					// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
+					setPlaygroundClient( () => client );
+					setApiClient(
+						new ApiClient( client, await client.absoluteUrl )
+					);
+				} }
+			/>
+		);
+	}, [ session ] );
 
 	const isPlaygroundLoading =
 		! apiClient?.siteUrl || apiClient.siteUrl.length < 1;
 
-	const previewAdmin = isPlaygroundLoading ? undefined : (
-		<iframe
-			title={ `${ session.id }-admin` }
-			src={ `${ apiClient!.siteUrl }/wp-admin/` }
-		/>
-	);
+	const previewAdmin =
+		isPlaygroundLoading || ! session || session.id === '' ? undefined : (
+			<iframe
+				title={ `${ session.id }-admin` }
+				src={ `${ apiClient!.siteUrl }/wp-admin/` }
+			/>
+		);
 
 	const preview = ! session ? (
 		<PlaceholderPreview />
