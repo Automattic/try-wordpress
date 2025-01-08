@@ -53,13 +53,16 @@ function extensionModules( mode, target ) {
 	const devtool = mode === 'production' ? false : 'cheap-module-source-map';
 	const resolve = {
 		extensions: [ '.ts', '.tsx', '.js' ],
-		plugins: [ new TsconfigPathsPlugin() ],
+		plugins: [
+			new TsconfigPathsPlugin( { configFile: 'tsconfig.webpack.json' } ),
+		],
 	};
 	const module = {
 		rules: [
 			{
 				test: /\.tsx?$/,
-				use: 'ts-loader',
+				loader: 'ts-loader',
+				options: { configFile: 'tsconfig.webpack.json' },
 			},
 			{
 				// If you enable `experiments.css` or `experiments.futureDefaults`, please uncomment line below
@@ -81,11 +84,8 @@ function extensionModules( mode, target ) {
 		ignored: [ SCHEMA_SRC_PATH, SCHEMA_PLUGIN_PATH ],
 	};
 
-	const webExtensionPolyfillPlugin = new webpack.ProvidePlugin( {
-		browser: 'webextension-polyfill',
-	} );
-
 	const envPlugin = new webpack.DefinePlugin( {
+		'process.env.IS_WEBPACK': JSON.stringify( 'true' ),
 		'process.env.OPFS_ENABLED': JSON.stringify(
 			mode === 'production' ? 'true' : 'false'
 		),
@@ -101,7 +101,7 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/extension/background.ts' ],
+			entry: [ './src/extension/background.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'background.js' ),
@@ -114,12 +114,11 @@ function extensionModules( mode, target ) {
 							to: path.join( targetPath, 'manifest.json' ),
 						},
 						{
-							from: './src/extension/icons',
-							to: path.join( targetPath, 'icons' ),
+							from: './public/icon',
+							to: path.join( targetPath, 'icon' ),
 						},
 					],
 				} ),
-				webExtensionPolyfillPlugin,
 				envPlugin,
 			],
 			watchOptions,
@@ -130,12 +129,12 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/extension/content.ts' ],
+			entry: [ './src/extension/content.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'content.js' ),
 			},
-			plugins: [ webExtensionPolyfillPlugin, envPlugin ],
+			plugins: [ envPlugin ],
 			watchOptions,
 		},
 		// The app.
@@ -144,7 +143,7 @@ function extensionModules( mode, target ) {
 			devtool,
 			resolve,
 			module,
-			entry: [ 'webextension-polyfill', './src/ui/main.ts' ],
+			entry: [ './src/ui/main.ts' ],
 			output: {
 				path: targetPath,
 				filename: path.join( 'app.js' ),
@@ -191,7 +190,6 @@ function extensionModules( mode, target ) {
 						},
 					},
 				} ),
-				webExtensionPolyfillPlugin,
 				envPlugin,
 			].concat(
 				mode === 'production' ? [ new MiniCssExtractPlugin() ] : []

@@ -1,4 +1,5 @@
 import { Namespace } from '@/bus/Bus';
+import { sendMessage } from '@/browser';
 
 export enum EventTypes {
 	OnElementClick = 'OnElementClick',
@@ -21,7 +22,7 @@ export type EventWithNamespace = Event & {
 };
 
 export async function sendEventToApp( event: Event ): Promise< any > {
-	return browser.runtime.sendMessage( {
+	return sendMessage( {
 		namespace: Namespace,
 		type: event.type,
 		payload: event.payload,

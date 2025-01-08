@@ -1,6 +1,7 @@
 import { ApiClient } from '@/api/ApiClient';
 import { Blueprint } from '@/model/Blueprint';
 import { SubjectType } from '@/model/Subject';
+import { localStorageGet, localStorageSet } from '@/browser';
 
 export class BlueprintsApi {
 	// eslint-disable-next-line no-useless-constructor
@@ -11,19 +12,18 @@ export class BlueprintsApi {
 
 		const values: Record< string, Blueprint > = {};
 		values[ key( blueprint.id ) ] = blueprint;
-		await browser.storage.local.set( values );
+		await localStorageSet( values );
 
 		// We also maintain an array of blueprintIds to serve as "index" for when we need to list blueprints.
 		let blueprintIds: string[];
-		const blueprintIdsValues =
-			await browser.storage.local.get( 'blueprints' );
+		const blueprintIdsValues = await localStorageGet( 'blueprints' );
 		if ( ! blueprintIdsValues || ! blueprintIdsValues.blueprints ) {
 			blueprintIds = [];
 		} else {
 			blueprintIds = blueprintIdsValues.blueprints;
 		}
 		blueprintIds.push( blueprint.id );
-		await browser.storage.local.set( { blueprints: blueprintIds } );
+		await localStorageSet( { blueprints: blueprintIds } );
 
 		return blueprint;
 	}
@@ -31,13 +31,13 @@ export class BlueprintsApi {
 	async update( blueprint: Blueprint ): Promise< Blueprint > {
 		const values: Record< string, Blueprint > = {};
 		values[ key( blueprint.id ) ] = blueprint;
-		await browser.storage.local.set( values );
+		await localStorageSet( values );
 		return blueprint;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async findById( id: string ): Promise< Blueprint | null > {
-		const values = await browser.storage.local.get( key( id ) );
+		const values = await localStorageGet( key( id ) );
 		if ( ! values || ! values[ key( id ) ] ) {
 			return null;
 		}
@@ -48,7 +48,7 @@ export class BlueprintsApi {
 		subjectType: SubjectType
 	): Promise< Blueprint[] > {
 		let blueprintIds = [];
-		const values = await browser.storage.local.get( 'blueprints' );
+		const values = await localStorageGet( 'blueprints' );
 		if ( values && values.blueprints ) {
 			blueprintIds = values.blueprints;
 		}

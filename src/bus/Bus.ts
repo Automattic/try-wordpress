@@ -1,4 +1,10 @@
-import MessageSender = browser.runtime.MessageSender;
+import {
+	addOnMessageListener,
+	hasOnMessageListener,
+	MessageSender,
+	OnMessageListener,
+	removeOnMessageListener,
+} from '@/browser';
 import { EventType, EventWithNamespace, EventWithResponder } from '@/bus/Event';
 import { CommandType } from '@/bus/Command';
 
@@ -24,12 +30,12 @@ export function startListening(
 			callback( { event, sendResponse } );
 		}
 	};
-	browser.runtime.onMessage.addListener( internalListener );
+	addOnMessageListener( < OnMessageListener >internalListener );
 	return internalListener;
 }
 
 export function stopListening( listener: Listener ) {
-	if ( browser.runtime.onMessage.hasListener( listener ) ) {
-		browser.runtime.onMessage.removeListener( listener );
+	if ( hasOnMessageListener( < OnMessageListener >listener ) ) {
+		removeOnMessageListener( < OnMessageListener >listener );
 	}
 }

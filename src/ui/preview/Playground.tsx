@@ -6,6 +6,8 @@ import {
 	startPlaygroundWeb,
 	StepDefinition,
 } from '@wp-playground/client';
+import { localStorageGet, localStorageSet } from '@/browser';
+import { isOpfsEnabled } from '@/config';
 
 const playgroundIframeId = 'playground';
 
@@ -55,7 +57,7 @@ async function initPlayground(
 	slug: string,
 	blogName: string
 ): Promise< PlaygroundClient > {
-	const opfsEnabled = process.env.OPFS_ENABLED === 'true';
+	const opfsEnabled = isOpfsEnabled();
 
 	// TODO: We should pass the initialSyncDirection property.
 	// @ts-ignore
@@ -104,7 +106,7 @@ async function isWordPressInstalled( slug: string ) {
 	let isInstalled = false;
 
 	try {
-		const result = await browser.storage.local.get( localStorageKey );
+		const result = await localStorageGet( localStorageKey );
 		if ( result[ localStorageKey ] === 'true' ) {
 			isInstalled = true;
 		}
@@ -117,7 +119,7 @@ async function isWordPressInstalled( slug: string ) {
 
 async function setWordPressAsInstalled( slug: string ) {
 	const localStorageKey = `${ slug }-isWordPressInstalled`;
-	await browser.storage.local.set( { [ localStorageKey ]: 'true' } );
+	await localStorageSet( { [ localStorageKey ]: 'true' } );
 }
 
 function steps(): StepDefinition[] {

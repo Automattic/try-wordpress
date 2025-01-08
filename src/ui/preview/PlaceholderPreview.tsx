@@ -11,7 +11,7 @@ export function PlaceholderPreview() {
 			} }
 		>
 			<img
-				src="icons/icon-128.png"
+				src="/icon/128.png"
 				alt="Icon"
 				style={ {
 					display: 'block',

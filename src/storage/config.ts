@@ -1,3 +1,5 @@
+import { localStorageGet, localStorageSet } from '@/browser';
+
 export interface Config {
 	currentPath: string;
 }
@@ -8,11 +10,11 @@ export async function setConfig( value: Config ): Promise< void > {
 	for ( key in value ) {
 		config[ key ] = value[ key ];
 	}
-	return browser.storage.local.set( { config } );
+	return localStorageSet( { config } );
 }
 
 export async function getConfig(): Promise< Config > {
-	const values = await browser.storage.local.get( 'config' );
+	const values = await localStorageGet( 'config' );
 	if ( ! values || ! values.config ) {
 		return { currentPath: '/' };
 	}

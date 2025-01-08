@@ -1,6 +1,7 @@
 import { startListening } from '@/bus/Bus';
 import { CommandTypes } from '@/bus/Command';
 import { EventTypes, sendEventToApp } from '@/bus/Event';
+import { isWebpack } from '@/config';
 
 enum Modes {
 	// Default mode, nothing is happening.
@@ -13,34 +14,40 @@ enum Modes {
 
 let currentMode = Modes.Default;
 
-startListening( CommandTypes.GetCurrentPageInfo, ( event ) => {
-	event.sendResponse( {
-		url: document.documentURI,
-		title: document.title,
+if ( isWebpack() ) {
+	contentScript();
+}
+
+export function contentScript() {
+	startListening( CommandTypes.GetCurrentPageInfo, ( event ) => {
+		event.sendResponse( {
+			url: document.documentURI,
+			title: document.title,
+		} );
 	} );
-} );
 
-startListening( CommandTypes.NavigateTo, ( event ) => {
-	const url = ( event.event.payload as any ).url;
-	if ( document.location.href !== url ) {
-		document.location.href = url;
-	}
-} );
+	startListening( CommandTypes.NavigateTo, ( event ) => {
+		const url = ( event.event.payload as any ).url;
+		if ( document.location.href !== url ) {
+			document.location.href = url;
+		}
+	} );
 
-startListening( CommandTypes.SwitchToNavigationSelectionMode, () => {
-	currentMode = Modes.NavigationSelection;
-	enableHighlighting();
-} );
+	startListening( CommandTypes.SwitchToNavigationSelectionMode, () => {
+		currentMode = Modes.NavigationSelection;
+		enableHighlighting();
+	} );
 
-startListening( CommandTypes.SwitchToGenericSelectionMode, () => {
-	currentMode = Modes.GenericSelection;
-	enableHighlighting();
-} );
+	startListening( CommandTypes.SwitchToGenericSelectionMode, () => {
+		currentMode = Modes.GenericSelection;
+		enableHighlighting();
+	} );
 
-startListening( CommandTypes.SwitchToDefaultMode, () => {
-	currentMode = Modes.Default;
-	disableHighlighting();
-} );
+	startListening( CommandTypes.SwitchToDefaultMode, () => {
+		currentMode = Modes.Default;
+		disableHighlighting();
+	} );
+}
 
 function onClick( event: MouseEvent ) {
 	event.preventDefault();

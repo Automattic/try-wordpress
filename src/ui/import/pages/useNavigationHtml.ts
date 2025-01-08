@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSessionContext } from '@/ui/session/SessionProvider';
+import { localStorageGet, localStorageSet } from '@/browser';
 
 // Store and get navigation html from local storage.
 export function useNavigationHtml(): [
@@ -32,11 +33,11 @@ async function saveNavigationHtml(
 ): Promise< void > {
 	const values: Record< string, string > = {};
 	values[ key( sessionId ) ] = html;
-	return browser.storage.local.set( values );
+	return localStorageSet( values );
 }
 
 async function getNavigationHtml( sessionId: string ): Promise< string > {
-	const values = await browser.storage.local.get( key( sessionId ) );
+	const values = await localStorageGet( key( sessionId ) );
 	if ( ! values || ! values[ key( sessionId ) ] ) {
 		return '';
 	}
