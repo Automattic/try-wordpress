@@ -5,7 +5,7 @@ import {
 } from '@wp-playground/client';
 import { shouldLogApiRequests } from '@/config';
 
-export class PlaygroundHttpProxy {
+export class HttpProxy {
 	constructor( private readonly client: PlaygroundClient ) {}
 
 	async request( request: PHPRequest ): Promise< PHPResponse > {
