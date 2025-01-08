@@ -11,15 +11,13 @@ import {
 	useNavigate,
 	useRouteLoaderData,
 } from 'react-router-dom';
-import { ReactNode, StrictMode, useEffect, useMemo, useState } from 'react';
+import { StrictMode, useEffect } from 'react';
 import { NewSession } from '@/ui/session/NewSession';
 import { ViewSession } from '@/ui/session/ViewSession';
 import { Home } from '@/ui/Home';
 import { getConfig, setConfig } from '@/storage/config';
 import { getSession, listSessions, Session } from '@/storage/session';
 import { SessionContext, SessionProvider } from '@/ui/session/SessionProvider';
-import { ApiClient } from '@/api/ApiClient';
-import { PlaygroundClient } from '@wp-playground/client';
 import { Breadcrumbs } from '@/ui/components/Breadcrumbs';
 import { NewBlueprint } from '@/ui/blueprints/NewBlueprint';
 import { EditBlueprint } from '@/ui/blueprints/EditBlueprint';
@@ -30,7 +28,7 @@ import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { Done } from '@/ui/import/pages/Done';
-import { Playground } from '@/ui/components/Playground';
+import { usePlaygroundRemote } from '@/remote/playground/remote';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -132,17 +130,15 @@ function App() {
 	}, [ location ] );
 
 	const session = useRouteLoaderData( 'session' ) as Session | undefined;
-	const [ playgroundClient, setPlaygroundClient ] =
-		useState< PlaygroundClient >();
-	const [ apiClient, setApiClient ] = useState< ApiClient >();
+	const remote = usePlaygroundRemote( { session } );
+	const apiClient = remote.api;
+	const playgroundClient = remote.client;
 	const sectionContext: SessionContext = {
 		// @ts-ignore
 		session,
 		apiClient,
 		playgroundClient,
 	};
-	const isPlaygroundLoading =
-		! apiClient?.siteUrl || apiClient.siteUrl.length < 1;
 
 	// Debugging tools.
 	useEffect( () => {
@@ -157,34 +153,6 @@ function App() {
 		}
 	}, [ apiClient, playgroundClient, navigate ] );
 
-	const previewFront = useMemo< ReactNode >( () => {
-		if ( ! session || session.id === '' ) {
-			return undefined;
-		}
-		return (
-			<Playground
-				slug={ session.id }
-				blogName={ session.title }
-				onReady={ async ( client: PlaygroundClient ) => {
-					// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
-					// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
-					setPlaygroundClient( () => client );
-					setApiClient(
-						new ApiClient( client, await client.absoluteUrl )
-					);
-				} }
-			/>
-		);
-	}, [ session ] );
-
-	const previewAdmin =
-		isPlaygroundLoading || ! session || session.id === '' ? undefined : (
-			<iframe
-				title={ `${ session.id }-admin` }
-				src={ `${ apiClient!.siteUrl }/wp-admin/` }
-			/>
-		);
-
 	return (
 		<SessionProvider value={ sectionContext }>
 			<div className="app">
@@ -196,9 +164,9 @@ function App() {
 			<div className="preview">
 				<Preview
 					showPlaceholder={ ! session }
-					front={ previewFront }
-					admin={ previewAdmin }
-					showTabBar={ ! isPlaygroundLoading }
+					front={ remote.front }
+					admin={ remote.admin }
+					showTabBar={ remote.isReady }
 				/>
 			</div>
 		</SessionProvider>
