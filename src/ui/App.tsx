@@ -141,6 +141,8 @@ function App() {
 		apiClient,
 		playgroundClient,
 	};
+	const isPlaygroundLoading =
+		! apiClient?.siteUrl || apiClient.siteUrl.length < 1;
 
 	// Debugging tools.
 	useEffect( () => {
@@ -175,9 +177,6 @@ function App() {
 		);
 	}, [ session ] );
 
-	const isPlaygroundLoading =
-		! apiClient?.siteUrl || apiClient.siteUrl.length < 1;
-
 	const previewAdmin =
 		isPlaygroundLoading || ! session || session.id === '' ? undefined : (
 			<iframe
@@ -185,15 +184,6 @@ function App() {
 				src={ `${ apiClient!.siteUrl }/wp-admin/` }
 			/>
 		);
-
-	const preview = (
-		<Preview
-			showPlaceholder={ ! session }
-			front={ previewFront }
-			admin={ previewAdmin }
-			showTabBar={ ! isPlaygroundLoading }
-		/>
-	);
 
 	return (
 		<SessionProvider value={ sectionContext }>
@@ -203,7 +193,14 @@ function App() {
 					<Outlet />
 				</div>
 			</div>
-			<div className="preview">{ preview }</div>
+			<div className="preview">
+				<Preview
+					showPlaceholder={ ! session }
+					front={ previewFront }
+					admin={ previewAdmin }
+					showTabBar={ ! isPlaygroundLoading }
+				/>
+			</div>
 		</SessionProvider>
 	);
 }
