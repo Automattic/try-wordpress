@@ -3,7 +3,7 @@ import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
 import { BlueprintsApi } from '@/api/Blueprints';
 import { SubjectsApi } from '@/api/SubjectsApi';
-import { PlaygroundHttpProxy } from '@/ui/preview/PlaygroundHttpProxy';
+import { PlaygroundHttpProxy } from '@/remote/playground/PlaygroundHttpProxy';
 
 export class ApiClient {
 	private readonly _client: PlaygroundHttpProxy;
