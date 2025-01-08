@@ -31,6 +31,7 @@ import { SelectNavigation } from '@/ui/import/pages/SelectNavigation';
 import { SelectPagesFromNavigation } from '@/ui/import/pages/SelectPagesFromNavigation';
 import { ImportPage } from '@/ui/import/pages/ImportPage';
 import { Done } from '@/ui/import/pages/Done';
+import { Playground } from '@/ui/preview/Playground';
 
 export const Screens = {
 	home: () => '/start/home',
@@ -154,10 +155,10 @@ function App() {
 		}
 	}, [ apiClient, playgroundClient, navigate ] );
 
-	const preview = ! session ? (
-		<PlaceholderPreview />
-	) : (
-		<Preview
+	const previewFront = (
+		<Playground
+			slug={ session.id }
+			blogName={ session.title }
 			onReady={ async ( client: PlaygroundClient ) => {
 				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
 				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
@@ -167,6 +168,21 @@ function App() {
 				);
 			} }
 		/>
+	);
+
+	const previewAdminUrl =
+		apiClient?.siteUrl && apiClient.siteUrl?.length > 0
+			? `${ apiClient.siteUrl }/wp-admin/`
+			: '';
+
+	const previewAdmin = (
+		<iframe title={ `${ session.id }-admin` } src={ previewAdminUrl } />
+	);
+
+	const preview = ! session ? (
+		<PlaceholderPreview />
+	) : (
+		<Preview front={ previewFront } admin={ previewAdmin } />
 	);
 
 	return (

@@ -1,26 +1,19 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { PreviewTabBar } from '@/ui/preview/PreviewTabBar';
-import { Playground } from '@/ui/preview/Playground';
 import { useSessionContext } from '@/ui/session/SessionProvider';
-import { PlaygroundClient } from '@wp-playground/client';
 
 const tabFront = 0;
 const tabAdmin = 1;
 const defaultTab = tabFront;
 
-export function Preview( props: {
-	onReady: ( playgroundClient: PlaygroundClient ) => void;
-} ) {
-	const { onReady } = props;
+export function Preview( props: { front: ReactNode; admin: ReactNode } ) {
+	const { front, admin } = props;
 	const [ currentTab, setCurrentTab ] = useState< number >( defaultTab );
-	const { session, apiClient } = useSessionContext();
+	const { apiClient } = useSessionContext();
 
-	const previewAdminUrl =
-		apiClient?.siteUrl && apiClient.siteUrl?.length > 0
-			? `${ apiClient.siteUrl }/wp-admin/`
-			: '';
-
-	const isPlaygroundLoading = previewAdminUrl === '';
+	const isPlaygroundLoading = ! (
+		apiClient?.siteUrl && apiClient.siteUrl.length > 0
+	);
 
 	const tabBar = (
 		<PreviewTabBar
@@ -30,18 +23,6 @@ export function Preview( props: {
 			tabClassName={ 'preview-tabs-tab' }
 			onChange={ ( tab: number ) => setCurrentTab( tab ) }
 		/>
-	);
-
-	const previewFront = (
-		<Playground
-			slug={ session.id }
-			blogName={ session.title }
-			onReady={ onReady }
-		/>
-	);
-
-	const previewAdmin = (
-		<iframe title={ `${ session.id }-admin` } src={ previewAdminUrl } />
 	);
 
 	const showTabBar = ! isPlaygroundLoading;
@@ -58,7 +39,7 @@ export function Preview( props: {
 						: 'preview-tab-panel hidden'
 				}
 			>
-				{ previewFront }
+				{ front }
 			</div>
 			<div
 				className={
@@ -67,7 +48,7 @@ export function Preview( props: {
 						: 'preview-tab-panel hidden'
 				}
 			>
-				{ previewAdmin }
+				{ admin }
 			</div>
 		</>
 	);
