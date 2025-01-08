@@ -1,19 +1,17 @@
 import { ReactNode, useState } from 'react';
 import { PreviewTabBar } from '@/ui/preview/PreviewTabBar';
-import { useSessionContext } from '@/ui/session/SessionProvider';
 
 const tabFront = 0;
 const tabAdmin = 1;
 const defaultTab = tabFront;
 
-export function Preview( props: { front: ReactNode; admin: ReactNode } ) {
-	const { front, admin } = props;
+export function Preview( props: {
+	front: ReactNode;
+	admin: ReactNode;
+	showTabBar: boolean;
+} ) {
+	const { front, admin, showTabBar } = props;
 	const [ currentTab, setCurrentTab ] = useState< number >( defaultTab );
-	const { apiClient } = useSessionContext();
-
-	const isPlaygroundLoading = ! (
-		apiClient?.siteUrl && apiClient.siteUrl.length > 0
-	);
 
 	const tabBar = (
 		<PreviewTabBar
@@ -25,7 +23,6 @@ export function Preview( props: { front: ReactNode; admin: ReactNode } ) {
 		/>
 	);
 
-	const showTabBar = ! isPlaygroundLoading;
 	const showPreviewFront = currentTab === tabFront;
 	const showPreviewAdmin = currentTab === tabAdmin;
 

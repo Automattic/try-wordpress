@@ -155,7 +155,7 @@ function App() {
 		}
 	}, [ apiClient, playgroundClient, navigate ] );
 
-	const previewFront = (
+	const previewFront = ! session ? undefined : (
 		<Playground
 			slug={ session.id }
 			blogName={ session.title }
@@ -170,19 +170,24 @@ function App() {
 		/>
 	);
 
-	const previewAdminUrl =
-		apiClient?.siteUrl && apiClient.siteUrl?.length > 0
-			? `${ apiClient.siteUrl }/wp-admin/`
-			: '';
+	const isPlaygroundLoading =
+		! apiClient?.siteUrl || apiClient.siteUrl.length < 1;
 
-	const previewAdmin = (
-		<iframe title={ `${ session.id }-admin` } src={ previewAdminUrl } />
+	const previewAdmin = isPlaygroundLoading ? undefined : (
+		<iframe
+			title={ `${ session.id }-admin` }
+			src={ `${ apiClient!.siteUrl }/wp-admin/` }
+		/>
 	);
 
 	const preview = ! session ? (
 		<PlaceholderPreview />
 	) : (
-		<Preview front={ previewFront } admin={ previewAdmin } />
+		<Preview
+			front={ previewFront }
+			admin={ previewAdmin }
+			showTabBar={ ! isPlaygroundLoading }
+		/>
 	);
 
 	return (
