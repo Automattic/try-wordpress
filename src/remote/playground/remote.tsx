@@ -1,4 +1,11 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import {
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { Session } from '@/storage/session';
 import { PlaygroundClient } from '@wp-playground/client';
 import { ApiClient } from '@/api/ApiClient';
@@ -20,7 +27,11 @@ export function usePlaygroundRemote( props: {
 	const [ api, setApi ] = useState< ApiClient >();
 	const [ isReady, setIsReady ] = useState( false );
 	const booted = useRef( false );
-	const playgroundIframeId = 'playground';
+
+	const iframeId = useCallback(
+		() => ( ! session?.id ? '' : `playground-${ session.id }` ),
+		[ session ]
+	);
 
 	useEffect( () => {
 		if ( ! session || session.id === '' ) {
@@ -32,7 +43,7 @@ export function usePlaygroundRemote( props: {
 			return;
 		}
 		booted.current = true;
-		mountPlayground( playgroundIframeId, session.id, session.title ).then(
+		mountPlayground( iframeId(), session.id, session.title ).then(
 			async ( c ) => {
 				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
 				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
@@ -41,11 +52,11 @@ export function usePlaygroundRemote( props: {
 				setIsReady( true );
 			}
 		);
-	}, [ session ] );
+	}, [ session, iframeId ] );
 
 	const front = useMemo< ReactNode >( () => {
 		return ! session || session.id === '' ? undefined : (
-			<iframe title={ session.id } id={ playgroundIframeId } />
+			<iframe title={ session.id } id={ iframeId() } />
 		);
 	}, [ session ] );
 
