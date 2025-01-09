@@ -1,6 +1,6 @@
 import { Api } from '@/remote/api/Api';
 import { Subject, SubjectType } from '@/model/Subject';
-import { ApiPost } from '@/remote/api/ApiTypes';
+import { ApiPost } from '@/remote/api/client';
 import { getSchema } from '@/model/Schema';
 import { Field, FieldType } from '@/model/field/Field';
 import { newDateField } from '@/model/field/DateField';
