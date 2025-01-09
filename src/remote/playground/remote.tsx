@@ -10,6 +10,7 @@ import { Session } from '@/storage/session';
 import { PlaygroundClient } from '@wp-playground/client';
 import { Api } from '@/remote/api/Api';
 import { mountPlayground } from '@/remote/playground/playground';
+import { Client } from '@/remote/api/client/Client';
 
 export interface PlaygroundRemote {
 	front: ReactNode;
@@ -49,7 +50,7 @@ export function usePlaygroundRemote( props: {
 			async ( c ) => {
 				setBaseUrl( await c.absoluteUrl );
 				setClient( () => c );
-				setApi( new Api( c ) );
+				setApi( new Api( new Client( c ) ) );
 				setIsReady( true );
 			}
 		);
