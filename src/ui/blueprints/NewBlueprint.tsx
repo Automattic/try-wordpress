@@ -12,6 +12,10 @@ import {
 } from '@/bus/Command';
 import { Button } from '@wordpress/components';
 import { getSchema } from '@/model/Schema';
+import {
+	createBlueprint,
+	findBlueprintBySubjectType,
+} from '@/storage/blueprint';
 
 export function NewBlueprint() {
 	const params = useParams();
@@ -29,8 +33,7 @@ export function NewBlueprint() {
 		}
 
 		async function maybeRedirect() {
-			const blueprints =
-				await apiClient!.blueprints.findBySubjectType( subjectType );
+			const blueprints = await findBlueprintBySubjectType( subjectType );
 			const blueprint = blueprints.length > 0 ? blueprints[ 0 ] : null;
 			if ( blueprint && blueprint.valid ) {
 				navigate(
@@ -61,7 +64,7 @@ export function NewBlueprint() {
 							type: CommandTypes.GetCurrentPageInfo,
 							payload: {},
 						} ) ) as CurrentPageInfo;
-						const blueprint = await apiClient!.blueprints.create(
+						const blueprint = await createBlueprint(
 							newBlueprint( subjectType, currentPage.url )
 						);
 						navigate(

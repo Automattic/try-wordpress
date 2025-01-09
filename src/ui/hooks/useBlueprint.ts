@@ -1,6 +1,7 @@
 import { Blueprint } from '@/model/Blueprint';
 import { useSessionContext } from '@/ui/session/SessionProvider';
 import { useEffect, useState } from 'react';
+import { findBlueprintById } from '@/storage/blueprint';
 
 export function useBlueprint(
 	blueprintId: string
@@ -10,8 +11,7 @@ export function useBlueprint(
 
 	useEffect( () => {
 		if ( apiClient ) {
-			apiClient.blueprints
-				.findById( blueprintId )
+			findBlueprintById( blueprintId )
 				.then( ( bp ) => {
 					if ( ! bp ) {
 						throw Error(

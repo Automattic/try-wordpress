@@ -1,7 +1,6 @@
 import { PlaygroundClient } from '@wp-playground/client';
 import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
-import { BlueprintsApi } from '@/api/Blueprints';
 import { SubjectsApi } from '@/api/SubjectsApi';
 import { HttpProxy } from '@/remote/playground/HttpProxy';
 
@@ -11,12 +10,10 @@ export class ApiClient {
 	private readonly _subjects: SubjectsApi;
 	private readonly _settings: SettingsApi;
 	private readonly _users: UsersApi;
-	private readonly _blueprints: BlueprintsApi;
 
 	constructor( playgroundClient: PlaygroundClient, siteUrl: string ) {
 		this._client = new HttpProxy( playgroundClient );
 		this._siteUrl = siteUrl;
-		this._blueprints = new BlueprintsApi( this );
 		this._subjects = new SubjectsApi( this );
 		this._settings = new SettingsApi( this );
 		this._users = new UsersApi( this );
@@ -24,10 +21,6 @@ export class ApiClient {
 
 	get siteUrl(): string {
 		return this._siteUrl;
-	}
-
-	get blueprints(): BlueprintsApi {
-		return this._blueprints;
 	}
 
 	get subjects(): SubjectsApi {

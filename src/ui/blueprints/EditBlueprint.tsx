@@ -12,6 +12,7 @@ import { Button } from '@wordpress/components';
 import { validateBlueprint } from '@/model/Blueprint';
 import { parseField } from '@/parser/field';
 import { FieldsEditor } from '@/ui/components/FieldsEditor/FieldsEditor';
+import { updateBlueprint } from '@/storage/blueprint';
 
 export function EditBlueprint() {
 	const params = useParams();
@@ -55,7 +56,7 @@ export function EditBlueprint() {
 		blueprint.valid = validateBlueprint( blueprint );
 		subject.fields[ name ] = parseField( field );
 
-		const bp = await apiClient!.blueprints.update( blueprint );
+		const bp = await updateBlueprint( blueprint );
 		setBlueprint( bp );
 
 		const p = await apiClient!.subjects.update( subject );
