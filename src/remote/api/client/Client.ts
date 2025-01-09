@@ -1,12 +1,10 @@
-import { PlaygroundClient } from '@wp-playground/client';
-import { HttpProxy } from '@/remote/playground/HttpProxy';
+export interface Adapter {
+	get: ( url: string ) => object | null;
+	post: ( url: string, body: object ) => object;
+}
 
 export class Client {
-	private readonly client: HttpProxy;
-
-	constructor( private readonly playgroundClient: PlaygroundClient ) {
-		this.client = new HttpProxy( playgroundClient );
-	}
+	constructor( private readonly adapter: Adapter ) {}
 
 	async get(
 		route: string,
@@ -17,33 +15,11 @@ export class Client {
 			const encoded = encodeURIComponent( params[ name ] );
 			url += `&${ name }=${ encoded }`;
 		}
-		const response = await this.client.request( {
-			url,
-			method: 'GET',
-		} );
-		if ( response.httpStatusCode === 404 ) {
-			return null;
-		}
-		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			throw Error( response.json.message );
-		}
-		return response.json;
+		return this.adapter.get( url );
 	}
 
 	async post( route: string, body: object ): Promise< object > {
 		const url = `/index.php?rest_route=/try-wp/v1${ route }`;
-		const response = await this.client.request( {
-			url,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify( body ),
-		} );
-
-		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			throw Error( response.json.message );
-		}
-		return response.json;
+		return this.adapter.post( url, body );
 	}
 }
