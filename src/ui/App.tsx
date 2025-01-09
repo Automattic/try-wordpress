@@ -131,8 +131,8 @@ function App() {
 
 	const session = useRouteLoaderData( 'session' ) as Session | undefined;
 	const remote = usePlaygroundRemote( { session } );
-	const apiClient = remote.api;
-	const playgroundClient = remote.client;
+	const apiClient = remote?.api;
+	const playgroundClient = remote?.client;
 	const sectionContext: SessionContext = {
 		// @ts-ignore
 		session,
@@ -164,9 +164,9 @@ function App() {
 			<div className="preview">
 				<Preview
 					showPlaceholder={ ! session }
-					front={ remote.front }
-					admin={ remote.admin }
-					showTabBar={ remote.isReady }
+					front={ remote?.front }
+					admin={ remote?.admin }
+					showTabBar={ remote?.isReady ?? false }
 				/>
 			</div>
 		</SessionProvider>

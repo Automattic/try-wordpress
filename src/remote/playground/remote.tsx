@@ -14,7 +14,7 @@ export interface PlaygroundRemote {
 
 export function usePlaygroundRemote( props: {
 	session: Session | undefined;
-} ): PlaygroundRemote {
+} ): PlaygroundRemote | undefined {
 	const { session } = props;
 	const [ client, setClient ] = useState< PlaygroundClient >();
 	const [ api, setApi ] = useState< ApiClient >();
@@ -44,24 +44,27 @@ export function usePlaygroundRemote( props: {
 	}, [ session ] );
 
 	const front = useMemo< ReactNode >( () => {
+		return ! session || session.id === '' ? undefined : (
+			<iframe title={ session.id } id={ playgroundIframeId } />
+		);
+	}, [ session ] );
+
+	return useMemo< PlaygroundRemote | undefined >( () => {
 		if ( ! session || session.id === '' ) {
 			return undefined;
 		}
-		return <iframe title={ session.id } id={ playgroundIframeId } />;
-	}, [ session ] );
-
-	const admin = useMemo< ReactNode >( () => {
-		if ( ! session || session.id === '' || ! isReady ) {
-			return undefined;
-		}
-		return (
+		const admin = ! isReady ? undefined : (
 			<iframe
 				title={ `${ session.id }-admin` }
 				src={ `${ api!.siteUrl }/wp-admin/` }
 			/>
 		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ session, isReady ] );
-
-	return { front, admin, isReady, client, api };
+		return {
+			front,
+			admin,
+			isReady,
+			api,
+			client,
+		};
+	}, [ session, front, isReady, api, client ] );
 }
