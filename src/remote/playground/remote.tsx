@@ -56,9 +56,9 @@ export function usePlaygroundRemote( props: {
 
 	const front = useMemo< ReactNode >( () => {
 		return ! session || session.id === '' ? undefined : (
-			<iframe title={ session.id } id={ iframeId() } />
+			<iframe title={ iframeId() } id={ iframeId() } />
 		);
-	}, [ session ] );
+	}, [ session, iframeId ] );
 
 	return useMemo< PlaygroundRemote | undefined >( () => {
 		if ( ! session || session.id === '' ) {
@@ -66,7 +66,7 @@ export function usePlaygroundRemote( props: {
 		}
 		const admin = ! isReady ? undefined : (
 			<iframe
-				title={ `${ session.id }-admin` }
+				title={ `${ iframeId() }-admin` }
 				src={ `${ api!.siteUrl }/wp-admin/` }
 			/>
 		);
@@ -77,5 +77,5 @@ export function usePlaygroundRemote( props: {
 			api,
 			client,
 		};
-	}, [ session, front, isReady, api, client ] );
+	}, [ session, iframeId, front, isReady, api, client ] );
 }
