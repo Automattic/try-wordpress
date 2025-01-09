@@ -1,8 +1,8 @@
-import { ReactNode, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Session } from '@/storage/session';
-import { Playground } from '@/ui/components/Playground';
 import { PlaygroundClient } from '@wp-playground/client';
 import { ApiClient } from '@/api/ApiClient';
+import { mountPlayground } from '@/remote/playground/playground';
 
 export interface PlaygroundRemote {
 	front: ReactNode;
@@ -19,38 +19,49 @@ export function usePlaygroundRemote( props: {
 	const [ client, setClient ] = useState< PlaygroundClient >();
 	const [ api, setApi ] = useState< ApiClient >();
 	const [ isReady, setIsReady ] = useState( false );
+	const booted = useRef( false );
+	const playgroundIframeId = 'playground';
+
+	useEffect( () => {
+		if ( ! session || session.id === '' ) {
+			booted.current = false;
+			return;
+		}
+		if ( booted.current ) {
+			// Playground is already started or initialization has been attempted.
+			return;
+		}
+		booted.current = true;
+		mountPlayground( playgroundIframeId, session.id, session.title ).then(
+			async ( c ) => {
+				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
+				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
+				setClient( () => c );
+				setApi( new ApiClient( c, await c.absoluteUrl ) );
+				setIsReady( true );
+			}
+		);
+	}, [ session ] );
 
 	const front = useMemo< ReactNode >( () => {
 		if ( ! session || session.id === '' ) {
 			return undefined;
 		}
-		return (
-			<Playground
-				slug={ session.id }
-				blogName={ session.title }
-				onReady={ async ( c ) => {
-					// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
-					// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
-					setClient( () => c );
-					setApi( new ApiClient( c, await c.absoluteUrl ) );
-					setIsReady( true );
-				} }
-			/>
-		);
+		return <iframe title={ session.id } id={ playgroundIframeId } />;
 	}, [ session ] );
 
 	const admin = useMemo< ReactNode >( () => {
-		if ( ! isReady ) {
+		if ( ! session || session.id === '' || ! isReady ) {
 			return undefined;
 		}
 		return (
 			<iframe
-				title={ `${ session!.id }-admin` }
+				title={ `${ session.id }-admin` }
 				src={ `${ api!.siteUrl }/wp-admin/` }
 			/>
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ isReady ] );
+	}, [ session, isReady ] );
 
 	return { front, admin, isReady, client, api };
 }
