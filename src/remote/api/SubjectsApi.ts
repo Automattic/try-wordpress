@@ -1,4 +1,4 @@
-import { ApiClient } from '@/remote/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { Subject, SubjectType } from '@/model/Subject';
 import { ApiPost } from '@/remote/api/ApiTypes';
 import { getSchema } from '@/model/Schema';
@@ -8,11 +8,11 @@ import { newTextField } from '@/model/field/TextField';
 import { newHtmlField } from '@/model/field/HtmlField';
 
 export class SubjectsApi {
-	constructor( private readonly client: ApiClient ) {}
+	constructor( private readonly api: Api ) {}
 
 	async create( type: SubjectType, sourceUrl: string ): Promise< Subject > {
 		const path = getEndpoint( type );
-		const response = ( await this.client.post( path, {
+		const response = ( await this.api.post( path, {
 			sourceUrl,
 		} ) ) as ApiPost;
 		return fromApiResponse( type, response );
@@ -21,7 +21,7 @@ export class SubjectsApi {
 	async update( subject: Subject ): Promise< Subject > {
 		const { id, type } = subject;
 		const path = `${ getEndpoint( type ) }/${ id }`;
-		const response = ( await this.client.post(
+		const response = ( await this.api.post(
 			path,
 			toApiUpdateRequest( subject )
 		) ) as ApiPost;
@@ -30,7 +30,7 @@ export class SubjectsApi {
 
 	async findById( type: SubjectType, id: number ): Promise< Subject | null > {
 		const path = `${ getEndpoint( type ) }/${ id }`;
-		const post = ( await this.client.get( path ) ) as ApiPost;
+		const post = ( await this.api.get( path ) ) as ApiPost;
 		return post ? fromApiResponse( type, post ) : null;
 	}
 
@@ -41,7 +41,7 @@ export class SubjectsApi {
 		const path = `${ getEndpoint( type ) }&sourceurl=${ encodeURIComponent(
 			sourceUrl
 		) }`;
-		const post = ( await this.client.get( path ) ) as ApiPost;
+		const post = ( await this.api.get( path ) ) as ApiPost;
 		return post ? fromApiResponse( type, post ) : null;
 	}
 }

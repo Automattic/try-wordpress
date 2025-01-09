@@ -1,11 +1,11 @@
 import { createContext, useContext } from 'react';
 import { Session } from '@/storage/session';
-import { ApiClient } from '@/remote/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { PlaygroundClient } from '@wp-playground/client';
 
 export interface SessionContext {
 	session: Session;
-	apiClient?: ApiClient;
+	api?: Api;
 	playgroundClient?: PlaygroundClient;
 }
 

@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Session } from '@/storage/session';
 import { PlaygroundClient } from '@wp-playground/client';
-import { ApiClient } from '@/remote/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { mountPlayground } from '@/remote/playground/playground';
 
 export interface PlaygroundRemote {
@@ -16,7 +16,7 @@ export interface PlaygroundRemote {
 	admin: ReactNode;
 	isReady: boolean;
 	baseUrl?: string;
-	api?: ApiClient;
+	api?: Api;
 	client?: PlaygroundClient;
 }
 
@@ -26,7 +26,7 @@ export function usePlaygroundRemote( props: {
 	const { session } = props;
 	const [ baseUrl, setBaseUrl ] = useState< string >();
 	const [ client, setClient ] = useState< PlaygroundClient >();
-	const [ api, setApi ] = useState< ApiClient >();
+	const [ api, setApi ] = useState< Api >();
 	const [ isReady, setIsReady ] = useState( false );
 	const booted = useRef( false );
 
@@ -51,7 +51,7 @@ export function usePlaygroundRemote( props: {
 				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
 				setBaseUrl( await c.absoluteUrl );
 				setClient( () => c );
-				setApi( new ApiClient( c ) );
+				setApi( new Api( c ) );
 				setIsReady( true );
 			}
 		);

@@ -22,7 +22,7 @@ export function EditBlueprint() {
 		blueprint?.type,
 		blueprint?.sourceUrl
 	);
-	const { session, apiClient, playgroundClient } = useSessionContext();
+	const { session, api, playgroundClient } = useSessionContext();
 	const navigate = useNavigate();
 
 	// Make the source site navigate to the blueprint's source URL.
@@ -59,7 +59,7 @@ export function EditBlueprint() {
 		const bp = await updateBlueprint( blueprint );
 		setBlueprint( bp );
 
-		const p = await apiClient!.subjects.update( subject );
+		const p = await api!.subjects.update( subject );
 		setSubject( p );
 	}
 

@@ -4,7 +4,7 @@ import { UsersApi } from '@/remote/api/Users';
 import { SubjectsApi } from '@/remote/api/SubjectsApi';
 import { HttpProxy } from '@/remote/playground/HttpProxy';
 
-export class ApiClient {
+export class Api {
 	private readonly _client: HttpProxy;
 	private readonly _subjects: SubjectsApi;
 	private readonly _settings: SettingsApi;

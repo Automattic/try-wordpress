@@ -1,4 +1,4 @@
-import { ApiClient } from '@/remote/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { User } from '@/model/User';
 import { ApiUser } from '@/remote/api/ApiTypes';
 
@@ -13,7 +13,7 @@ interface CreateBody {
 
 export class UsersApi {
 	// eslint-disable-next-line no-useless-constructor
-	constructor( private readonly client: ApiClient ) {}
+	constructor( private readonly api: Api ) {}
 
 	async create( body: CreateBody ): Promise< User > {
 		const actualBody: any = {
@@ -30,7 +30,7 @@ export class UsersApi {
 		if ( body.lastName ) {
 			actualBody.last_name = body.lastName;
 		}
-		const response = ( await this.client.post(
+		const response = ( await this.api.post(
 			`/users`,
 			actualBody
 		) ) as ApiUser;

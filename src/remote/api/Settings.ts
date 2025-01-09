@@ -1,4 +1,4 @@
-import { ApiClient } from '@/remote/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { SiteSettings } from '@/model/SiteSettings';
 import { ApiSettings } from '@/remote/api/ApiTypes';
 
@@ -8,7 +8,7 @@ interface UpdateBody {
 
 export class SettingsApi {
 	// eslint-disable-next-line no-useless-constructor
-	constructor( private readonly client: ApiClient ) {}
+	constructor( private readonly api: Api ) {}
 
 	async update( body: UpdateBody ): Promise< SiteSettings > {
 		const actualBody: any = {};
@@ -18,7 +18,7 @@ export class SettingsApi {
 		if ( Object.keys( actualBody ).length === 0 ) {
 			throw Error( 'attempting to update zero fields' );
 		}
-		const response = ( await this.client.post(
+		const response = ( await this.api.post(
 			`/settings`,
 			actualBody
 		) ) as ApiSettings;

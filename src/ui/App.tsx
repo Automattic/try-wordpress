@@ -136,7 +136,7 @@ function App() {
 	const sectionContext: SessionContext = {
 		// @ts-ignore
 		session,
-		apiClient,
+		api: apiClient,
 		playgroundClient,
 	};
 

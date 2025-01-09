@@ -7,10 +7,10 @@ export function useBlueprint(
 	blueprintId: string
 ): [ Blueprint | undefined, ( blueprint: Blueprint ) => void ] {
 	const [ blueprint, setBlueprint ] = useState< Blueprint >();
-	const { apiClient } = useSessionContext();
+	const { api } = useSessionContext();
 
 	useEffect( () => {
-		if ( apiClient ) {
+		if ( api ) {
 			findBlueprintById( blueprintId )
 				.then( ( bp ) => {
 					if ( ! bp ) {
@@ -22,7 +22,7 @@ export function useBlueprint(
 				} )
 				.catch( console.error );
 		}
-	}, [ blueprintId, apiClient ] );
+	}, [ blueprintId, api ] );
 
 	return [ blueprint, setBlueprint ];
 }
