@@ -1,7 +1,7 @@
 import { PlaygroundClient } from '@wp-playground/client';
-import { SettingsApi } from '@/api/Settings';
-import { UsersApi } from '@/api/Users';
-import { SubjectsApi } from '@/api/SubjectsApi';
+import { SettingsApi } from '@/remote/api/Settings';
+import { UsersApi } from '@/remote/api/Users';
+import { SubjectsApi } from '@/remote/api/SubjectsApi';
 import { HttpProxy } from '@/remote/playground/HttpProxy';
 
 export class ApiClient {

@@ -1,6 +1,6 @@
-import { ApiClient } from '@/api/ApiClient';
+import { ApiClient } from '@/remote/api/ApiClient';
 import { User } from '@/model/User';
-import { ApiUser } from '@/api/ApiTypes';
+import { ApiUser } from '@/remote/api/ApiTypes';
 
 interface CreateBody {
 	username: string;

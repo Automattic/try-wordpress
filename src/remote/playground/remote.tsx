@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { Session } from '@/storage/session';
 import { PlaygroundClient } from '@wp-playground/client';
-import { ApiClient } from '@/api/ApiClient';
+import { ApiClient } from '@/remote/api/ApiClient';
 import { mountPlayground } from '@/remote/playground/playground';
 
 export interface PlaygroundRemote {

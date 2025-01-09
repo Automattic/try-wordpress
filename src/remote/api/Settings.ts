@@ -1,6 +1,6 @@
-import { ApiClient } from '@/api/ApiClient';
+import { ApiClient } from '@/remote/api/ApiClient';
 import { SiteSettings } from '@/model/SiteSettings';
-import { ApiSettings } from '@/api/ApiTypes';
+import { ApiSettings } from '@/remote/api/ApiTypes';
 
 interface UpdateBody {
 	title?: string;
