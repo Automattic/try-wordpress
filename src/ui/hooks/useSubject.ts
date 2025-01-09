@@ -10,21 +10,24 @@ export function useSubject(
 	sourceUrl: string | undefined
 ): [ Subject | undefined, ( subject: Subject ) => void ] {
 	const [ subject, setSubject ] = useState< Subject >();
-	const { api } = useSessionContext();
+	const { remote } = useSessionContext();
 
 	useEffect( () => {
 		async function loadSubject() {
-			if ( ! type || ! sourceUrl || ! api ) {
+			if ( ! type || ! sourceUrl || ! remote?.api ) {
 				return;
 			}
-			let subj = await api!.subjects.findBySourceUrl( type, sourceUrl );
+			let subj = await remote.api.subjects.findBySourceUrl(
+				type,
+				sourceUrl
+			);
 			if ( ! subj ) {
-				subj = await api!.subjects.create( type, sourceUrl );
+				subj = await remote.api.subjects.create( type, sourceUrl );
 			}
 			setSubject( subj );
 		}
 		loadSubject().catch( console.error );
-	}, [ type, sourceUrl, api ] );
+	}, [ type, sourceUrl, remote?.api ] );
 
 	return [ subject, setSubject ];
 }

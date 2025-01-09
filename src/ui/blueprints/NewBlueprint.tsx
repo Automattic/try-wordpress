@@ -22,13 +22,13 @@ export function NewBlueprint() {
 	const subjectType = params.subjectType as SubjectType;
 	const navigate = useNavigate();
 	const [ isLoading, setIsLoading ] = useState( true );
-	const { session, api } = useSessionContext();
+	const { session, remote } = useSessionContext();
 
 	// Check if there is already a blueprint for the subjectType and if so,
 	// redirect to that blueprint's edit screen if the blueprint is not valid yet,
 	// or redirect to the import screen if the blueprint is already valid.
 	useEffect( () => {
-		if ( ! api ) {
+		if ( ! remote?.api ) {
 			return;
 		}
 
@@ -48,7 +48,7 @@ export function NewBlueprint() {
 		}
 
 		maybeRedirect().catch( console.error );
-	}, [ session.id, api, subjectType, navigate ] );
+	}, [ session.id, remote?.api, subjectType, navigate ] );
 
 	const schema = getSchema( subjectType );
 	const navigateMessage = <>Navigate to a { schema.title }</>;

@@ -18,7 +18,7 @@ const subjectType = ManualSubjectTypes.Page as unknown as SubjectType;
 export function ImportPage() {
 	const params = useParams();
 	const pageIndex = parseInt( params.page! ?? 0, 10 );
-	const { session, playgroundClient, api } = useSessionContext();
+	const { session, remote } = useSessionContext();
 	const navigate = useNavigate();
 	const [ selectedPages ] = useSelectedPages();
 	const [ sourceUrl, setSourceUrl ] = useState< string >();
@@ -51,10 +51,10 @@ export function ImportPage() {
 
 	// Make playground navigate to the transformed post of the page.
 	useEffect( () => {
-		if ( subject && !! playgroundClient ) {
-			void playgroundClient.goTo( subject.previewUrl );
+		if ( subject && !! remote?.client ) {
+			void remote.client.goTo( subject.previewUrl );
 		}
-	}, [ subject, playgroundClient ] );
+	}, [ subject, remote?.client ] );
 
 	if ( ! subject ) {
 		return 'Loading...';
@@ -83,7 +83,7 @@ export function ImportPage() {
 				subject={ subject }
 				onFieldChanged={ async ( name: string, field: Field ) => {
 					subject.fields[ name ] = parseField( field );
-					const s = await api!.subjects.update( subject );
+					const s = await remote!.api!.subjects.update( subject );
 					setPage( s );
 				} }
 			/>

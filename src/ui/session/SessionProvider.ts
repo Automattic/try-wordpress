@@ -1,12 +1,10 @@
 import { createContext, useContext } from 'react';
 import { Session } from '@/storage/session';
-import { Api } from '@/remote/api/Api';
-import { PlaygroundClient } from '@wp-playground/client';
+import { PlaygroundRemote } from '@/remote/playground/remote';
 
 export interface SessionContext {
 	session: Session;
-	api?: Api;
-	playgroundClient?: PlaygroundClient;
+	remote?: PlaygroundRemote;
 }
 
 const sessionContext = createContext< SessionContext >( {
