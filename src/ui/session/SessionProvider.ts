@@ -3,17 +3,11 @@ import { Session } from '@/storage/session';
 import { PlaygroundRemote } from '@/remote/playground/remote';
 
 export interface SessionContext {
-	session: Session;
+	session?: Session;
 	remote?: PlaygroundRemote;
 }
 
-const sessionContext = createContext< SessionContext >( {
-	session: {
-		id: '',
-		url: '',
-		title: '',
-	},
-} );
+const sessionContext = createContext< SessionContext >( {} );
 
 export const SessionProvider = sessionContext.Provider;
 

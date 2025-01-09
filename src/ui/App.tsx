@@ -131,11 +131,7 @@ function App() {
 
 	const session = useRouteLoaderData( 'session' ) as Session | undefined;
 	const remote = usePlaygroundRemote( { session } );
-	const sectionContext: SessionContext = {
-		// @ts-ignore
-		session,
-		remote,
-	};
+	const sectionContext: SessionContext = { session, remote };
 
 	// Debugging tools.
 	useEffect( () => {

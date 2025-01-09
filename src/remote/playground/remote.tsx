@@ -58,13 +58,13 @@ export function usePlaygroundRemote( props: {
 	}, [ session, iframeId ] );
 
 	const front = useMemo< ReactNode >( () => {
-		return ! session || session.id === '' ? undefined : (
+		return ! session ? undefined : (
 			<iframe title={ iframeId() } id={ iframeId() } />
 		);
 	}, [ session, iframeId ] );
 
 	return useMemo< PlaygroundRemote | undefined >( () => {
-		if ( ! session || session.id === '' ) {
+		if ( ! session ) {
 			// We must only return undefined when the session is undefined.
 			// Do not add any extra conditions to the above if statement.
 			return undefined;
