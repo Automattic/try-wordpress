@@ -15,6 +15,7 @@ export interface PlaygroundRemote {
 	front: ReactNode;
 	admin: ReactNode;
 	isReady: boolean;
+	baseUrl?: string;
 	api?: ApiClient;
 	client?: PlaygroundClient;
 }
@@ -23,6 +24,7 @@ export function usePlaygroundRemote( props: {
 	session: Session | undefined;
 } ): PlaygroundRemote | undefined {
 	const { session } = props;
+	const [ baseUrl, setBaseUrl ] = useState< string >();
 	const [ client, setClient ] = useState< PlaygroundClient >();
 	const [ api, setApi ] = useState< ApiClient >();
 	const [ isReady, setIsReady ] = useState( false );
@@ -47,8 +49,9 @@ export function usePlaygroundRemote( props: {
 			async ( c ) => {
 				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
 				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
+				setBaseUrl( await c.absoluteUrl );
 				setClient( () => c );
-				setApi( new ApiClient( c, await c.absoluteUrl ) );
+				setApi( new ApiClient( c ) );
 				setIsReady( true );
 			}
 		);
@@ -62,20 +65,24 @@ export function usePlaygroundRemote( props: {
 
 	return useMemo< PlaygroundRemote | undefined >( () => {
 		if ( ! session || session.id === '' ) {
+			// We must only return undefined when the session is undefined.
+			// Do not add any extra conditions to the above if statement.
 			return undefined;
 		}
-		const admin = ! isReady ? undefined : (
-			<iframe
-				title={ `${ iframeId() }-admin` }
-				src={ `${ api!.siteUrl }/wp-admin/` }
-			/>
-		);
+		const admin =
+			! isReady || ! baseUrl ? undefined : (
+				<iframe
+					title={ `${ iframeId() }-admin` }
+					src={ `${ baseUrl }/wp-admin/` }
+				/>
+			);
 		return {
 			front,
 			admin,
 			isReady,
+			baseUrl,
 			api,
 			client,
 		};
-	}, [ session, iframeId, front, isReady, api, client ] );
+	}, [ session, iframeId, front, isReady, baseUrl, api, client ] );
 }

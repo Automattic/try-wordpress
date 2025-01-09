@@ -6,21 +6,15 @@ import { HttpProxy } from '@/remote/playground/HttpProxy';
 
 export class ApiClient {
 	private readonly _client: HttpProxy;
-	private readonly _siteUrl: string;
 	private readonly _subjects: SubjectsApi;
 	private readonly _settings: SettingsApi;
 	private readonly _users: UsersApi;
 
-	constructor( playgroundClient: PlaygroundClient, siteUrl: string ) {
+	constructor( playgroundClient: PlaygroundClient ) {
 		this._client = new HttpProxy( playgroundClient );
-		this._siteUrl = siteUrl;
 		this._subjects = new SubjectsApi( this );
 		this._settings = new SettingsApi( this );
 		this._users = new UsersApi( this );
-	}
-
-	get siteUrl(): string {
-		return this._siteUrl;
 	}
 
 	get subjects(): SubjectsApi {
