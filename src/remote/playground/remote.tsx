@@ -47,8 +47,6 @@ export function usePlaygroundRemote( props: {
 		booted.current = true;
 		mountPlayground( iframeId(), session.id, session.title ).then(
 			async ( c ) => {
-				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
-				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
 				setBaseUrl( await c.absoluteUrl );
 				setClient( () => c );
 				setApi( new Api( c ) );
