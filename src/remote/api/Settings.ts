@@ -1,6 +1,6 @@
-import { ApiClient } from '@/api/ApiClient';
+import { Client } from '@/remote/api/client/Client';
 import { SiteSettings } from '@/model/SiteSettings';
-import { ApiSettings } from '@/api/ApiTypes';
+import { ApiSettings } from '@/remote/api/client/types';
 
 interface UpdateBody {
 	title?: string;
@@ -8,7 +8,7 @@ interface UpdateBody {
 
 export class SettingsApi {
 	// eslint-disable-next-line no-useless-constructor
-	constructor( private readonly client: ApiClient ) {}
+	constructor( private readonly client: Client ) {}
 
 	async update( body: UpdateBody ): Promise< SiteSettings > {
 		const actualBody: any = {};

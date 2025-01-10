@@ -1,3 +1,4 @@
+import { Adapter } from '@/remote/api/client/Client';
 import {
 	PHPRequest,
 	PHPResponse,
@@ -5,19 +6,44 @@ import {
 } from '@wp-playground/client';
 import { shouldLogApiRequests } from '@/config';
 
-export class HttpProxy {
-	constructor( private readonly client: PlaygroundClient ) {}
+export class PlaygroundAdapter implements Adapter {
+	constructor( private readonly playgroundClient: PlaygroundClient ) {}
 
-	async request( request: PHPRequest ): Promise< PHPResponse > {
-		const response = await this.client.request( request );
-
-		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
-			logFailedRequest( { request, response } );
-		} else if ( shouldLogApiRequests() ) {
+	async get( url: string ): Promise< object | null > {
+		const request: PHPRequest = {
+			url,
+			method: 'GET',
+		};
+		const response = await this.playgroundClient.request( request );
+		if ( shouldLogApiRequests() ) {
 			logRequest( { request, response } );
 		}
+		if ( response.httpStatusCode === 404 ) {
+			return null;
+		}
+		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
+			logFailedRequest( { request, response } );
+			throw Error( response.json.message );
+		}
+		return response.json;
+	}
 
-		return response;
+	async post( url: string, body: object ): Promise< object > {
+		const request: PHPRequest = {
+			url,
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify( body ),
+		};
+		const response = await this.playgroundClient.request( request );
+		if ( shouldLogApiRequests() ) {
+			logRequest( { request, response } );
+		}
+		if ( response.httpStatusCode < 200 || response.httpStatusCode >= 300 ) {
+			logFailedRequest( { request, response } );
+			throw Error( response.json.message );
+		}
+		return response.json;
 	}
 }
 

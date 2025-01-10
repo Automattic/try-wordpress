@@ -8,14 +8,17 @@ import {
 } from 'react';
 import { Session } from '@/storage/session';
 import { PlaygroundClient } from '@wp-playground/client';
-import { ApiClient } from '@/api/ApiClient';
+import { Api } from '@/remote/api/Api';
 import { mountPlayground } from '@/remote/playground/playground';
+import { Client } from '@/remote/api/client/Client';
+import { PlaygroundAdapter } from '@/remote/api/client/PlaygroundAdapter';
 
 export interface PlaygroundRemote {
 	front: ReactNode;
 	admin: ReactNode;
 	isReady: boolean;
-	api?: ApiClient;
+	baseUrl?: string;
+	api?: Api;
 	client?: PlaygroundClient;
 }
 
@@ -23,8 +26,9 @@ export function usePlaygroundRemote( props: {
 	session: Session | undefined;
 } ): PlaygroundRemote | undefined {
 	const { session } = props;
+	const [ baseUrl, setBaseUrl ] = useState< string >();
 	const [ client, setClient ] = useState< PlaygroundClient >();
-	const [ api, setApi ] = useState< ApiClient >();
+	const [ api, setApi ] = useState< Api >();
 	const [ isReady, setIsReady ] = useState( false );
 	const booted = useRef( false );
 
@@ -45,37 +49,40 @@ export function usePlaygroundRemote( props: {
 		booted.current = true;
 		mountPlayground( iframeId(), session.id, session.title ).then(
 			async ( c ) => {
-				// Because client is "function-y", we need to wrap it in a function so that React doesn't call it.
-				// See: https://react.dev/reference/react/useState#im-trying-to-set-state-to-a-function-but-it-gets-called-instead.
+				setBaseUrl( await c.absoluteUrl );
 				setClient( () => c );
-				setApi( new ApiClient( c, await c.absoluteUrl ) );
+				setApi( new Api( new Client( new PlaygroundAdapter( c ) ) ) );
 				setIsReady( true );
 			}
 		);
 	}, [ session, iframeId ] );
 
 	const front = useMemo< ReactNode >( () => {
-		return ! session || session.id === '' ? undefined : (
+		return ! session ? undefined : (
 			<iframe title={ iframeId() } id={ iframeId() } />
 		);
 	}, [ session, iframeId ] );
 
 	return useMemo< PlaygroundRemote | undefined >( () => {
-		if ( ! session || session.id === '' ) {
+		if ( ! session ) {
+			// We must only return undefined when the session is undefined.
+			// Do not add any extra conditions to the above if statement.
 			return undefined;
 		}
-		const admin = ! isReady ? undefined : (
-			<iframe
-				title={ `${ iframeId() }-admin` }
-				src={ `${ api!.siteUrl }/wp-admin/` }
-			/>
-		);
+		const admin =
+			! isReady || ! baseUrl ? undefined : (
+				<iframe
+					title={ `${ iframeId() }-admin` }
+					src={ `${ baseUrl }/wp-admin/` }
+				/>
+			);
 		return {
 			front,
 			admin,
 			isReady,
+			baseUrl,
 			api,
 			client,
 		};
-	}, [ session, iframeId, front, isReady, api, client ] );
+	}, [ session, iframeId, front, isReady, baseUrl, api, client ] );
 }

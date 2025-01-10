@@ -12,25 +12,28 @@ import {
 } from '@/bus/Command';
 import { Button } from '@wordpress/components';
 import { getSchema } from '@/model/Schema';
+import {
+	createBlueprint,
+	findBlueprintBySubjectType,
+} from '@/storage/blueprint';
 
 export function NewBlueprint() {
 	const params = useParams();
 	const subjectType = params.subjectType as SubjectType;
 	const navigate = useNavigate();
 	const [ isLoading, setIsLoading ] = useState( true );
-	const { session, apiClient } = useSessionContext();
+	const { session, remote } = useSessionContext();
 
 	// Check if there is already a blueprint for the subjectType and if so,
 	// redirect to that blueprint's edit screen if the blueprint is not valid yet,
 	// or redirect to the import screen if the blueprint is already valid.
 	useEffect( () => {
-		if ( ! apiClient ) {
+		if ( ! remote?.api ) {
 			return;
 		}
 
 		async function maybeRedirect() {
-			const blueprints =
-				await apiClient!.blueprints.findBySubjectType( subjectType );
+			const blueprints = await findBlueprintBySubjectType( subjectType );
 			const blueprint = blueprints.length > 0 ? blueprints[ 0 ] : null;
 			if ( blueprint && blueprint.valid ) {
 				navigate(
@@ -45,7 +48,7 @@ export function NewBlueprint() {
 		}
 
 		maybeRedirect().catch( console.error );
-	}, [ session.id, apiClient, subjectType, navigate ] );
+	}, [ session.id, remote?.api, subjectType, navigate ] );
 
 	const schema = getSchema( subjectType );
 	const navigateMessage = <>Navigate to a { schema.title }</>;
@@ -61,7 +64,7 @@ export function NewBlueprint() {
 							type: CommandTypes.GetCurrentPageInfo,
 							payload: {},
 						} ) ) as CurrentPageInfo;
-						const blueprint = await apiClient!.blueprints.create(
+						const blueprint = await createBlueprint(
 							newBlueprint( subjectType, currentPage.url )
 						);
 						navigate(

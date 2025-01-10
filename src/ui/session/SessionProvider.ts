@@ -1,21 +1,13 @@
 import { createContext, useContext } from 'react';
 import { Session } from '@/storage/session';
-import { ApiClient } from '@/api/ApiClient';
-import { PlaygroundClient } from '@wp-playground/client';
+import { PlaygroundRemote } from '@/remote/playground/remote';
 
 export interface SessionContext {
-	session: Session;
-	apiClient?: ApiClient;
-	playgroundClient?: PlaygroundClient;
+	session?: Session;
+	remote?: PlaygroundRemote;
 }
 
-const sessionContext = createContext< SessionContext >( {
-	session: {
-		id: '',
-		url: '',
-		title: '',
-	},
-} );
+const sessionContext = createContext< SessionContext >( {} );
 
 export const SessionProvider = sessionContext.Provider;
 

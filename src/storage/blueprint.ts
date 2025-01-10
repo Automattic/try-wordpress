@@ -1,0 +1,71 @@
+import { Blueprint } from '@/model/Blueprint';
+import { localStorageGet, localStorageSet } from '@/browser';
+import { SubjectType } from '@/model/Subject';
+
+export async function createBlueprint(
+	blueprint: Blueprint
+): Promise< Blueprint > {
+	blueprint.id = Date.now().toString( 16 );
+
+	const values: Record< string, Blueprint > = {};
+	values[ key( blueprint.id ) ] = blueprint;
+	await localStorageSet( values );
+
+	// We also maintain an array of blueprintIds to serve as "index" for when we need to list blueprints.
+	let blueprintIds: string[];
+	const blueprintIdsValues = await localStorageGet( 'blueprints' );
+	if ( ! blueprintIdsValues || ! blueprintIdsValues.blueprints ) {
+		blueprintIds = [];
+	} else {
+		blueprintIds = blueprintIdsValues.blueprints;
+	}
+	blueprintIds.push( blueprint.id );
+	await localStorageSet( { blueprints: blueprintIds } );
+
+	return blueprint;
+}
+
+export async function updateBlueprint(
+	blueprint: Blueprint
+): Promise< Blueprint > {
+	const values: Record< string, Blueprint > = {};
+	values[ key( blueprint.id ) ] = blueprint;
+	await localStorageSet( values );
+	return blueprint;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function findBlueprintById(
+	id: string
+): Promise< Blueprint | null > {
+	const values = await localStorageGet( key( id ) );
+	if ( ! values || ! values[ key( id ) ] ) {
+		return null;
+	}
+	return values[ key( id ) ] as Blueprint;
+}
+
+export async function findBlueprintBySubjectType(
+	subjectType: SubjectType
+): Promise< Blueprint[] > {
+	let blueprintIds = [];
+	const values = await localStorageGet( 'blueprints' );
+	if ( values && values.blueprints ) {
+		blueprintIds = values.blueprints;
+	}
+
+	const blueprints = [];
+	for ( const blueprintId of blueprintIds ) {
+		// eslint-disable-next-line react/no-is-mounted
+		const blueprint = await findBlueprintById( blueprintId );
+		if ( blueprint && blueprint.type === subjectType ) {
+			blueprints.push( blueprint );
+		}
+	}
+
+	return blueprints;
+}
+
+function key( blueprintId: string ): string {
+	return `blueprint-${ blueprintId }`;
+}

@@ -1,6 +1,6 @@
-import { ApiClient } from '@/api/ApiClient';
 import { Subject, SubjectType } from '@/model/Subject';
-import { ApiPost } from '@/api/ApiTypes';
+import { ApiPost } from '@/remote/api/client/types';
+import { Client } from '@/remote/api/client/Client';
 import { getSchema } from '@/model/Schema';
 import { Field, FieldType } from '@/model/field/Field';
 import { newDateField } from '@/model/field/DateField';
@@ -8,7 +8,7 @@ import { newTextField } from '@/model/field/TextField';
 import { newHtmlField } from '@/model/field/HtmlField';
 
 export class SubjectsApi {
-	constructor( private readonly client: ApiClient ) {}
+	constructor( private readonly client: Client ) {}
 
 	async create( type: SubjectType, sourceUrl: string ): Promise< Subject > {
 		const path = getEndpoint( type );

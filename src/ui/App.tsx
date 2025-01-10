@@ -131,14 +131,7 @@ function App() {
 
 	const session = useRouteLoaderData( 'session' ) as Session | undefined;
 	const remote = usePlaygroundRemote( { session } );
-	const apiClient = remote?.api;
-	const playgroundClient = remote?.client;
-	const sectionContext: SessionContext = {
-		// @ts-ignore
-		session,
-		apiClient,
-		playgroundClient,
-	};
+	const sectionContext: SessionContext = { session, remote };
 
 	// Debugging tools.
 	useEffect( () => {
@@ -147,11 +140,10 @@ function App() {
 				navigateTo: ( url: string ) => navigate( url ),
 			};
 		}
-		if ( apiClient ) {
-			( window as any ).trywp.apiClient = apiClient;
-			( window as any ).trywp.playgroundClient = playgroundClient;
+		if ( remote?.api ) {
+			( window as any ).trywp.remote = remote;
 		}
-	}, [ apiClient, playgroundClient, navigate ] );
+	}, [ remote, navigate ] );
 
 	return (
 		<SessionProvider value={ sectionContext }>
