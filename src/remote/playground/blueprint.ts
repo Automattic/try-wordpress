@@ -1,125 +1,13 @@
-import { useEffect, useRef } from 'react';
-import {
-	MountDescriptor,
-	PlaygroundClient,
-	StartPlaygroundOptions,
-	startPlaygroundWeb,
-	StepDefinition,
-} from '@wp-playground/client';
-import { localStorageGet, localStorageSet } from '@/browser';
-import { isOpfsEnabled } from '@/config';
+import { Blueprint, StepDefinition } from '@wp-playground/client';
 
-const playgroundIframeId = 'playground';
-
-export function Playground( props: {
-	slug: string;
-	className?: string;
-	blogName: string;
-	onReady: ( client: PlaygroundClient ) => void;
-} ) {
-	const { slug, className, blogName, onReady } = props;
-	const initializationRef = useRef( false );
-
-	useEffect( () => {
-		const iframe = document.getElementById( playgroundIframeId );
-		if ( ! ( iframe instanceof HTMLIFrameElement ) ) {
-			throw Error( 'Playground container element must be an iframe' );
-		}
-		if ( iframe.src !== '' || initializationRef.current ) {
-			// Playground is already started or initialization has been attempted.
-			return;
-		}
-
-		initializationRef.current = true;
-
-		initPlayground( iframe, slug, blogName )
-			.then( async ( client: PlaygroundClient ) => {
-				const url = await client.absoluteUrl;
-				console.log( 'Playground communication established', url );
-				onReady( client );
-			} )
-			.catch( ( error ) => {
-				throw error;
-			} );
-	}, [ slug, blogName, onReady ] );
-
-	return (
-		<iframe
-			title={ slug }
-			id={ playgroundIframeId }
-			className={ className }
-		/>
-	);
-}
-
-async function initPlayground(
-	iframe: HTMLIFrameElement,
-	slug: string,
-	blogName: string
-): Promise< PlaygroundClient > {
-	const opfsEnabled = isOpfsEnabled();
-
-	// TODO: We should pass the initialSyncDirection property.
-	// @ts-ignore
-	const mountDescriptor: MountDescriptor = {
-		device: {
-			type: 'opfs',
-			path: '/try-wp-sites/' + slug,
-		},
-		mountpoint: '/wordpress',
-	};
-
-	const isWPInstalled = await isWordPressInstalled( slug );
-	console.info(
-		'opfsEnabled:',
-		opfsEnabled,
-		'isWordPressInstalled:',
-		isWPInstalled
-	);
-
-	const options: StartPlaygroundOptions = {
-		iframe,
-		remoteUrl: `https://pg.ashfame.com/remote.html`,
-		mounts: opfsEnabled ? [ mountDescriptor ] : undefined,
-		shouldInstallWordPress: opfsEnabled ? ! isWPInstalled : undefined,
-		blueprint: {
-			login: true,
-			steps: steps(),
-			siteOptions: {
-				blogname: blogName,
-			},
+export function blueprint( blogName: string ): Blueprint {
+	return {
+		login: true,
+		steps: steps(),
+		siteOptions: {
+			blogname: blogName,
 		},
 	};
-
-	const client: PlaygroundClient = await startPlaygroundWeb( options );
-	await client.isReady();
-
-	if ( ! isWPInstalled ) {
-		await setWordPressAsInstalled( slug );
-	}
-
-	return client;
-}
-
-async function isWordPressInstalled( slug: string ) {
-	const localStorageKey = `${ slug }-isWordPressInstalled`;
-	let isInstalled = false;
-
-	try {
-		const result = await localStorageGet( localStorageKey );
-		if ( result[ localStorageKey ] === 'true' ) {
-			isInstalled = true;
-		}
-		return isInstalled;
-	} catch ( error ) {
-		console.log( `Error: ${ error }` );
-		return false; // In case of error, assume WordPress is not installed
-	}
-}
-
-async function setWordPressAsInstalled( slug: string ) {
-	const localStorageKey = `${ slug }-isWordPressInstalled`;
-	await localStorageSet( { [ localStorageKey ]: 'true' } );
 }
 
 function steps(): StepDefinition[] {

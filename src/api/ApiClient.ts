@@ -3,10 +3,10 @@ import { SettingsApi } from '@/api/Settings';
 import { UsersApi } from '@/api/Users';
 import { BlueprintsApi } from '@/api/Blueprints';
 import { SubjectsApi } from '@/api/SubjectsApi';
-import { PlaygroundHttpProxy } from '@/ui/preview/PlaygroundHttpProxy';
+import { HttpProxy } from '@/remote/playground/HttpProxy';
 
 export class ApiClient {
-	private readonly _client: PlaygroundHttpProxy;
+	private readonly _client: HttpProxy;
 	private readonly _siteUrl: string;
 	private readonly _subjects: SubjectsApi;
 	private readonly _settings: SettingsApi;
@@ -14,7 +14,7 @@ export class ApiClient {
 	private readonly _blueprints: BlueprintsApi;
 
 	constructor( playgroundClient: PlaygroundClient, siteUrl: string ) {
-		this._client = new PlaygroundHttpProxy( playgroundClient );
+		this._client = new HttpProxy( playgroundClient );
 		this._siteUrl = siteUrl;
 		this._blueprints = new BlueprintsApi( this );
 		this._subjects = new SubjectsApi( this );
